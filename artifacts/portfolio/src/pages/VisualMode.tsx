@@ -6,6 +6,7 @@ import Hero from "@/components/Hero";
 import LandsatName from "@/components/LandsatName";
 import About from "@/components/About";
 import Journey from "@/components/Journey";
+import KineticText from "@/components/KineticText";
 import Projects from "@/components/Projects";
 import Skills from "@/components/Skills";
 import Achievements from "@/components/Achievements";
@@ -108,6 +109,7 @@ export default function VisualMode() {
           <LandsatName />
           <About />
           <Journey />
+          <KineticText />
           <Projects />
           <Skills />
           <Achievements />
