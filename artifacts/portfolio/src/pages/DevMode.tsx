@@ -2,19 +2,187 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";
 import { projects } from "@/data/projects";
 
-interface HistoryEntry {
-  input?: string;
-  output: string | string[];
-  type?: "error" | "success" | "info" | "system";
-}
+/* ── ASCII art ───────────────────────────────────────────── */
+const ASCII_ART = [
+  " ███╗   ██╗██╗██╗     ███████╗███████╗██╗  ██╗",
+  " ████╗  ██║██║██║     ██╔════╝██╔════╝██║  ██║",
+  " ██╔██╗ ██║██║██║     █████╗  ███████╗███████║",
+  " ██║╚██╗██║██║██║     ██╔══╝  ╚════██║██╔══██║",
+  " ██║ ╚████║██║███████╗███████╗███████║██║  ██║",
+  " ╚═╝  ╚═══╝╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝",
+];
+const GLITCH_CHARS = "!@#%^&*<>▓▒░█▄▀╔╗╚╝║═╠╣╦╩╬~`";
 
-type NanoState = { open: false } | { open: true; project: typeof projects[0] };
-
+/* ── Prompt state (module-level, shared with getPrompt) ──── */
 const PROMPT_BASE = "nilesh@portfolio";
 let currentDir = "~";
-
 const getPrompt = () => `${PROMPT_BASE}:${currentDir}$`;
 
+/* ── Types ───────────────────────────────────────────────── */
+interface HistoryEntry {
+  input?: string;
+  output: string[];
+  type?: "error" | "success" | "info" | "system";
+}
+type NanoState = { open: false } | { open: true; project: typeof projects[0] };
+
+/* ══════════════════════════════════════════════════════════
+   GlitchAscii — logo corrupts random chars periodically
+══════════════════════════════════════════════════════════ */
+function GlitchAscii() {
+  const [lines, setLines] = useState(ASCII_ART);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const schedule = () => {
+      timer = setTimeout(() => {
+        setLines(
+          ASCII_ART.map(line =>
+            Math.random() > 0.55 ? line :
+            line.split("").map(ch =>
+              ch !== " " && Math.random() < 0.08
+                ? GLITCH_CHARS[Math.floor(Math.random() * GLITCH_CHARS.length)]
+                : ch
+            ).join("")
+          )
+        );
+        setTimeout(() => { setLines(ASCII_ART); schedule(); }, 90);
+      }, 1600 + Math.random() * 3400);
+    };
+    schedule();
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="mb-1 select-none">
+      {lines.map((line, i) => (
+        <div
+          key={i}
+          className="font-mono text-sm whitespace-pre text-[#00d4ff]"
+          style={{ textShadow: "0 0 10px rgba(0,212,255,0.4), 0 0 3px rgba(0,212,255,0.7)" }}
+        >
+          {line}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════
+   AnimatedOutput — lines appear one-by-one with stagger
+══════════════════════════════════════════════════════════ */
+function AnimatedOutput({
+  lines, type, speed = 22,
+}: { lines: string[]; type?: string; speed?: number }) {
+  const [shown, setShown] = useState(0);
+
+  /* Reset when lines change (async command resolved) */
+  useEffect(() => { setShown(0); }, [lines]);
+
+  /* Increment one line per tick */
+  useEffect(() => {
+    if (shown >= lines.length) return;
+    const t = setTimeout(() => setShown(s => s + 1), speed);
+    return () => clearTimeout(t);
+  }, [shown, lines.length, speed]);
+
+  const colorClass =
+    type === "error"   ? "text-red-400"   :
+    type === "success" ? "text-[#00ff88]" :
+    type === "system"  ? "text-[#00d4ff]" :
+    type === "info"    ? "text-[#a0aec0]" :
+    "text-[#e2e8f0]";
+
+  return (
+    <>
+      {lines.slice(0, shown).map((line, j) => (
+        <div key={j} className={`font-mono text-sm whitespace-pre term-line-in ${colorClass}`}>
+          {line || "\u00A0"}
+        </div>
+      ))}
+    </>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════
+   LoadingDots — animated spinner for async commands
+══════════════════════════════════════════════════════════ */
+function LoadingDots({ message }: { message: string }) {
+  const [frame, setFrame] = useState(0);
+  const FRAMES = ["[·  ]", "[·· ]", "[···]", "[ ··]", "[  ·]", "[   ]"];
+
+  useEffect(() => {
+    const t = setInterval(() => setFrame(f => (f + 1) % FRAMES.length), 120);
+    return () => clearInterval(t);
+  }, []);
+
+  return (
+    <div className="flex items-center gap-2 font-mono text-sm mt-0.5">
+      <span className="text-[#00ff88]" style={{ textShadow: "0 0 6px rgba(0,255,136,0.5)" }}>
+        {FRAMES[frame]}
+      </span>
+      <span className="text-[#a0aec0] animate-pulse">{message}</span>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════
+   MatrixRain — very subtle falling char canvas background
+══════════════════════════════════════════════════════════ */
+function MatrixRain() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const setSize = () => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    setSize();
+    window.addEventListener("resize", setSize);
+
+    const FS = 11;
+    const CHARS = "01アイウエカキクサシスタチツナニハヒフ10ヲン";
+    let drops: number[] = [];
+    const initDrops = () => {
+      const cols = Math.max(1, Math.floor((canvas.width || 1) / FS));
+      drops = Array(cols).fill(0).map(() => -Math.floor(Math.random() * 70));
+    };
+    initDrops();
+    ctx.font = `${FS}px "JetBrains Mono", monospace`;
+
+    const tick = () => {
+      ctx.fillStyle = "rgba(10,10,9,0.042)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(0,255,136,0.52)";
+      drops.forEach((y, i) => {
+        const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
+        ctx.fillText(ch, i * FS, y * FS);
+        if (y * FS > canvas.height && Math.random() > 0.974) drops[i] = 0;
+        drops[i] += 0.38;
+      });
+    };
+
+    const id = setInterval(tick, 55);
+    return () => { clearInterval(id); window.removeEventListener("resize", setSize); };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full"
+      style={{ opacity: 0.14, mixBlendMode: "screen", pointerEvents: "none", zIndex: 0 }}
+    />
+  );
+}
+
+/* ══════════════════════════════════════════════════════════
+   NanoViewer
+══════════════════════════════════════════════════════════ */
 function NanoViewer({ project, onClose }: { project: typeof projects[0]; onClose: () => void }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -82,17 +250,15 @@ function NanoViewer({ project, onClose }: { project: typeof projects[0]; onClose
   );
 }
 
+/* ══════════════════════════════════════════════════════════
+   DevMode — main terminal component
+══════════════════════════════════════════════════════════ */
 export default function DevMode() {
   const [, setLocation] = useLocation();
+
   const [history, setHistory] = useState<HistoryEntry[]>([
     {
       output: [
-        " ███╗   ██╗██╗██╗     ███████╗███████╗██╗  ██╗",
-        " ████╗  ██║██║██║     ██╔════╝██╔════╝██║  ██║",
-        " ██╔██╗ ██║██║██║     █████╗  ███████╗███████║",
-        " ██║╚██╗██║██║██║     ██╔══╝  ╚════██║██╔══██║",
-        " ██║ ╚████║██║███████╗███████╗███████║██║  ██║",
-        " ╚═╝  ╚═══╝╚═╝╚══════╝╚══════╝╚══════╝╚═╝  ╚═╝",
         "",
         "SYSTEM://NILESH.SH — Terminal v3.0.0",
         "Last login: " + new Date().toLocaleString() + " from 192.168.1.1",
@@ -118,51 +284,76 @@ export default function DevMode() {
       type: "system",
     },
   ]);
-  const [input, setInput] = useState("");
+
+  const [input, setInput]         = useState("");
   const [cmdHistory, setCmdHistory] = useState<string[]>([]);
-  const [histIdx, setHistIdx] = useState(-1);
-  const [nano, setNano] = useState<NanoState>({ open: false });
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [histIdx, setHistIdx]     = useState(-1);
+  const [nano, setNano]           = useState<NanoState>({ open: false });
+  const [loadingCmd, setLoadingCmd] = useState<{ message: string } | null>(null);
+  const [booting, setBooting]     = useState(true);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [history]);
+  const bottomRef   = useRef<HTMLDivElement>(null);
+  const inputRef    = useRef<HTMLInputElement>(null);
+  const inputBarRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+  /* Auto-scroll */
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [history, loadingCmd]);
+  /* Focus input on mount */
+  useEffect(() => { inputRef.current?.focus(); }, []);
+  /* Boot flicker: remove class after animation */
+  useEffect(() => { const t = setTimeout(() => setBooting(false), 750); return () => clearTimeout(t); }, []);
 
+  /* Add a complete new history entry */
   const addHistory = useCallback((entry: HistoryEntry) => {
-    setHistory((prev) => [...prev, entry]);
+    setHistory(prev => [...prev, entry]);
   }, []);
 
+  /* Resolve a pending async command: fill in the last entry's output */
+  const resolveLastEntry = useCallback((output: string[], type?: HistoryEntry["type"]) => {
+    setLoadingCmd(null);
+    setHistory(prev => {
+      if (!prev.length) return prev;
+      const copy = [...prev];
+      copy[copy.length - 1] = { ...copy[copy.length - 1], output, type };
+      return copy;
+    });
+  }, []);
+
+  /* Input-bar flash on Enter */
+  const triggerFlash = useCallback(() => {
+    const el = inputBarRef.current;
+    if (!el) return;
+    el.style.animation = "none";
+    void el.offsetHeight; // force repaint so animation restarts
+    el.style.animation = "input-flash 0.38s ease-out";
+  }, []);
+
+  /* ── processCommand ───────────────────────────────────── */
   const processCommand = useCallback((cmd: string) => {
     const trimmed = cmd.trim();
     if (!trimmed) return;
 
-    const parts = trimmed.split(" ");
+    const parts   = trimmed.split(" ");
     const command = parts[0].toLowerCase();
-    const args = parts.slice(1);
+    const args    = parts.slice(1);
 
-    setCmdHistory((prev) => [trimmed, ...prev]);
+    setCmdHistory(prev => [trimmed, ...prev]);
     setHistIdx(-1);
 
-    addHistory({ input: trimmed, output: [] });
+    /* Helper: run a command that needs a loading delay */
+    const runAsync = (message: string, delayMs: number, output: string[], type?: HistoryEntry["type"]) => {
+      addHistory({ input: trimmed, output: [] });
+      setLoadingCmd({ message });
+      setTimeout(() => resolveLastEntry(output, type), delayMs);
+    };
 
-    // Handle commands
-    if (command === "clear") {
-      setHistory([]);
-      return;
-    }
-
-    if (command === "exit" || command === "quit") {
-      setLocation("/");
-      return;
-    }
+    /* ── Instant commands ─────────────────────────────── */
+    if (command === "clear") { setHistory([]); return; }
+    if (command === "exit" || command === "quit") { setLocation("/"); return; }
 
     if (command === "help") {
       addHistory({
+        input: trimmed,
         output: [
           "╔═════════════════════════════════════════════════════════╗",
           "║  NILESH.SH — TERMINAL REFERENCE                        ║",
@@ -213,6 +404,7 @@ export default function DevMode() {
 
     if (command === "whoami") {
       addHistory({
+        input: trimmed,
         output: [
           "┌─────────────────────────────────────────────┐",
           "│  NILESH S. PATIL                            │",
@@ -239,89 +431,59 @@ export default function DevMode() {
     }
 
     if (command === "ls") {
-      const arg = args[0];
-      const isLa = args.includes("-la") || args.includes("-l");
+      const arg       = args[0];
+      const isLa      = args.includes("-la") || args.includes("-l");
       const effectiveArg = (!arg || arg === "-la" || arg === "-l") ? null : arg;
-      const resolvedDir = effectiveArg ?? currentDir;
+      const resolvedDir  = effectiveArg ?? currentDir;
 
       const isHome     = resolvedDir === "~" || resolvedDir === "/home/nilesh";
-      const isProjects = resolvedDir === "~/projects" || resolvedDir === "projects" || resolvedDir === "projects/";
-      const isSkills   = resolvedDir === "~/skills"   || resolvedDir === "skills"   || resolvedDir === "skills/";
+      const isProjects = ["~/projects","projects","projects/"].includes(resolvedDir);
+      const isSkills   = ["~/skills","skills","skills/"].includes(resolvedDir);
 
       if (isHome) {
-        if (isLa) {
-          addHistory({
-            output: [
-              "total 47",
-              "drwxr-xr-x  7 nilesh portfolio  4096 May 02 2026 .",
-              "drwxr-xr-x  3 nilesh portfolio  4096 May 02 2026 ..",
-              "-rw-r--r--  1 nilesh portfolio  2048 May 02 2026 README.md",
-              "-rw-r--r--  1 nilesh portfolio   512 May 02 2026 contact.md",
-              "drwxr-xr-x 19 nilesh portfolio  4096 May 02 2026 projects/",
-              "drwxr-xr-x  7 nilesh portfolio  4096 May 02 2026 skills/",
-              "drwxr-xr-x  5 nilesh portfolio  4096 May 02 2026 achievements/",
-              "drwxr-xr-x  3 nilesh portfolio  4096 May 02 2026 education/",
-              "-rwxr-xr-x  1 nilesh portfolio  8192 May 02 2026 portfolio.sh*",
-            ],
-          });
-        } else {
-          addHistory({
-            output: ["README.md  contact.md  projects/  skills/  achievements/  education/  portfolio.sh"],
-          });
-        }
-        return;
-      }
-
-      if (isProjects) {
-        if (isLa) {
-          addHistory({
-            output: [
-              `total ${projects.length}`,
-              ...projects.map((p) =>
-                `drwxr-xr-x  1 nilesh portfolio  4096 May 02 2026 ${p.id}/`
-              ),
-            ],
-          });
-        } else {
-          addHistory({
-            output: projects.map((p) => `${p.id}/    — ${p.tagline}`),
-          });
-        }
-        return;
-      }
-
-      if (isSkills) {
         addHistory({
-          output: ["languages/  frontend/  backend/  ai-ml/  databases/  infrastructure/  blockchain/"],
+          input: trimmed,
+          output: isLa
+            ? [
+                "total 47",
+                "drwxr-xr-x  7 nilesh portfolio  4096 May 02 2026 .",
+                "drwxr-xr-x  3 nilesh portfolio  4096 May 02 2026 ..",
+                "-rw-r--r--  1 nilesh portfolio  2048 May 02 2026 README.md",
+                "-rw-r--r--  1 nilesh portfolio   512 May 02 2026 contact.md",
+                "drwxr-xr-x 19 nilesh portfolio  4096 May 02 2026 projects/",
+                "drwxr-xr-x  7 nilesh portfolio  4096 May 02 2026 skills/",
+                "drwxr-xr-x  5 nilesh portfolio  4096 May 02 2026 achievements/",
+                "drwxr-xr-x  3 nilesh portfolio  4096 May 02 2026 education/",
+                "-rwxr-xr-x  1 nilesh portfolio  8192 May 02 2026 portfolio.sh*",
+              ]
+            : ["README.md  contact.md  projects/  skills/  achievements/  education/  portfolio.sh"],
         });
         return;
       }
-
-      if (effectiveArg) {
-        addHistory({ output: [`ls: cannot access '${effectiveArg}': No such file or directory`], type: "error" });
-      } else {
-        addHistory({ output: [`ls: cannot access '${currentDir}': No such file or directory`], type: "error" });
+      if (isProjects) {
+        addHistory({
+          input: trimmed,
+          output: isLa
+            ? [`total ${projects.length}`, ...projects.map(p => `drwxr-xr-x  1 nilesh portfolio  4096 May 02 2026 ${p.id}/`)]
+            : projects.map(p => `${p.id}/    — ${p.tagline}`),
+        });
+        return;
       }
+      if (isSkills) {
+        addHistory({ input: trimmed, output: ["languages/  frontend/  backend/  ai-ml/  databases/  infrastructure/  blockchain/"] });
+        return;
+      }
+      addHistory({ input: trimmed, output: [`ls: cannot access '${effectiveArg ?? currentDir}': No such file or directory`], type: "error" });
       return;
     }
 
     if (command === "cd") {
       const dir = args[0];
-      if (!dir || dir === "~" || dir === "/home/nilesh") {
-        currentDir = "~";
-        addHistory({ output: [] });
-      } else if (dir === "projects" || dir === "projects/") {
-        currentDir = "~/projects";
-        addHistory({ output: [] });
-      } else if (dir === "skills" || dir === "skills/") {
-        currentDir = "~/skills";
-        addHistory({ output: [] });
-      } else if (dir === "..") {
-        currentDir = "~";
-        addHistory({ output: [] });
-      } else {
-        addHistory({ output: [`cd: ${dir}: No such file or directory`], type: "error" });
-      }
+      if (!dir || dir === "~" || dir === "/home/nilesh") { currentDir = "~"; addHistory({ input: trimmed, output: [] }); }
+      else if (dir === "projects" || dir === "projects/") { currentDir = "~/projects"; addHistory({ input: trimmed, output: [] }); }
+      else if (dir === "skills"   || dir === "skills/")   { currentDir = "~/skills";   addHistory({ input: trimmed, output: [] }); }
+      else if (dir === "..") { currentDir = "~"; addHistory({ input: trimmed, output: [] }); }
+      else addHistory({ input: trimmed, output: [`cd: ${dir}: No such file or directory`], type: "error" });
       return;
     }
 
@@ -329,6 +491,7 @@ export default function DevMode() {
       const file = args[0];
       if (file === "README.md" || file === "~/README.md") {
         addHistory({
+          input: trimmed,
           output: [
             "# About Nilesh Patil",
             "",
@@ -352,6 +515,7 @@ export default function DevMode() {
       }
       if (file === "contact.md") {
         addHistory({
+          input: trimmed,
           output: [
             "# Contact",
             "",
@@ -366,197 +530,178 @@ export default function DevMode() {
         });
         return;
       }
-      addHistory({ output: [`cat: ${file}: No such file or directory`], type: "error" });
+      addHistory({ input: trimmed, output: [`cat: ${file}: No such file or directory`], type: "error" });
       return;
     }
 
     if (command === "nano") {
       const projectName = args.join(" ").toLowerCase().replace(/\//g, "").trim();
       if (!projectName) {
-        addHistory({ output: ["Usage: nano <project-name>", "Try: nano triponbuddy"], type: "error" });
+        addHistory({ input: trimmed, output: ["Usage: nano <project-name>", "Try: nano triponbuddy"], type: "error" });
         return;
       }
-      const project = projects.find(
-        (p) => p.id === projectName || p.name.toLowerCase().includes(projectName) || p.id.includes(projectName)
+      const project = projects.find(p =>
+        p.id === projectName || p.name.toLowerCase().includes(projectName) || p.id.includes(projectName)
       );
-      if (project) {
-        setNano({ open: true, project });
-        return;
-      }
-      addHistory({ output: [`nano: ${projectName}: No such file`, "Available projects:", ...projects.map((p) => `  ${p.id}`).slice(0, 10), "  ...and more. Run: ls projects/"], type: "error" });
+      if (project) { addHistory({ input: trimmed, output: [] }); setNano({ open: true, project }); return; }
+      addHistory({
+        input: trimmed,
+        output: [`nano: ${projectName}: No such file`, "Available projects:", ...projects.map(p => `  ${p.id}`).slice(0, 10), "  ...and more. Run: ls projects/"],
+        type: "error",
+      });
       return;
     }
 
+    /* ── Async commands ──────────────────────────────────── */
     if (command === "git") {
       const sub = args[0];
-      if (sub === "log" || sub === "log\x00--oneline") {
-        addHistory({
-          output: [
-            "a1b2c3d (HEAD -> main) feat: add agentic commerce protocol",
-            "b2c3d4e feat: ship mediassist ai v2.0",
-            "c3d4e5f feat: yukti-ai — 1000+ science components",
-            "d4e5f6a feat: triponbuddy v3 with gemini integration",
-            "e5f6a7b feat: college erp — full RBAC system",
-            "f6a7b8c feat: nasa spaceapps project — 1st place",
-            "a7b8c9d feat: ai social media automation pipeline",
-            "b8c9d0e feat: roofvision ai satellite detection",
-            "c9d0e1f feat: detox ai android launcher",
-            "d0e1f2a feat: 8th hackathon win — codebharat rs.50k",
-            "e1f2a3b feat: iit bombay internship complete",
-            "f2a3b4c init: repository initialized",
-          ],
-        });
+      if (sub === "log") {
+        runAsync("Reading repository history", 420, [
+          "a1b2c3d (HEAD -> main) feat: add agentic commerce protocol",
+          "b2c3d4e feat: ship mediassist ai v2.0",
+          "c3d4e5f feat: yukti-ai — 1000+ science components",
+          "d4e5f6a feat: triponbuddy v3 with gemini integration",
+          "e5f6a7b feat: college erp — full RBAC system",
+          "f6a7b8c feat: nasa spaceapps project — 1st place",
+          "a7b8c9d feat: ai social media automation pipeline",
+          "b8c9d0e feat: roofvision ai satellite detection",
+          "c9d0e1f feat: detox ai android launcher",
+          "d0e1f2a feat: 8th hackathon win — codebharat rs.50k",
+          "e1f2a3b feat: iit bombay internship complete",
+          "f2a3b4c init: repository initialized",
+        ]);
         return;
       }
       if (sub === "status") {
-        addHistory({
-          output: [
-            "On branch main",
-            "Your branch is 47 commits ahead of 'origin/master'",
-            "",
-            "Working on: next product",
-            "",
-            "Changes to be committed:",
-            "  (use 'git restore --staged <file>' to unstage)",
-            "        new file: projects/next-big-thing.md",
-            "        modified: achievements/hackathon-wins.md",
-            "",
-            "nothing to commit (working tree clean)",
-          ],
-        });
+        runAsync("Checking working tree", 280, [
+          "On branch main",
+          "Your branch is 47 commits ahead of 'origin/master'",
+          "",
+          "Working on: next product",
+          "",
+          "Changes to be committed:",
+          "  (use 'git restore --staged <file>' to unstage)",
+          "        new file: projects/next-big-thing.md",
+          "        modified: achievements/hackathon-wins.md",
+          "",
+          "nothing to commit (working tree clean)",
+        ]);
         return;
       }
-      addHistory({ output: [`git: '${sub}' is not a git command. Try: git log, git status`], type: "error" });
+      addHistory({ input: trimmed, output: [`git: '${sub}' is not a git command. Try: git log, git status`], type: "error" });
       return;
     }
 
     if (command === "neofetch") {
-      addHistory({
-        output: [
-          "         _  _         nilesh@portfolio",
-          "        (_)(_)        ────────────────",
-          "     _  _  _ _       OS: FullStack Linux v3.0",
-          "    | || || | |      Kernel: GenAI-4.2-agentic",
-          "    | || || | |      Uptime: 3+ years",
-          "    |_||_||_|_|      Shell: React/Next.js",
-          "     _ _ _ _ _       Resolution: 1920x1080",
-          "    | | | | | |      DE: Component-Based",
-          "    |_|_|_|_|_|      WM: Tailwind CSS",
-          "                     Terminal: JetBrains Mono",
-          " [nilesh@portfolio]  CPU: Brain @ 200GHz",
-          "                     Memory: 128GB Projects",
-          "                     Packages: React, Flutter, Python,",
-          "                              Node.js, TypeScript, Solidity,",
-          "                              Docker, PostgreSQL, Supabase",
-          "                     Colors: ██████████████████",
-        ],
-        type: "system",
-      });
+      runAsync("Gathering system information", 380, [
+        "         _  _         nilesh@portfolio",
+        "        (_)(_)        ────────────────",
+        "     _  _  _ _       OS: FullStack Linux v3.0",
+        "    | || || | |      Kernel: GenAI-4.2-agentic",
+        "    | || || | |      Uptime: 3+ years",
+        "    |_||_||_|_|      Shell: React/Next.js",
+        "     _ _ _ _ _       Resolution: 1920x1080",
+        "    | | | | | |      DE: Component-Based",
+        "    |_|_|_|_|_|      WM: Tailwind CSS",
+        "                     Terminal: JetBrains Mono",
+        " [nilesh@portfolio]  CPU: Brain @ 200GHz",
+        "                     Memory: 128GB Projects",
+        "                     Packages: React, Flutter, Python,",
+        "                              Node.js, TypeScript, Solidity,",
+        "                              Docker, PostgreSQL, Supabase",
+        "                     Colors: ██████████████████",
+      ], "system");
       return;
     }
 
     if (command === "curl") {
       if (args.join(" ").includes("nilesh.dev/skills")) {
-        addHistory({
-          output: [
-            '{"skills": {',
-            '  "languages": ["TypeScript","JavaScript","Python","Dart","Kotlin","Go","Solidity","SQL"],',
-            '  "frontend": ["React","Next.js","Flutter","Tailwind CSS","ReactFlow","Three.js"],',
-            '  "backend": ["Node.js","NestJS","FastAPI","Flask","Express.js"],',
-            '  "ai_ml": ["Gemini AI","OpenAI API","LangChain","RAG","Agentic AI","MCP"],',
-            '  "databases": ["PostgreSQL","Supabase","Firebase","Redis","Prisma"],',
-            '  "infrastructure": ["Docker","GitHub Actions","Vercel","Render"],',
-            '  "blockchain": ["Solidity","Ethereum","Hardhat","Web3.js"]',
-            "}}",
-          ],
-          type: "success",
-        });
+        runAsync("Fetching nilesh.dev/skills", 500, [
+          '{"skills": {',
+          '  "languages": ["TypeScript","JavaScript","Python","Dart","Kotlin","Go","Solidity","SQL"],',
+          '  "frontend": ["React","Next.js","Flutter","Tailwind CSS","ReactFlow","Three.js"],',
+          '  "backend": ["Node.js","NestJS","FastAPI","Flask","Express.js"],',
+          '  "ai_ml": ["Gemini AI","OpenAI API","LangChain","RAG","Agentic AI","MCP"],',
+          '  "databases": ["PostgreSQL","Supabase","Firebase","Redis","Prisma"],',
+          '  "infrastructure": ["Docker","GitHub Actions","Vercel","Render"],',
+          '  "blockchain": ["Solidity","Ethereum","Hardhat","Web3.js"]',
+          "}}",
+        ], "success");
         return;
       }
-      addHistory({ output: [`curl: (6) Could not resolve host: ${args[0]}`], type: "error" });
+      addHistory({ input: trimmed, output: [`curl: (6) Could not resolve host: ${args[0]}`], type: "error" });
       return;
     }
 
     if (command === "ping") {
       if (args[0] === "google.com" || args[0] === "google") {
-        addHistory({
-          output: [
-            `PING ${args[0]} (142.250.182.46): 56 data bytes`,
-            "64 bytes from 142.250.182.46: icmp_seq=0 ttl=64 time=1ms",
-            "64 bytes from 142.250.182.46: icmp_seq=1 ttl=64 time=1ms",
-            "64 bytes from 142.250.182.46: icmp_seq=2 ttl=64 time=1ms",
-            "",
-            "--- google.com ping statistics ---",
-            "3 packets transmitted, 3 received, 0% packet loss",
-            "round-trip min/avg/max = 1/1/1 ms (he's too fast)",
-          ],
-          type: "success",
-        });
+        runAsync(`Pinging ${args[0]}`, 680, [
+          `PING ${args[0]} (142.250.182.46): 56 data bytes`,
+          "64 bytes from 142.250.182.46: icmp_seq=0 ttl=64 time=1ms",
+          "64 bytes from 142.250.182.46: icmp_seq=1 ttl=64 time=1ms",
+          "64 bytes from 142.250.182.46: icmp_seq=2 ttl=64 time=1ms",
+          "",
+          "--- google.com ping statistics ---",
+          "3 packets transmitted, 3 received, 0% packet loss",
+          "round-trip min/avg/max = 1/1/1 ms (he's too fast)",
+        ], "success");
         return;
       }
-      addHistory({ output: [`ping: ${args[0]}: Name or service not known`], type: "error" });
+      addHistory({ input: trimmed, output: [`ping: ${args[0]}: Name or service not known`], type: "error" });
       return;
     }
 
     if (command === "ssh") {
       if (args[0] && args[0].includes("nilesh")) {
-        addHistory({
-          output: [
-            "Connecting to nilesh@portfolio.dev...",
-            "Authenticating with public key...",
-            "",
-            "Connection established. Welcome to the mainframe.",
-            "Access level: GOD MODE",
-            "",
-            "Warning: You have entered the mind of a serial builder.",
-            "Proceed with awe.",
-          ],
-          type: "success",
-        });
+        runAsync("Authenticating with public key", 850, [
+          "Connecting to nilesh@portfolio.dev...",
+          "Authenticating with public key...",
+          "",
+          "Connection established. Welcome to the mainframe.",
+          "Access level: GOD MODE",
+          "",
+          "Warning: You have entered the mind of a serial builder.",
+          "Proceed with awe.",
+        ], "success");
         return;
       }
-      addHistory({ output: [`ssh: connect to host ${args[0]} port 22: Connection refused`], type: "error" });
+      addHistory({ input: trimmed, output: [`ssh: connect to host ${args[0]} port 22: Connection refused`], type: "error" });
       return;
     }
 
-    /* ── portfolio.sh easter egg ── */
     if (
-      trimmed === "./portfolio.sh" ||
-      trimmed === "bash portfolio.sh" ||
-      trimmed === "sh portfolio.sh" ||
-      trimmed === "./portfolio.sh --run"
+      trimmed === "./portfolio.sh" || trimmed === "bash portfolio.sh" ||
+      trimmed === "sh portfolio.sh" || trimmed === "./portfolio.sh --run"
     ) {
-      addHistory({
-        output: [
-          "#!/bin/bash",
-          "# portfolio.sh — Nilesh Patil v3.0.0",
-          "",
-          "Initializing Nilesh Patil OS...",
-          "",
-          "[██████████████████████████████] 100%",
-          "",
-          "✓ Loading 19 projects         … done",
-          "✓ Importing 8 hackathon wins  … done",
-          "✓ Mounting IIT Bombay creds   … done",
-          "✓ Spinning up AI pipelines    … done",
-          "✓ Connecting to portfolio.dev … done",
-          "",
-          "┌──────────────────────────────────────────────────┐",
-          "│  NILESH PATIL — Full Stack & GenAI Engineer       │",
-          "│  Status: Building the internet's next layer 🚀    │",
-          "│  Mode:   GOD MODE ACTIVATED                       │",
-          "└──────────────────────────────────────────────────┘",
-          "",
-          "Run 'whoami' to see credentials, or 'ls projects/' to",
-          "browse 19 production-grade projects.",
-        ],
-        type: "success",
-      });
+      runAsync("Loading Nilesh Patil OS", 1400, [
+        "#!/bin/bash",
+        "# portfolio.sh — Nilesh Patil v3.0.0",
+        "",
+        "Initializing Nilesh Patil OS...",
+        "",
+        "[██████████████████████████████] 100%",
+        "",
+        "✓ Loading 19 projects         … done",
+        "✓ Importing 8 hackathon wins  … done",
+        "✓ Mounting IIT Bombay creds   … done",
+        "✓ Spinning up AI pipelines    … done",
+        "✓ Connecting to portfolio.dev … done",
+        "",
+        "┌──────────────────────────────────────────────────┐",
+        "│  NILESH PATIL — Full Stack & GenAI Engineer       │",
+        "│  Status: Building the internet's next layer 🚀    │",
+        "│  Mode:   GOD MODE ACTIVATED                       │",
+        "└──────────────────────────────────────────────────┘",
+        "",
+        "Run 'whoami' to see credentials, or 'ls projects/' to",
+        "browse 19 production-grade projects.",
+      ], "success");
       return;
     }
 
     if (trimmed.includes("sudo rm -rf") && trimmed.includes("boring-portfolio")) {
       addHistory({
+        input: trimmed,
         output: [
           "sudo: Permission denied",
           "This portfolio is too good to delete.",
@@ -568,18 +713,17 @@ export default function DevMode() {
     }
 
     if (command === "sudo") {
-      addHistory({ output: ["[sudo] password for nilesh:", "Sorry, try again.", "sudo: 3 incorrect password attempts"], type: "error" });
+      addHistory({ input: trimmed, output: ["[sudo] password for nilesh:", "Sorry, try again.", "sudo: 3 incorrect password attempts"], type: "error" });
       return;
     }
 
-    addHistory({
-      output: [`${command}: command not found`, "Type 'help' for available commands."],
-      type: "error",
-    });
-  }, [addHistory, setLocation]);
+    addHistory({ input: trimmed, output: [`${command}: command not found`, "Type 'help' for available commands."], type: "error" });
+  }, [addHistory, setLocation, resolveLastEntry]);
 
+  /* ── Keyboard handler ─────────────────────────────────── */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      triggerFlash();
       processCommand(input);
       setInput("");
       return;
@@ -602,7 +746,7 @@ export default function DevMode() {
       e.preventDefault();
       const partial = input.split(" ").pop()?.toLowerCase() || "";
       if (partial) {
-        const match = projects.find((p) => p.id.startsWith(partial));
+        const match = projects.find(p => p.id.startsWith(partial));
         if (match) {
           const words = input.split(" ");
           words[words.length - 1] = match.id;
@@ -612,27 +756,27 @@ export default function DevMode() {
     }
   };
 
-  const getLineColor = (type?: string) => {
-    if (type === "error") return "text-red-400";
-    if (type === "success") return "text-[#00ff88]";
-    if (type === "system") return "text-[#00d4ff]";
-    if (type === "info") return "text-[#a0aec0]";
-    return "text-[#e2e8f0]";
-  };
-
+  /* ── Render ───────────────────────────────────────────── */
   return (
-    <div className="relative h-screen w-full terminal-body flex flex-col overflow-hidden">
+    <div className={`relative h-screen w-full terminal-body flex flex-col overflow-hidden ${booting ? "terminal-boot" : ""}`}>
+      {/* Matrix rain */}
+      <MatrixRain />
+      {/* CRT overlays */}
       <div className="terminal-scanlines" />
       <div className="scanline-sweep" />
+      <div className="terminal-vignette" />
 
-      {/* Top bar */}
-      <div className="relative z-10 flex items-center justify-between px-4 py-2 bg-[#1a1a1a] border-b border-[#00ff88]/10">
+      {/* Title bar */}
+      <div className="relative z-10 flex items-center justify-between px-4 py-2 bg-[#111]/90 border-b border-[#00ff88]/12 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
           <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
           <div className="w-3 h-3 rounded-full bg-[#28c840]" />
         </div>
-        <span className="text-[#00ff88]/50 text-xs font-mono">NILESH.SH — TERMINAL</span>
+        <span className="text-[#00ff88]/50 text-xs font-mono tracking-widest"
+              style={{ textShadow: "0 0 8px rgba(0,255,136,0.4)" }}>
+          NILESH.SH — TERMINAL
+        </span>
         <button
           data-testid="button-back-mode"
           onClick={() => setLocation("/")}
@@ -642,52 +786,71 @@ export default function DevMode() {
         </button>
       </div>
 
-      {nano.open && (
-        <NanoViewer project={nano.project} onClose={() => setNano({ open: false })} />
-      )}
+      {nano.open && <NanoViewer project={nano.project} onClose={() => setNano({ open: false })} />}
 
-      {/* Terminal output */}
+      {/* Output area */}
       <div
-        className="relative z-10 flex-1 overflow-y-auto p-4 space-y-1"
+        className="relative z-10 flex-1 overflow-y-auto p-4 space-y-0.5"
         onClick={() => inputRef.current?.focus()}
       >
+        {/* Glitchy ASCII logo — always at top */}
+        <GlitchAscii />
+
+        {/* History entries */}
         {history.map((entry, i) => (
           <div key={i}>
             {entry.input !== undefined && (
-              <div className="text-[#00ff88] font-mono text-sm">
-                <span className="text-[#00d4ff]">{getPrompt()}</span>{" "}
+              <div className="font-mono text-sm flex gap-1 mt-1">
+                <span
+                  className="text-[#00d4ff] whitespace-nowrap select-none"
+                  style={{ textShadow: "0 0 8px rgba(0,212,255,0.45)" }}
+                >
+                  {getPrompt()}
+                </span>
+                {" "}
                 <span className="text-white">{entry.input}</span>
               </div>
             )}
-            {Array.isArray(entry.output)
-              ? entry.output.map((line, j) => (
-                  <div key={j} className={`font-mono text-sm whitespace-pre ${getLineColor(entry.type)}`}>
-                    {line}
-                  </div>
-                ))
-              : (
-                <div className={`font-mono text-sm ${getLineColor(entry.type)}`}>{entry.output}</div>
-              )}
+            <AnimatedOutput
+              lines={entry.output}
+              type={entry.type}
+              speed={i === 0 ? 12 : 22}
+            />
           </div>
         ))}
+
+        {/* Loading indicator */}
+        {loadingCmd && <LoadingDots message={loadingCmd.message} />}
+
         <div ref={bottomRef} />
       </div>
 
-      {/* Input line */}
-      <div className="relative z-10 flex items-center gap-2 px-4 py-3 border-t border-[#00ff88]/10 bg-[#0d0d0d]">
-        <span className="text-[#00d4ff] font-mono text-sm whitespace-nowrap">{getPrompt()}</span>
+      {/* Input bar */}
+      <div
+        ref={inputBarRef}
+        className="relative z-10 flex items-center gap-2 px-4 py-3 border-t border-[#00ff88]/10 bg-[#0a0a09]/95"
+      >
+        <span
+          className="text-[#00d4ff] font-mono text-sm whitespace-nowrap select-none"
+          style={{ textShadow: "0 0 8px rgba(0,212,255,0.45)" }}
+        >
+          {getPrompt()}
+        </span>
         <input
           ref={inputRef}
           data-testid="input-terminal"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="flex-1 bg-transparent text-white font-mono text-sm outline-none caret-[#00ff88] cursor-none"
+          className="flex-1 bg-transparent text-white font-mono text-sm outline-none cursor-none caret-transparent"
           autoComplete="off"
           spellCheck={false}
           autoFocus
         />
-        <span className="cursor-blink text-[#00ff88] font-mono">_</span>
+        <span
+          className="term-cursor"
+          style={{ boxShadow: "0 0 7px rgba(0,255,136,0.7)" }}
+        />
       </div>
     </div>
   );
