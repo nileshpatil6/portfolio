@@ -413,18 +413,25 @@ export default function Projects() {
           })}
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT — always centered in viewport */}
         <div
           style={{
             position: "sticky",
-            top: "calc(60px + 24px)",
-            height: "calc(100vh - 108px)",
-            minHeight: 400,
+            top: 0,
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            paddingTop: 76,
+            paddingBottom: 32,
+            boxSizing: "border-box",
           }}
         >
-          <AnimatePresence mode="wait">
-            <PreviewPanel key={activeId} active={active} />
-          </AnimatePresence>
+          <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+            <AnimatePresence mode="wait">
+              <PreviewPanel key={activeId} active={active} />
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </section>

@@ -89,6 +89,13 @@ export default function Hero() {
         scrollTrigger: { trigger: sectionRef.current, start: "top top", end: "bottom top", scrub: 1.2 }
       });
 
+      gsap.fromTo(".hero-name-first", { y: 80, autoAlpha: 0 }, {
+        y: 0, autoAlpha: 1, duration: 1.4, ease: "expo.out", delay: 0,
+      });
+      gsap.fromTo(".hero-name-last", { y: 80, autoAlpha: 0 }, {
+        y: 0, autoAlpha: 1, duration: 1.4, ease: "expo.out", delay: 0.14,
+      });
+
       gsap.to(".hero-inner", {
         y: -250,
         scrollTrigger: { trigger: sectionRef.current, start: "top top", end: "bottom top", scrub: 1 }
@@ -157,19 +164,50 @@ export default function Hero() {
       </div>
 
       <div className="hero-inner max-w-7xl w-full relative z-10">
-        <div className="flex items-center gap-2 mb-10 anim-fade-in" style={{ animationDelay: "2.2s" }}>
+
+        {/* ── NAME — dramatic stacked display ── */}
+        <div className="mb-8 select-none" style={{ overflow: "hidden" }}>
+          <div style={{ lineHeight: 0.86, letterSpacing: "-0.045em" }}>
+            {/* NILESH — ultra-light italic, outlined */}
+            <div
+              className="hero-name-first font-serif block"
+              style={{
+                fontSize: "clamp(5rem, 14vw, 13rem)",
+                fontWeight: 100,
+                fontStyle: "italic",
+                color: "transparent",
+                WebkitTextStroke: "1.5px var(--fg)",
+                opacity: 0.88,
+              }}
+            >
+              Nilesh
+            </div>
+            {/* PATIL — ultra-bold filled */}
+            <div
+              className="hero-name-last font-serif block"
+              style={{
+                fontSize: "clamp(5rem, 14vw, 13rem)",
+                fontWeight: 900,
+                color: "var(--fg)",
+                marginTop: "-0.06em",
+              }}
+            >
+              Patil.
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 mb-8 anim-fade-in" style={{ animationDelay: "2.2s" }}>
           <div className="status-dot" />
           <span className="section-label" style={{ color: "var(--fg-muted)" }}>
             Available for work — Belgaum, Karnataka
           </span>
         </div>
 
-        <h1 className="hero-headline" style={{ fontSize: "clamp(3.4rem, 9vw, 9.5rem)" }}>
+        <h1 className="hero-headline" style={{ fontSize: "clamp(1.8rem, 4vw, 4rem)" }}>
           <span className="hero-word inline-block">Building</span>{" "}
-          <span className="hero-word inline-block">the</span>
-          <br />
-          <strong className="hero-word inline-block">internet's</strong>
-          <br />
+          <span className="hero-word inline-block">the</span>{" "}
+          <strong className="hero-word inline-block">internet's</strong>{" "}
           <em className="hero-word inline-block">next layer.</em>
         </h1>
 
