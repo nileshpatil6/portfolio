@@ -137,6 +137,7 @@ export default function Skills() {
             <div
               key={cat.category}
               className="skill-cat-card p-7 rounded-2xl"
+              data-cursor-text={cat.category}
               style={{ border: "1px solid var(--border-color)", background: "var(--bg-elevated)" }}
             >
               <div className="flex items-center gap-3 mb-7">

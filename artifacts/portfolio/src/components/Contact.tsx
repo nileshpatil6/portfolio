@@ -157,10 +157,10 @@ export default function Contact() {
             Building remotely from Belgaum, Karnataka.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
-            <button onClick={copy} data-testid="button-copy-email" className="contact-cta btn-primary">
+            <button onClick={copy} data-testid="button-copy-email" className="contact-cta btn-primary" data-cursor-text="Copy to clipboard">
               {copied ? "Copied ✓" : "Copy email"}
             </button>
-            <a href="mailto:technil6436@gmail.com" className="contact-cta btn-outline">Send message →</a>
+            <a href="mailto:technil6436@gmail.com" className="contact-cta btn-outline" data-cursor-text="Send email ✦">Send message →</a>
           </div>
         </div>
 
@@ -173,6 +173,7 @@ export default function Contact() {
               target={link.href.startsWith("http") ? "_blank" : undefined}
               rel="noopener noreferrer"
               data-testid={`link-contact-${link.label.toLowerCase()}`}
+              data-cursor-text={link.label + " ↗"}
               className="contact-link group flex items-center justify-between py-6 transition-all duration-200"
               style={{
                 borderTop: "1px solid var(--border-color)",

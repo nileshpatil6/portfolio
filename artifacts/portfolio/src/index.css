@@ -142,6 +142,39 @@
   background: rgba(255,255,255,0.35);
 }
 
+/* ─── CURSOR LABEL ─────────────────────────────────────── */
+/* Morphing text tag that appears near the cursor when      */
+/* hovering elements with data-cursor-text attribute.       */
+/* Uses standalone `scale` so it doesn't conflict with the  */
+/* JS-driven `transform` used for positioning.              */
+.c-label {
+  pointer-events: none;
+  position: fixed;
+  top: 0; left: 0;
+  font-family: var(--app-font-mono);
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  line-height: 1;
+  padding: 5px 13px 6px;
+  border-radius: 100px;
+  background: var(--fg);
+  color: var(--bg);
+  z-index: 999997;
+  will-change: transform;
+  /* show/hide via opacity + scale (standalone property, no conflict with transform) */
+  opacity: 0;
+  scale: 0.72;
+  transition: opacity 0.14s ease,
+              scale   0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.c-label--show {
+  opacity: 1;
+  scale: 1;
+}
+
 /* ─── TERMINAL ───────────────────────────────────────── */
 .terminal-body {
   font-family: 'JetBrains Mono', monospace;

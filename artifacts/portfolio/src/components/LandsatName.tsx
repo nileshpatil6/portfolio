@@ -94,6 +94,7 @@ function Tile({
 
   return (
     <motion.div
+      data-cursor-text={state.region}
       initial={{ opacity: 0, y: 48, rotate: state.rotation }}
       animate={reveal ? { opacity: 1, y: 0, rotate: state.rotation } : {}}
       transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1], delay: index * 0.05 }}

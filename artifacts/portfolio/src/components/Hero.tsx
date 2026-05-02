@@ -220,12 +220,12 @@ export default function Hero() {
 
         <div className="mt-16 pt-8 grid grid-cols-2 md:grid-cols-4 gap-x-12 gap-y-8 anim-fade-up" style={{ borderTop: "1px solid var(--border-color)", animationDelay: "2s" }}>
           {[
-            { n: "19+", label: "Projects shipped" },
-            { n: "8×", label: "Hackathon wins" },
-            { n: "₹2L", label: "Government funded" },
-            { n: "2+", label: "Years building" },
-          ].map(({ n, label }) => (
-            <div key={label}>
+            { n: "19+", label: "Projects shipped",   cursor: "Built & shipped" },
+            { n: "8×",  label: "Hackathon wins",     cursor: "Champion ✦" },
+            { n: "₹2L", label: "Government funded",  cursor: "Funded by GOI" },
+            { n: "2+",  label: "Years building",     cursor: "And counting" },
+          ].map(({ n, label, cursor }) => (
+            <div key={label} data-cursor-text={cursor}>
               <p className="font-serif" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700, color: "var(--fg)", lineHeight: 1 }}>{n}</p>
               <p className="section-label mt-2">{label}</p>
             </div>
@@ -233,9 +233,9 @@ export default function Hero() {
         </div>
 
         <div className="mt-12 flex flex-wrap gap-3 anim-fade-up" style={{ animationDelay: "2.3s" }}>
-          <a href="#projects" className="btn-primary">View work</a>
-          <a href="#contact" className="btn-outline">Get in touch</a>
-          <a href="https://github.com/nileshpatil6" target="_blank" rel="noopener noreferrer" className="btn-outline">GitHub ↗</a>
+          <a href="#projects" className="btn-primary" data-cursor-text="Explore →">View work</a>
+          <a href="#contact" className="btn-outline" data-cursor-text="Say hi ✦">Get in touch</a>
+          <a href="https://github.com/nileshpatil6" target="_blank" rel="noopener noreferrer" className="btn-outline" data-cursor-text="Open source">GitHub ↗</a>
         </div>
       </div>
 

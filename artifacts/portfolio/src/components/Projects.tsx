@@ -216,6 +216,7 @@ function ProjectRow({
     <motion.div
       onMouseEnter={onHover}
       className="relative overflow-hidden"
+      data-cursor-text={project.liveUrl ? "Open live ↗" : "View project"}
       style={{ borderBottom: "1px solid var(--border-color)", cursor: "none" }}
       initial={{ opacity: 0, x: -24 }}
       whileInView={{ opacity: 1, x: 0 }}
