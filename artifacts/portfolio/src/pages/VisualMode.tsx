@@ -1,5 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
+import { useTheme } from "@/App";
+import FlowBackground from "@/components/FlowBackground";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Projects from "@/components/Projects";
@@ -7,105 +9,114 @@ import Skills from "@/components/Skills";
 import Achievements from "@/components/Achievements";
 import Contact from "@/components/Contact";
 
+const navItems = [
+  { label: "About",    id: "about" },
+  { label: "Work",     id: "projects" },
+  { label: "Skills",   id: "skills" },
+  { label: "Awards",   id: "achievements" },
+  { label: "Contact",  id: "contact" },
+];
+
 function Nav() {
   const [, setLocation] = useLocation();
+  const { theme, toggle } = useTheme();
+  const [scrolled, setScrolled] = useState(false);
 
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
-      <div className="max-w-6xl mx-auto flex items-center justify-between">
+    <nav
+      className="site-nav px-6 md:px-16"
+      style={{
+        borderBottomColor: scrolled ? "var(--border-subtle)" : "transparent",
+      }}
+    >
+      <div
+        className="max-w-7xl mx-auto flex items-center justify-between"
+        style={{ height: 60 }}
+      >
         {/* Logo */}
         <button
-          data-testid="button-nav-logo"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="font-mono text-[#00d4ff] font-bold text-sm tracking-wider cursor-none hover:text-glow-blue transition-all"
+          className="font-mono cursor-none transition-opacity hover:opacity-60"
+          style={{ fontSize: "0.7rem", letterSpacing: "0.12em", color: "var(--fg)" }}
+          data-testid="button-nav-logo"
         >
           NILESH.SH
         </button>
 
-        {/* Links */}
-        <div className="hidden md:flex items-center gap-6">
-          {[
-            { label: "About", id: "about" },
-            { label: "Projects", id: "projects" },
-            { label: "Skills", id: "skills" },
-            { label: "Achievements", id: "achievements" },
-            { label: "Contact", id: "contact" },
-          ].map((item) => (
+        {/* Center nav */}
+        <div className="hidden md:flex items-center gap-8">
+          {navItems.map(item => (
             <button
               key={item.id}
               data-testid={`nav-${item.id}`}
-              onClick={() => scrollTo(item.id)}
-              className="text-[#a0aec0] hover:text-[#00d4ff] text-sm font-mono transition-colors cursor-none"
+              onClick={() => document.getElementById(item.id)?.scrollIntoView({ behavior: "smooth" })}
+              className="cursor-none transition-all duration-150 hover:opacity-100"
+              style={{
+                fontFamily: "var(--app-font-mono)",
+                fontSize: "0.68rem",
+                letterSpacing: "0.08em",
+                color: "var(--fg-muted)",
+              }}
             >
               {item.label}
             </button>
           ))}
         </div>
 
-        {/* Terminal button */}
-        <button
-          data-testid="button-nav-terminal"
-          onClick={() => setLocation("/dev")}
-          className="text-xs font-mono text-[#00ff88] border border-[#00ff88]/30 px-3 py-1.5 rounded-full hover:bg-[#00ff88]/10 transition-all cursor-none"
-        >
-          &gt; Terminal
-        </button>
+        {/* Right actions */}
+        <div className="flex items-center gap-4">
+          {/* Theme toggle */}
+          <button
+            onClick={toggle}
+            className="theme-toggle"
+            aria-label="Toggle theme"
+          >
+            <div className="theme-toggle-thumb" />
+          </button>
+
+          {/* Terminal */}
+          <button
+            data-testid="button-nav-terminal"
+            onClick={() => setLocation("/dev")}
+            className="btn-outline"
+            style={{ fontSize: "0.68rem", padding: "0.4rem 1rem" }}
+          >
+            Terminal
+          </button>
+        </div>
       </div>
     </nav>
   );
 }
 
-function Footer() {
-  const [, setLocation] = useLocation();
-
-  return (
-    <footer className="relative border-t border-[#1e1e2e] py-8 px-6">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="text-[#a0aec0]/40 text-xs font-mono">
-          Built by Nilesh Patil &nbsp;•&nbsp; 2026 &nbsp;•&nbsp; SYSTEM://NILESH.SH
-        </div>
-        <button
-          data-testid="button-footer-terminal"
-          onClick={() => setLocation("/dev")}
-          className="text-xs font-mono text-[#00d4ff]/50 hover:text-[#00d4ff] transition-colors cursor-none"
-        >
-          &gt; switch to terminal view
-        </button>
-      </div>
-    </footer>
-  );
-}
-
 export default function VisualMode() {
   useEffect(() => {
-    // Lenis smooth scroll — basic version without the library for compatibility
     document.documentElement.style.scrollBehavior = "smooth";
-    return () => {
-      document.documentElement.style.scrollBehavior = "";
-    };
+    return () => { document.documentElement.style.scrollBehavior = ""; };
   }, []);
 
   return (
-    <div className="relative bg-[#0a0a0f] min-h-screen">
-      {/* Nav bar background blur */}
-      <div className="fixed top-0 left-0 right-0 h-16 z-40 bg-gradient-to-b from-[#0a0a0f] to-transparent pointer-events-none" />
-
+    <div className="relative min-h-screen" style={{ background: "var(--bg)" }}>
+      <FlowBackground />
       <Nav />
 
-      <main>
-        <Hero />
-        <About />
-        <Projects />
-        <Skills />
-        <Achievements />
-        <Contact />
-      </main>
-
-      <Footer />
+      {/* Offset for fixed nav */}
+      <div style={{ paddingTop: 60 }}>
+        <main>
+          <Hero />
+          <About />
+          <Projects />
+          <Skills />
+          <Achievements />
+          <Contact />
+        </main>
+      </div>
     </div>
   );
 }

@@ -1,138 +1,121 @@
-import { useRef } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { skillCategories } from "@/data/skills";
 
-function SkillBar({ name, level, color, delay }: { name: string; level: number; color: string; delay: number }) {
+function useReveal(threshold = 0.1) {
   const ref = useRef<HTMLDivElement>(null);
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay, duration: 0.5 }}
-      className="group"
-    >
-      <div className="flex items-center justify-between mb-1.5">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-[#e2e8f0] font-medium">{name}</span>
-        </div>
-        <span className="text-xs font-mono" style={{ color }}>{level}%</span>
-      </div>
-      <div className="h-1.5 bg-[#1e1e2e] rounded-full overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          whileInView={{ width: `${level}%` }}
-          viewport={{ once: true }}
-          transition={{ delay: delay + 0.2, duration: 1.0, ease: "easeOut" }}
-          className="h-full rounded-full"
-          style={{ background: `linear-gradient(90deg, ${color}aa, ${color})` }}
-        />
-      </div>
-    </motion.div>
-  );
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true); }, { threshold });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, visible };
 }
 
 export default function Skills() {
+  const { ref, visible } = useReveal();
+
+  const extraTech = [
+    "Swagger/OpenAPI", "JWT", "MinIO", "Playwright", "Jest", "GitHub Actions",
+    "Google ML Kit", "OpenAI TTS", "Whisper STT", "ReactFlow", "Zustand",
+    "Riverpod", "Web3.js", "Hardhat", "Supabase RLS", "Edge Functions",
+  ];
+
   return (
-    <section id="skills" className="relative py-32 px-6 overflow-hidden">
-      <div className="absolute inset-0 grid-bg opacity-10" />
-      <div className="absolute top-1/2 left-0 w-px h-64 bg-gradient-to-b from-transparent via-[#00d4ff]/20 to-transparent -translate-y-1/2" />
+    <section id="skills" className="relative py-32 px-6 md:px-16 overflow-hidden">
+      <div className="divider mb-20" />
+      <div className="max-w-7xl mx-auto">
 
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="flex items-center gap-4 mb-4"
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-4">
+          <span className="section-label">04 / 05</span>
+          <div className="w-8 h-px" style={{ background: "var(--border-color)" }} />
+          <span className="section-label">Skills</span>
+        </div>
+
+        <h2
+          className="font-serif mb-16"
+          style={{
+            fontSize: "clamp(2.5rem, 6vw, 5rem)",
+            fontWeight: 300,
+            fontStyle: "italic",
+            color: "var(--fg)",
+            lineHeight: 1.1,
+          }}
         >
-          <div className="w-8 h-px bg-[#00d4ff]" />
-          <span className="text-[#00d4ff] font-mono text-sm tracking-widest uppercase">Skills</span>
-        </motion.div>
+          What I <strong style={{ fontStyle: "normal", fontWeight: 800 }}>know.</strong>
+        </h2>
 
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-4xl md:text-6xl font-bold text-white mb-4"
-        >
-          What I <span className="gradient-text-green">know.</span>
-        </motion.h2>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-[#a0aec0] mb-16 max-w-2xl"
-        >
-          Full-stack proficiency across languages, frameworks, AI/ML, mobile, and infrastructure.
-        </motion.p>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {skillCategories.map((cat, catIdx) => (
-            <motion.div
+        {/* Category cards */}
+        <div ref={ref} className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {skillCategories.map((cat, ci) => (
+            <div
               key={cat.category}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: catIdx * 0.1 }}
-              className="p-6 rounded-2xl border border-[#1e1e2e] bg-[#111118] hover:border-opacity-50 transition-all"
-              style={{ "--cat-color": cat.color } as React.CSSProperties}
+              className={`p-6 rounded-lg ${visible ? "anim-fade-up" : "opacity-0"}`}
+              style={{
+                border: "1px solid var(--border-color)",
+                background: "var(--bg-elevated)",
+                animationDelay: `${ci * 0.07}s`,
+              }}
             >
-              {/* Category header */}
               <div className="flex items-center gap-3 mb-6">
                 <div
-                  className="w-2 h-8 rounded-full"
-                  style={{ background: `linear-gradient(to bottom, ${cat.color}, ${cat.color}44)` }}
+                  style={{
+                    width: 3,
+                    height: 20,
+                    borderRadius: 99,
+                    background: "var(--fg)",
+                    opacity: 0.4,
+                  }}
                 />
-                <h3 className="text-white font-bold text-sm uppercase tracking-wider">{cat.category}</h3>
+                <h3
+                  className="font-mono uppercase tracking-widest"
+                  style={{ fontSize: "0.65rem", color: "var(--fg-muted)" }}
+                >
+                  {cat.category}
+                </h3>
               </div>
 
-              {/* Skill bars */}
               <div className="space-y-4">
-                {cat.skills.map((skill, skillIdx) => (
-                  <SkillBar
-                    key={skill.name}
-                    name={skill.name}
-                    level={skill.level}
-                    color={cat.color}
-                    delay={catIdx * 0.1 + skillIdx * 0.06}
-                  />
+                {cat.skills.map((skill, si) => (
+                  <div key={skill.name}>
+                    <div className="flex justify-between mb-1.5">
+                      <span className="text-sm font-medium" style={{ color: "var(--fg)" }}>{skill.name}</span>
+                      <span className="font-mono text-xs" style={{ color: "var(--fg-subtle)" }}>{skill.level}%</span>
+                    </div>
+                    <div
+                      className="h-px w-full rounded-full overflow-hidden"
+                      style={{ background: "var(--border-color)" }}
+                    >
+                      <div
+                        style={{
+                          height: "100%",
+                          background: "var(--fg)",
+                          width: visible ? `${skill.level}%` : "0%",
+                          transition: `width 1s cubic-bezier(0.16,1,0.3,1) ${ci * 0.07 + si * 0.05}s`,
+                          opacity: 0.7,
+                        }}
+                      />
+                    </div>
+                  </div>
                 ))}
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
-        {/* Bottom tech grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-16 p-8 rounded-2xl border border-[#1e1e2e] bg-[#111118]"
+        {/* Extra tech cloud */}
+        <div
+          className="mt-12 p-8 rounded-lg"
+          style={{ border: "1px solid var(--border-color)", background: "var(--bg-elevated)" }}
         >
-          <div className="text-center mb-8">
-            <span className="text-[#a0aec0]/60 text-xs font-mono uppercase tracking-widest">
-              Also experienced with
-            </span>
-          </div>
-          <div className="flex flex-wrap justify-center gap-3">
-            {[
-              "Swagger/OpenAPI", "JWT", "MinIO", "Playwright", "Jest", "GitHub Actions CI/CD",
-              "Google ML Kit", "OpenAI TTS", "Whisper STT", "ReactFlow", "Zustand", "Riverpod",
-              "Web3.js", "Hardhat", "Supabase RLS", "Edge Functions", "pnpm workspaces",
-            ].map((tech) => (
-              <motion.span
-                key={tech}
-                whileHover={{ scale: 1.05, color: "#00d4ff" }}
-                className="text-xs font-mono text-[#a0aec0]/60 bg-[#1e1e2e] border border-[#2a2a3e] px-3 py-1.5 rounded-full cursor-none transition-colors hover:border-[#00d4ff]/30"
-              >
-                {tech}
-              </motion.span>
+          <p className="section-label mb-5">Also experienced with</p>
+          <div className="flex flex-wrap gap-2">
+            {extraTech.map(t => (
+              <span key={t} className="skill-tag">{t}</span>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
