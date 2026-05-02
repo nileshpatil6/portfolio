@@ -203,8 +203,14 @@ export default function DevMode() {
     if (command === "ls") {
       const arg = args[0];
       const isLa = args.includes("-la") || args.includes("-l");
+      const effectiveArg = (!arg || arg === "-la" || arg === "-l") ? null : arg;
+      const resolvedDir = effectiveArg ?? currentDir;
 
-      if (!arg || arg === "~" || arg === "-la" || arg === "-l") {
+      const isHome     = resolvedDir === "~" || resolvedDir === "/home/nilesh";
+      const isProjects = resolvedDir === "~/projects" || resolvedDir === "projects" || resolvedDir === "projects/";
+      const isSkills   = resolvedDir === "~/skills"   || resolvedDir === "skills"   || resolvedDir === "skills/";
+
+      if (isHome) {
         if (isLa) {
           addHistory({
             output: [
@@ -228,21 +234,36 @@ export default function DevMode() {
         return;
       }
 
-      if (arg === "projects/" || arg === "projects") {
-        addHistory({
-          output: projects.map((p) => `${p.id}/    — ${p.tagline}`),
-        });
+      if (isProjects) {
+        if (isLa) {
+          addHistory({
+            output: [
+              `total ${projects.length}`,
+              ...projects.map((p) =>
+                `drwxr-xr-x  1 nilesh portfolio  4096 May 02 2026 ${p.id}/`
+              ),
+            ],
+          });
+        } else {
+          addHistory({
+            output: projects.map((p) => `${p.id}/    — ${p.tagline}`),
+          });
+        }
         return;
       }
 
-      if (arg === "skills/" || arg === "skills") {
+      if (isSkills) {
         addHistory({
           output: ["languages/  frontend/  backend/  ai-ml/  databases/  infrastructure/  blockchain/"],
         });
         return;
       }
 
-      addHistory({ output: [`ls: cannot access '${arg}': No such file or directory`], type: "error" });
+      if (effectiveArg) {
+        addHistory({ output: [`ls: cannot access '${effectiveArg}': No such file or directory`], type: "error" });
+      } else {
+        addHistory({ output: [`ls: cannot access '${currentDir}': No such file or directory`], type: "error" });
+      }
       return;
     }
 
@@ -457,6 +478,42 @@ export default function DevMode() {
         return;
       }
       addHistory({ output: [`ssh: connect to host ${args[0]} port 22: Connection refused`], type: "error" });
+      return;
+    }
+
+    /* ── portfolio.sh easter egg ── */
+    if (
+      trimmed === "./portfolio.sh" ||
+      trimmed === "bash portfolio.sh" ||
+      trimmed === "sh portfolio.sh" ||
+      trimmed === "./portfolio.sh --run"
+    ) {
+      addHistory({
+        output: [
+          "#!/bin/bash",
+          "# portfolio.sh — Nilesh Patil v3.0.0",
+          "",
+          "Initializing Nilesh Patil OS...",
+          "",
+          "[██████████████████████████████] 100%",
+          "",
+          "✓ Loading 19 projects         … done",
+          "✓ Importing 8 hackathon wins  … done",
+          "✓ Mounting IIT Bombay creds   … done",
+          "✓ Spinning up AI pipelines    … done",
+          "✓ Connecting to portfolio.dev … done",
+          "",
+          "┌──────────────────────────────────────────────────┐",
+          "│  NILESH PATIL — Full Stack & GenAI Engineer       │",
+          "│  Status: Building the internet's next layer 🚀    │",
+          "│  Mode:   GOD MODE ACTIVATED                       │",
+          "└──────────────────────────────────────────────────┘",
+          "",
+          "Run 'whoami' to see credentials, or 'ls projects/' to",
+          "browse 19 production-grade projects.",
+        ],
+        type: "success",
+      });
       return;
     }
 

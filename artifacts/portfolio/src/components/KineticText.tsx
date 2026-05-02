@@ -4,7 +4,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ── Word definitions ── */
 const LINES = [
   { word: "BUILD",  fill: true  },
   { word: "SHIP",   fill: false },
@@ -12,9 +11,8 @@ const LINES = [
   { word: "REPEAT", fill: false },
 ] as const;
 
-/* How much scroll each word occupies before the next overlaps */
-const ROW_VH  = 120; // total scroll range per row
-const OVER_VH = 32;  // negative overlap between rows (cinematic stack)
+const ROW_VH  = 120;
+const OVER_VH = 32;
 
 export default function KineticText() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -22,40 +20,35 @@ export default function KineticText() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       LINES.forEach((_, li) => {
-        const row         = sectionRef.current!.querySelector<HTMLElement>(`.kt-row-${li}`)!;
-        const mainChars   = gsap.utils.toArray<HTMLElement>(".kt-main",   row);
-        const drips       = gsap.utils.toArray<HTMLElement>(".kt-drip",   row);
-        const dripInners  = gsap.utils.toArray<HTMLElement>(".kt-drip-i", row);
+        const row        = sectionRef.current!.querySelector<HTMLElement>(`.kt-row-${li}`)!;
+        const mainChars  = gsap.utils.toArray<HTMLElement>(".kt-main",  row);
+        const dripInners = gsap.utils.toArray<HTMLElement>(".kt-drip-i", row);
 
-        /* initialise drip at 0 scale */
-        gsap.set(dripInners, { scaleY: 0, opacity: 0 });
+        /* Start drips hidden — GSAP owns the transform on these elements */
+        gsap.set(dripInners, { scaleY: 0, opacity: 0, transformOrigin: "50% 0%" });
 
-        /* One scrubbed timeline that covers the full ROW_VH of scroll */
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: row,
             start:   "top top",
-            end:     "bottom top",   /* = ROW_VH of scroll */
+            end:     "bottom top",
             scrub:   1.2,
           },
         });
 
-        /* Anchor total timeline duration = 2 units */
+        /* Anchor total duration to 2 units */
         tl.to({}, { duration: 2 }, 0);
 
         const n = mainChars.length;
         mainChars.forEach((char, i) => {
-          /* Second half of scroll, staggered per character */
+          /* Squish starts at 50 % of the scroll range, staggered per char */
           const t0 = 1.0 + (n > 1 ? (i / (n - 1)) * 0.48 : 0);
 
-          /* Main char squishes from top (transform-origin set in CSS) */
+          /* Main char collapses from its top edge */
           tl.to(char, { scaleY: 0, ease: "none", duration: 0.28 }, t0);
 
-          /* Drip clipping box appears first */
-          tl.to(drips[i], { height: "0.65em", ease: "none", duration: 0.12 }, t0);
-
-          /* Drip inner grows downward */
-          tl.to(dripInners[i], { scaleY: 0.9, opacity: 0.32, ease: "none", duration: 0.28 }, t0);
+          /* Drip grows downward below the baseline */
+          tl.to(dripInners[i], { scaleY: 0.85, opacity: 0.28, ease: "none", duration: 0.30 }, t0);
         });
       });
     }, sectionRef);
@@ -64,10 +57,16 @@ export default function KineticText() {
   }, []);
 
   return (
+    /*
+     * IMPORTANT: do NOT set overflow: hidden on this section.
+     * overflow: hidden makes the section a scroll container which
+     * breaks position: sticky on child rows (sticky needs to track
+     * the nearest scrollable ancestor — the page, not this section).
+     */
     <section
       ref={sectionRef}
       aria-label="Kinetic type"
-      style={{ background: "var(--fg)", position: "relative", overflow: "hidden" }}
+      style={{ background: "var(--fg)", position: "relative" }}
     >
       {/* ── fade from page bg ── */}
       <div style={{
@@ -106,22 +105,25 @@ export default function KineticText() {
               zIndex:       li + 1,
             }}
           >
+            {/* Sticky panel — visible for the full ROW_VH scroll range */}
             <div style={{
-              position:        "sticky",
-              top:             0,
-              height:          "100vh",
-              display:         "flex",
-              alignItems:      "center",
-              justifyContent:  "center",
-              background:      "var(--fg)",
-              overflow:        "visible",
+              position:       "sticky",
+              top:            0,
+              height:         "100vh",
+              display:        "flex",
+              alignItems:     "center",
+              justifyContent: "center",
+              background:     "var(--fg)",
+              /* clip horizontal bleed without breaking sticky */
+              overflowX:      "clip",
+              overflowY:      "visible",
             }}>
-              {/* Row counter */}
+              {/* row counter */}
               <span style={{
                 position: "absolute", left: "clamp(1.5rem, 5vw, 4rem)", bottom: "10vh",
                 fontFamily: "var(--app-font-mono)", fontSize: "0.5rem",
-                letterSpacing: "0.2em", color: "color-mix(in srgb, var(--bg) 18%, transparent)",
-                textTransform: "uppercase",
+                letterSpacing: "0.2em", textTransform: "uppercase",
+                color: "color-mix(in srgb, var(--bg) 18%, transparent)",
               }}>
                 0{li + 1}
               </span>
@@ -130,18 +132,18 @@ export default function KineticText() {
                 {chars.map((char, ci) => (
                   <div key={ci} style={{ position: "relative", display: "inline-block" }}>
 
-                    {/* ── Main character — squishes from top ── */}
+                    {/* ── Main char — squishes from its top edge downward ── */}
                     <span
                       className="kt-main"
                       style={{
                         display:         "block",
                         transformOrigin: "50% 0%",
                         willChange:      "transform",
-                        fontFamily:  "var(--app-font-serif)",
-                        fontSize:    "clamp(4.5rem, 18vw, 16rem)",
-                        fontWeight:  isFill ? 900 : 100,
-                        fontStyle:   isFill ? "normal" : "italic",
-                        lineHeight:  0.88,
+                        fontFamily:      "var(--app-font-serif)",
+                        fontSize:        "clamp(4.5rem, 18vw, 16rem)",
+                        fontWeight:      isFill ? 900 : 100,
+                        fontStyle:       isFill ? "normal" : "italic",
+                        lineHeight:      0.88,
                         color:           isFill ? "var(--bg)" : "transparent",
                         WebkitTextStroke: isFill ? undefined : "1.5px var(--bg)",
                       }}
@@ -149,45 +151,42 @@ export default function KineticText() {
                       {char}
                     </span>
 
-                    {/* ── Drip shadow — grows below the collapsing char ── */}
-                    <div
-                      className="kt-drip"
+                    {/* ── Drip — grows downward below the collapsing char ── */}
+                    {/*
+                     * No React-controlled transform here.
+                     * GSAP fully owns scaleY + opacity via gsap.set() + tl.to()
+                     * so there is no inline-style vs GSAP conflict.
+                     */}
+                    <span
+                      className="kt-drip-i"
                       style={{
-                        position:   "absolute",
-                        top:        "86%",
-                        left:       0,
-                        right:      0,
-                        height:     0,           /* GSAP expands this */
-                        overflow:   "hidden",
-                        pointerEvents: "none",
+                        /* layout: sit right below char baseline */
+                        position:        "absolute",
+                        top:             "100%",
+                        left:            0,
+                        display:         "block",
+                        willChange:      "transform, opacity",
+                        /* same font metrics as main char */
+                        fontFamily:      "var(--app-font-serif)",
+                        fontSize:        "clamp(4.5rem, 18vw, 16rem)",
+                        fontWeight:      isFill ? 900 : 100,
+                        fontStyle:       isFill ? "normal" : "italic",
+                        lineHeight:      0.88,
+                        /* slightly dimmed colour */
+                        color: isFill
+                          ? "color-mix(in srgb, var(--bg) 30%, transparent)"
+                          : "transparent",
+                        WebkitTextStroke: isFill
+                          ? undefined
+                          : "1px color-mix(in srgb, var(--bg) 25%, transparent)",
+                        /* fade out toward the bottom so it reads as a drip */
+                        maskImage:       "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 75%)",
+                        WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 75%)",
+                        /* GSAP sets scaleY / opacity — no transform here */
                       }}
                     >
-                      <span
-                        className="kt-drip-i"
-                        style={{
-                          display:         "block",
-                          transformOrigin: "50% 0%",
-                          willChange:      "transform, opacity",
-                          fontFamily:  "var(--app-font-serif)",
-                          fontSize:    "clamp(4.5rem, 18vw, 16rem)",
-                          fontWeight:  isFill ? 900 : 100,
-                          fontStyle:   isFill ? "normal" : "italic",
-                          lineHeight:  0.88,
-                          /* mirror the char — drip reads as pressed liquid */
-                          transform:   "scaleY(-1)",
-                          color: isFill
-                            ? "color-mix(in srgb, var(--bg) 35%, transparent)"
-                            : "transparent",
-                          WebkitTextStroke: isFill
-                            ? undefined
-                            : "1px color-mix(in srgb, var(--bg) 30%, transparent)",
-                          maskImage:       "linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 80%)",
-                          WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 80%)",
-                        }}
-                      >
-                        {char}
-                      </span>
-                    </div>
+                      {char}
+                    </span>
 
                   </div>
                 ))}
