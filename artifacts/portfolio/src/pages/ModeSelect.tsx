@@ -26,7 +26,7 @@ export default function ModeSelect() {
         clearInterval(timer);
         setTimeout(() => setBooted(true), 600);
       }
-    }, 280);
+    }, 180);
     return () => clearInterval(timer);
   }, []);
 

@@ -1,117 +1,174 @@
-import { useRef, useMemo } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import * as THREE from "three";
+import { useEffect, useRef } from "react";
 
-function Particles({ count = 2000 }: { count?: number }) {
-  const mesh = useRef<THREE.Points>(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
-
-  const positions = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 20;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 20;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 10;
-    }
-    return pos;
-  }, [count]);
-
-  const sizes = useMemo(() => {
-    const s = new Float32Array(count);
-    for (let i = 0; i < count; i++) {
-      s[i] = Math.random() * 2 + 0.5;
-    }
-    return s;
-  }, [count]);
-
-  const { camera } = useThree();
-
-  useFrame(({ clock }) => {
-    if (!mesh.current) return;
-    const t = clock.getElapsedTime();
-    mesh.current.rotation.y = t * 0.03;
-    mesh.current.rotation.x = t * 0.01;
-    (camera as THREE.PerspectiveCamera).position.x += (mouseRef.current.x * 0.5 - camera.position.x) * 0.02;
-    (camera as THREE.PerspectiveCamera).position.y += (-mouseRef.current.y * 0.5 - camera.position.y) * 0.02;
-    camera.lookAt(0, 0, 0);
-  });
-
-  return (
-    <points ref={mesh}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} />
-        <bufferAttribute attach="attributes-size" count={count} array={sizes} itemSize={1} />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.04}
-        color="#00d4ff"
-        transparent
-        opacity={0.6}
-        sizeAttenuation
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </points>
-  );
+interface Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  opacity: number;
+  color: string;
 }
 
-function FloatingGeometry() {
-  const mesh1 = useRef<THREE.Mesh>(null);
-  const mesh2 = useRef<THREE.Mesh>(null);
-  const mesh3 = useRef<THREE.Mesh>(null);
-
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    if (mesh1.current) {
-      mesh1.current.rotation.x = t * 0.3;
-      mesh1.current.rotation.y = t * 0.4;
-      mesh1.current.position.y = Math.sin(t * 0.5) * 0.5;
-    }
-    if (mesh2.current) {
-      mesh2.current.rotation.x = -t * 0.2;
-      mesh2.current.rotation.z = t * 0.3;
-      mesh2.current.position.y = Math.cos(t * 0.4) * 0.3;
-    }
-    if (mesh3.current) {
-      mesh3.current.rotation.y = t * 0.5;
-      mesh3.current.rotation.x = t * 0.2;
-      mesh3.current.position.x = Math.sin(t * 0.3) * 0.3;
-    }
-  });
-
-  const wireMat = (color: string) => (
-    <meshBasicMaterial color={color} wireframe transparent opacity={0.3} />
-  );
-
-  return (
-    <>
-      <mesh ref={mesh1} position={[-4, 1, -2]}>
-        <icosahedronGeometry args={[1.2, 1]} />
-        {wireMat("#00d4ff")}
-      </mesh>
-      <mesh ref={mesh2} position={[4, -1, -3]}>
-        <octahedronGeometry args={[1.0, 0]} />
-        {wireMat("#7c3aed")}
-      </mesh>
-      <mesh ref={mesh3} position={[0, -3, -4]}>
-        <tetrahedronGeometry args={[1.5, 0]} />
-        {wireMat("#00ff88")}
-      </mesh>
-    </>
-  );
-}
+const COLORS = ["#00d4ff", "#7c3aed", "#00ff88", "#00d4ff", "#00d4ff"];
 
 export default function ThreeCanvas() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animRef = useRef<number>(0);
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const particlesRef = useRef<Particle[]>([]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const onMouseMove = (e: MouseEvent) => {
+      mouseRef.current = { x: e.clientX, y: e.clientY };
+    };
+    window.addEventListener("mousemove", onMouseMove);
+
+    // Init particles
+    const count = 120;
+    particlesRef.current = Array.from({ length: count }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      size: Math.random() * 2.5 + 0.5,
+      opacity: Math.random() * 0.5 + 0.1,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    }));
+
+    let frame = 0;
+
+    const draw = () => {
+      frame++;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const mx = mouseRef.current.x;
+      const my = mouseRef.current.y;
+
+      particlesRef.current.forEach((p, i) => {
+        // Mouse repulsion
+        const dx = p.x - mx;
+        const dy = p.y - my;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          const force = (120 - dist) / 120;
+          p.vx += (dx / dist) * force * 0.3;
+          p.vy += (dy / dist) * force * 0.3;
+        }
+
+        // Velocity damping
+        p.vx *= 0.98;
+        p.vy *= 0.98;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Wrap
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height;
+        if (p.y > canvas.height) p.y = 0;
+
+        // Twinkle
+        const twinkle = Math.sin(frame * 0.02 + i) * 0.15;
+        const opacity = Math.max(0.05, Math.min(0.7, p.opacity + twinkle));
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = p.color + Math.floor(opacity * 255).toString(16).padStart(2, "0");
+        ctx.fill();
+
+        // Connect nearby particles
+        for (let j = i + 1; j < particlesRef.current.length; j++) {
+          const q = particlesRef.current[j];
+          const qx = p.x - q.x;
+          const qy = p.y - q.y;
+          const d = Math.sqrt(qx * qx + qy * qy);
+          if (d < 100) {
+            const lineOpacity = ((100 - d) / 100) * 0.15;
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(q.x, q.y);
+            ctx.strokeStyle = `rgba(0,212,255,${lineOpacity})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      });
+
+      // Draw rotating wireframe shapes (pure 2D)
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const t = frame * 0.003;
+
+      // Rotating hexagon
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI * 2 + t;
+        const px = cx - 300 + Math.cos(angle) * 80;
+        const py = cy - 100 + Math.sin(angle) * 80;
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = `rgba(0,212,255,${0.08 + Math.sin(t * 2) * 0.03})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Rotating triangle
+      ctx.beginPath();
+      for (let i = 0; i < 3; i++) {
+        const angle = (i / 3) * Math.PI * 2 - t * 1.5;
+        const px = cx + 280 + Math.cos(angle) * 60;
+        const py = cy + 100 + Math.sin(angle) * 60;
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = `rgba(124,58,237,${0.1 + Math.sin(t * 3) * 0.04})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Rotating octagon
+      ctx.beginPath();
+      for (let i = 0; i < 8; i++) {
+        const angle = (i / 8) * Math.PI * 2 + t * 0.7;
+        const px = cx + 100 + Math.cos(angle) * 50;
+        const py = cy + 200 + Math.sin(angle) * 50;
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = `rgba(0,255,136,${0.06 + Math.sin(t * 1.5) * 0.03})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      animRef.current = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animRef.current);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", onMouseMove);
+    };
+  }, []);
+
   return (
-    <div className="absolute inset-0 -z-10">
-      <Canvas
-        camera={{ position: [0, 0, 5], fov: 75 }}
-        style={{ background: "transparent" }}
-        gl={{ antialias: true, alpha: true }}
-      >
-        <Particles count={1500} />
-        <FloatingGeometry />
-      </Canvas>
-    </div>
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 -z-10 pointer-events-none"
+      style={{ background: "transparent" }}
+    />
   );
 }

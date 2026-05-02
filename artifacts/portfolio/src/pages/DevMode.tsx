@@ -32,7 +32,7 @@ function NanoViewer({ project, onClose }: { project: typeof projects[0]; onClose
       </div>
       <div className="flex-1 p-6 overflow-auto text-sm">
         <div className="text-[#00d4ff] font-bold text-xl mb-2"># {project.name}</div>
-        <div className="text-[#a0aec0] mb-4 text-xs">> {project.tagline}</div>
+        <div className="text-[#a0aec0] mb-4 text-xs">{">"} {project.tagline}</div>
         <div className="mb-4">
           <div className="text-[#00ff88] mb-1">## Description</div>
           <div className="text-[#e2e8f0] leading-relaxed">{project.description}</div>
