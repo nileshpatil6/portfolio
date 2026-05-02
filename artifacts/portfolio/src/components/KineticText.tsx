@@ -21,34 +21,31 @@ export default function KineticText() {
     const ctx = gsap.context(() => {
       LINES.forEach((_, li) => {
         const row        = sectionRef.current!.querySelector<HTMLElement>(`.kt-row-${li}`)!;
-        const mainChars  = gsap.utils.toArray<HTMLElement>(".kt-main",  row);
+        const mainChars  = gsap.utils.toArray<HTMLElement>(".kt-main",   row);
         const dripInners = gsap.utils.toArray<HTMLElement>(".kt-drip-i", row);
 
-        /* Start drips hidden — GSAP owns the transform on these elements */
+        /* Explicit starting states — GSAP fully owns these transforms */
+        gsap.set(mainChars,  { scaleY: 1, transformOrigin: "50% 0%" });
         gsap.set(dripInners, { scaleY: 0, opacity: 0, transformOrigin: "50% 0%" });
+
+        const n       = mainChars.length;
+        /* Spread stagger across ~55 % of the scroll range; last tween finishes at ~85 % */
+        const step    = n > 1 ? 0.55 / (n - 1) : 0;
+        const charDur = 0.30;
 
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: row,
             start:   "top top",
-            end:     "bottom top",
-            scrub:   1.2,
+            end:     "bottom top",   /* full ROW_VH of scroll */
+            scrub:   1,
           },
         });
 
-        /* Anchor total duration to 2 units */
-        tl.to({}, { duration: 2 }, 0);
-
-        const n = mainChars.length;
         mainChars.forEach((char, i) => {
-          /* Squish starts at 50 % of the scroll range, staggered per char */
-          const t0 = 1.0 + (n > 1 ? (i / (n - 1)) * 0.48 : 0);
-
-          /* Main char collapses from its top edge */
-          tl.to(char, { scaleY: 0, ease: "none", duration: 0.28 }, t0);
-
-          /* Drip grows downward below the baseline */
-          tl.to(dripInners[i], { scaleY: 0.85, opacity: 0.28, ease: "none", duration: 0.30 }, t0);
+          const t0 = i * step;               /* starts at 0 → 0.55 */
+          tl.to(char,         { scaleY: 0,    ease: "none", duration: charDur }, t0);
+          tl.to(dripInners[i],{ scaleY: 0.8, opacity: 0.28, ease: "none", duration: charDur + 0.05 }, t0);
         });
       });
     }, sectionRef);
