@@ -4,13 +4,19 @@ import { useTheme } from "@/App";
 import FlowBackground from "@/components/FlowBackground";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
+import Journey from "@/components/Journey";
 import Projects from "@/components/Projects";
 import Skills from "@/components/Skills";
 import Achievements from "@/components/Achievements";
 import Contact from "@/components/Contact";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const navItems = [
   { label: "About",    id: "about" },
+  { label: "Journey",  id: "journey" },
   { label: "Work",     id: "projects" },
   { label: "Skills",   id: "skills" },
   { label: "Awards",   id: "achievements" },
@@ -31,15 +37,9 @@ function Nav() {
   return (
     <nav
       className="site-nav px-6 md:px-16"
-      style={{
-        borderBottomColor: scrolled ? "var(--border-subtle)" : "transparent",
-      }}
+      style={{ borderBottomColor: scrolled ? "var(--border-subtle)" : "transparent" }}
     >
-      <div
-        className="max-w-7xl mx-auto flex items-center justify-between"
-        style={{ height: 60 }}
-      >
-        {/* Logo */}
+      <div className="max-w-7xl mx-auto flex items-center justify-between" style={{ height: 60 }}>
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           className="font-mono cursor-none transition-opacity hover:opacity-60"
@@ -49,7 +49,6 @@ function Nav() {
           NILESH.SH
         </button>
 
-        {/* Center nav */}
         <div className="hidden md:flex items-center gap-8">
           {navItems.map(item => (
             <button
@@ -69,18 +68,10 @@ function Nav() {
           ))}
         </div>
 
-        {/* Right actions */}
         <div className="flex items-center gap-4">
-          {/* Theme toggle */}
-          <button
-            onClick={toggle}
-            className="theme-toggle"
-            aria-label="Toggle theme"
-          >
+          <button onClick={toggle} className="theme-toggle" aria-label="Toggle theme">
             <div className="theme-toggle-thumb" />
           </button>
-
-          {/* Terminal */}
           <button
             data-testid="button-nav-terminal"
             onClick={() => setLocation("/dev")}
@@ -97,20 +88,24 @@ function Nav() {
 
 export default function VisualMode() {
   useEffect(() => {
-    document.documentElement.style.scrollBehavior = "smooth";
-    return () => { document.documentElement.style.scrollBehavior = ""; };
+    // Refresh ScrollTrigger on page load
+    ScrollTrigger.refresh();
+
+    return () => {
+      ScrollTrigger.getAll().forEach(st => st.kill());
+    };
   }, []);
 
   return (
-    <div className="relative min-h-screen" style={{ background: "var(--bg)" }}>
+    <div className="relative" style={{ background: "var(--bg)" }}>
       <FlowBackground />
       <Nav />
 
-      {/* Offset for fixed nav */}
       <div style={{ paddingTop: 60 }}>
         <main>
           <Hero />
           <About />
+          <Journey />
           <Projects />
           <Skills />
           <Achievements />

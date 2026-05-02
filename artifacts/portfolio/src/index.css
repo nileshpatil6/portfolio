@@ -416,3 +416,40 @@
   opacity: 1;
   transform: none;
 }
+
+/* ─── HORIZONTAL SCROLL TRACK ────────────────────────── */
+.hscroll-track {
+  will-change: transform;
+}
+
+/* ─── JOURNEY TIMELINE ───────────────────────────────── */
+.journey-item-left,
+.journey-item-right {
+  will-change: transform, opacity;
+}
+
+/* ─── BLOB SHAPES ────────────────────────────────────── */
+.hb1, .hb2, .hb3, .hb4,
+.about-morph-shape,
+.skills-bg-shape,
+.ach-bg-shape,
+.cb1, .cb2,
+.journey-bg-shape {
+  will-change: transform, border-radius, opacity;
+}
+
+/* ─── GSAP SCROLL PINNED ─────────────────────────────── */
+.pin-spacer {
+  pointer-events: none;
+}
+
+/* ─── CONTACT WORDS ──────────────────────────────────── */
+.contact-word {
+  will-change: transform, opacity;
+}
+
+/* ─── HERO WORDS ─────────────────────────────────────── */
+.hero-word {
+  will-change: transform, opacity;
+  display: inline-block;
+}
