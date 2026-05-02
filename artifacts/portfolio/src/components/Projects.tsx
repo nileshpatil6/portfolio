@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { AnimatePresence, motion } from "framer-motion";
@@ -7,24 +7,204 @@ import ProjectMockup from "@/components/ProjectMockup";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ─── Featured projects for the tunnel ─── */
-const FEATURED_IDS = ["triponbuddy", "mediassist", "yukti-ai", "college-erp", "detox-ai", "agentic-commerce"];
-const featuredProjects = FEATURED_IDS.map(id => projects.find(p => p.id === id)!).filter(Boolean);
-
 /* ─── Category buckets ─── */
 const BUCKETS = [
-  { label: "AI & Web Platforms", ids: ["triponbuddy","yukti-ai","roofvision","ai-social","dataverseai","text2db","finadvise"] },
-  { label: "Mobile & Machine Learning", ids: ["mediassist","detox-ai","mindread","promptinject","multiagent-rag","rag-pinecone"] },
-  { label: "Blockchain & Enterprise", ids: ["agentic-commerce","college-erp"] },
-  { label: "Freelance & Production", ids: ["prasanhom","unyfiny","akcarrentals","cmn"] },
+  { label: "AI & Web Platforms",     emoji: "◈", ids: ["triponbuddy","yukti-ai","roofvision","ai-social","dataverseai","text2db","finadvise"] },
+  { label: "Mobile & Machine Learning", emoji: "◉", ids: ["mediassist","detox-ai","mindread","promptinject","multiagent-rag","rag-pinecone"] },
+  { label: "Blockchain & Enterprise", emoji: "⬡", ids: ["agentic-commerce","college-erp"] },
+  { label: "Freelance & Production",  emoji: "◎", ids: ["prasanhom","unyfiny","akcarrentals","cmn"] },
 ];
 
+/* ─── Typewriter hook ─────────────────────────────────── */
+function useTypewriter(text: string, active: boolean, speed = 22) {
+  const [displayed, setDisplayed] = useState("");
+  useEffect(() => {
+    if (!active) { setDisplayed(""); return; }
+    setDisplayed("");
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      setDisplayed(text.slice(0, i));
+      if (i >= text.length) clearInterval(interval);
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, active, speed]);
+  return displayed;
+}
+
+/* ─── Hover Popup ─────────────────────────────────────── */
+function HoverPopup({ project, visible }: { project: Project; visible: boolean }) {
+  const name     = useTypewriter(project.name,    visible, 28);
+  const tagline  = useTypewriter(project.tagline, visible, 18);
+  const desc     = useTypewriter(project.description.slice(0, 130) + "…", visible && name.length === project.name.length, 9);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.96 }}
+      animate={visible ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 20, scale: 0.96 }}
+      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+      className="absolute inset-0 flex flex-col justify-end z-20 pointer-events-none"
+      style={{ borderRadius: "inherit" }}
+    >
+      {/* Frosted overlay */}
+      <div className="absolute inset-0" style={{
+        background: "linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.75) 55%, transparent 100%)",
+        borderRadius: "inherit",
+      }} />
+
+      <div className="relative z-10 p-5 space-y-2">
+        {/* Name typewriter */}
+        <h3 className="font-serif text-white leading-tight" style={{ fontSize: "clamp(1rem, 2vw, 1.25rem)", fontWeight: 600, minHeight: "1.5em" }}>
+          {name}
+          {name.length < project.name.length && visible && (
+            <motion.span animate={{ opacity: [1, 0] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ color: "var(--fg-muted)" }}>|</motion.span>
+          )}
+        </h3>
+
+        {/* Tagline */}
+        <p className="font-mono text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.55)", minHeight: "1.2em" }}>
+          {tagline}
+          {tagline.length < project.tagline.length && name.length === project.name.length && visible && (
+            <motion.span animate={{ opacity: [1, 0] }} transition={{ repeat: Infinity, duration: 0.5 }} style={{ color: "var(--fg-muted)" }}>|</motion.span>
+          )}
+        </p>
+
+        {/* Description */}
+        {desc && (
+          <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.4)", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+            {desc}
+          </p>
+        )}
+
+        {/* Tech tags */}
+        <div className="flex flex-wrap gap-1 pt-1">
+          {project.tech.slice(0, 4).map((t, i) => (
+            <motion.span
+              key={t}
+              initial={{ opacity: 0, x: -6 }}
+              animate={{ opacity: visible ? 1 : 0, x: visible ? 0 : -6 }}
+              transition={{ delay: 0.25 + i * 0.06, duration: 0.2 }}
+              style={{
+                fontSize: "0.55rem", padding: "0.15rem 0.5rem",
+                borderRadius: "999px", border: "1px solid rgba(255,255,255,0.15)",
+                color: "rgba(255,255,255,0.6)", background: "rgba(255,255,255,0.05)",
+                fontFamily: "var(--font-mono)", letterSpacing: "0.05em",
+              }}
+            >{t}</motion.span>
+          ))}
+          {project.tech.length > 4 && (
+            <motion.span
+              initial={{ opacity: 0 }} animate={{ opacity: visible ? 0.5 : 0 }}
+              transition={{ delay: 0.5 }}
+              style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.4)", alignSelf: "center", fontFamily: "var(--font-mono)" }}
+            >+{project.tech.length - 4}</motion.span>
+          )}
+        </div>
+
+        {/* Links */}
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: visible ? 1 : 0 }}
+          transition={{ delay: 0.4 }}
+          className="flex items-center gap-3 pt-1 pointer-events-auto"
+        >
+          {project.liveUrl && (
+            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              className="flex items-center gap-1.5 text-xs font-mono cursor-none"
+              style={{ color: "#22c55e", textDecoration: "none" }}
+            >
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />
+              Live ↗
+            </a>
+          )}
+          {project.githubUrl && (
+            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
+              onClick={e => e.stopPropagation()}
+              className="flex items-center gap-1.5 text-xs font-mono cursor-none"
+              style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none" }}
+            >
+              ⌥ Repo
+            </a>
+          )}
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Project Card ────────────────────────────────────── */
+function ProjectCard({ project, index, onSelect }: { project: Project; index: number; onSelect: (p: Project) => void }) {
+  const [popupVisible, setPopupVisible] = useState(false);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleMouseEnter = useCallback(() => {
+    hoverTimer.current = setTimeout(() => setPopupVisible(true), 450);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    clearTimeout(hoverTimer.current);
+    setPopupVisible(false);
+  }, []);
+
+  return (
+    <motion.div
+      className="project-card group relative overflow-hidden rounded-2xl cursor-none"
+      style={{
+        gridRow: index % 5 === 0 ? "span 2" : "span 1",
+        background: "var(--bg-elevated)",
+        border: "1px solid var(--border-color)",
+      }}
+      whileHover={{ scale: 1.012, transition: { duration: 0.25 } }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={() => onSelect(project)}
+    >
+      {/* SVG illustration */}
+      <div style={{
+        aspectRatio: index % 5 === 0 ? "16/9" : "4/3",
+        overflow: "hidden",
+      }}>
+        <ProjectMockup
+          projectId={project.id}
+          className="w-full h-full transition-transform duration-700 group-hover:scale-105"
+        />
+      </div>
+
+      {/* Default info (bottom strip) */}
+      <div className="p-4" style={{ borderTop: "1px solid var(--border-color)" }}>
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <p className="font-medium text-sm truncate" style={{ color: "var(--fg)" }}>{project.name}</p>
+            <p className="font-mono text-xs truncate mt-0.5" style={{ color: "var(--fg-muted)", fontSize: "0.6rem" }}>{project.tagline}</p>
+          </div>
+          <div className="flex flex-col items-end gap-1 flex-shrink-0">
+            {project.liveUrl && (
+              <span style={{
+                fontSize: "0.55rem", padding: "0.1rem 0.5rem", borderRadius: "999px",
+                border: "1px solid #22c55e40", color: "#22c55e",
+                fontFamily: "var(--font-mono)", whiteSpace: "nowrap",
+              }}>● Live</span>
+            )}
+            <span style={{
+              fontSize: "0.55rem", padding: "0.1rem 0.5rem", borderRadius: "999px",
+              border: "1px solid var(--border-color)", color: "var(--fg-muted)",
+              fontFamily: "var(--font-mono)",
+            }}>{project.category}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Hover popup overlay */}
+      <HoverPopup project={project} visible={popupVisible} />
+    </motion.div>
+  );
+}
+
+/* ─── Full-screen Modal ───────────────────────────────── */
 function ProjectModal({ project, onClose }: { project: Project; onClose: () => void }) {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(20px)" }}
       onClick={onClose}
@@ -42,7 +222,7 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
           <ProjectMockup projectId={project.id} className="w-full h-full" />
         </div>
         <div className="p-8">
-          <button onClick={onClose} data-testid="button-close-modal"
+          <button onClick={onClose}
             className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full border cursor-none text-sm font-mono"
             style={{ border: "1px solid var(--border-color)", color: "var(--fg-muted)", background: "var(--bg-elevated)" }}>✕</button>
           <div className="flex items-start justify-between gap-4 mb-4">
@@ -75,182 +255,83 @@ function ProjectModal({ project, onClose }: { project: Project; onClose: () => v
   );
 }
 
-/* ─── Tunnel Section ─────────────────────────────────── */
-function TunnelProjects({ onSelect }: { onSelect: (p: Project) => void }) {
-  const tunnelRef = useRef<HTMLDivElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const SCROLL_PER_CARD = 700;
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const cards = gsap.utils.toArray<HTMLElement>(".tunnel-card");
-      const totalScroll = SCROLL_PER_CARD * cards.length;
-
-      // Start all invisible + tiny
-      gsap.set(cards, { scale: 0.06, autoAlpha: 0, borderRadius: "50%" });
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: tunnelRef.current,
-          pin: true,
-          scrub: 1.2,
-          start: "top top",
-          end: `+=${totalScroll}`,
-        },
-      });
-
-      cards.forEach((card) => {
-        tl
-          // Zoom in from tiny dot → full card (tunnel dive-in)
-          .to(card, {
-            scale: 1,
-            autoAlpha: 1,
-            borderRadius: "16px",
-            duration: 0.38,
-            ease: "power3.in",
-          })
-          // Hold visible briefly
-          .to(card, { duration: 0.08 })
-          // Punch through — continue zooming past (exit through the card)
-          .to(card, {
-            scale: 2.8,
-            autoAlpha: 0,
-            duration: 0.28,
-            ease: "power3.in",
-          });
-      });
-
-      // Overlay darkens as each card zooms in
-      gsap.to(overlayRef.current, {
-        opacity: 0.6,
-        scrollTrigger: {
-          trigger: tunnelRef.current,
-          start: "top top",
-          end: `+=${totalScroll}`,
-          scrub: 1,
-        },
-      });
-
-    }, tunnelRef);
-    return () => ctx.revert();
-  }, []);
-
-  return (
-    <div ref={tunnelRef} className="relative overflow-hidden" style={{ height: "100vh", background: "#050508" }}>
-      {/* Dark tunnel overlay */}
-      <div ref={overlayRef} className="absolute inset-0 z-10 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, transparent 30%, #000 100%)", opacity: 0 }} />
-
-      {/* Tunnel rings (decorative depth cue) */}
-      {[0,1,2,3,4].map(i => (
-        <div key={i} className="absolute inset-0 flex items-center justify-center pointer-events-none z-0" style={{ transform: `scale(${0.3+i*0.18})`, opacity: 0.06-i*0.01 }}>
-          <div style={{ width: "70vw", height: "70vw", maxWidth: 700, maxHeight: 700, border: "1px solid white", borderRadius: "50%" }} />
-        </div>
-      ))}
-
-      {/* Project cards — stacked in center */}
-      <div className="absolute inset-0 flex items-center justify-center z-20">
-        {featuredProjects.map((project) => (
-          <button
-            key={project.id}
-            className="tunnel-card absolute cursor-none"
-            style={{
-              width: "min(75vw, 680px)",
-              aspectRatio: "16/10",
-              overflow: "hidden",
-              boxShadow: "0 40px 120px rgba(0,0,0,0.8)",
-            }}
-            onClick={() => onSelect(project)}
-          >
-            <ProjectMockup projectId={project.id} className="w-full h-full" />
-            {/* Card overlay info */}
-            <div className="absolute bottom-0 left-0 right-0 p-5"
-              style={{ background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%)" }}>
-              <h3 className="font-serif text-2xl font-semibold text-white">{project.name}</h3>
-              <p className="text-sm mt-1 opacity-70 text-white">{project.tagline}</p>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="skill-tag" style={{ fontSize: "0.6rem", borderColor: "rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.6)", background: "transparent" }}>{project.category}</span>
-                {project.liveUrl && <span className="skill-tag" style={{ fontSize: "0.6rem", color: "#22c55e", borderColor: "#22c55e50", background: "transparent" }}>Live</span>}
-                {project.highlight && <span className="skill-tag" style={{ fontSize: "0.6rem", color: "#f59e0b", borderColor: "#f59e0b50", background: "transparent" }}>★ Featured</span>}
-              </div>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* Scroll hint */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 text-center">
-        <p className="section-label" style={{ color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em" }}>scroll to explore</p>
-      </div>
-    </div>
-  );
-}
-
 /* ─── Bucket Section ─────────────────────────────────── */
 function ProjectBuckets({ onSelect }: { onSelect: (p: Project) => void }) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.utils.toArray<HTMLElement>(".bucket-section").forEach((section) => {
-        gsap.from(section.querySelectorAll(".bucket-card"), {
-          y: 50,
-          opacity: 0,
-          scale: 0.93,
-          stagger: 0.07,
-          duration: 0.9,
-          ease: "expo.out",
+      // Bucket label slides in
+      gsap.utils.toArray<HTMLElement>(".bucket-label").forEach(el => {
+        gsap.from(el, {
+          x: -60, opacity: 0, duration: 1.1, ease: "expo.out",
+          scrollTrigger: { trigger: el, start: "top 90%", toggleActions: "play none none none" },
+        });
+      });
+
+      // Cards stagger with alternating directions
+      gsap.utils.toArray<HTMLElement>(".bucket-row").forEach(row => {
+        const cards = row.querySelectorAll(".project-card-wrap");
+        gsap.from(cards, {
+          y: 60, opacity: 0, scale: 0.9, rotateX: 6,
+          stagger: { each: 0.08, from: "start" },
+          duration: 1, ease: "expo.out",
           scrollTrigger: {
-            trigger: section,
-            start: "top 85%",
+            trigger: row,
+            start: "top 88%",
             toggleActions: "play none none none",
           },
         });
       });
-    });
+    }, sectionRef);
     return () => ctx.revert();
   }, []);
 
   return (
-    <div className="py-24 px-6 md:px-16" style={{ background: "var(--bg)" }}>
-      <div className="max-w-7xl mx-auto space-y-24">
-        {BUCKETS.map((bucket) => {
+    <div ref={sectionRef} className="py-20 px-6 md:px-16" style={{ background: "var(--bg)" }}>
+      <div className="max-w-7xl mx-auto space-y-28">
+        {BUCKETS.map((bucket, bi) => {
           const bucketProjects = bucket.ids.map(id => projects.find(p => p.id === id)!).filter(Boolean);
           return (
-            <div key={bucket.label} className="bucket-section">
-              <div className="flex items-center gap-4 mb-10">
-                <h3 className="font-serif" style={{
-                  fontSize: "clamp(1.5rem, 3vw, 2.2rem)",
-                  fontWeight: 300, fontStyle: "italic",
-                  color: "var(--fg)",
-                }}>
-                  {bucket.label}
-                </h3>
-                <div className="flex-1 h-px" style={{ background: "var(--border-color)" }} />
-                <span className="section-label">{bucketProjects.length} projects</span>
+            <div key={bucket.label}>
+              {/* Bucket header */}
+              <div className="bucket-label flex items-baseline gap-5 mb-10">
+                <span className="font-mono" style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", color: "var(--border-color)", lineHeight: 1 }}>
+                  {String(bi + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3 className="font-serif" style={{
+                    fontSize: "clamp(1.4rem, 2.8vw, 2rem)",
+                    fontWeight: 300, fontStyle: "italic",
+                    color: "var(--fg)", lineHeight: 1.1,
+                  }}>
+                    {bucket.label}
+                  </h3>
+                  <p className="section-label mt-1">{bucketProjects.length} projects</p>
+                </div>
+                <div className="flex-1 h-px ml-4" style={{ background: "var(--border-color)" }} />
               </div>
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {bucketProjects.map((p) => (
-                  <button
+              {/* Masonry-ish grid */}
+              <div
+                className="bucket-row"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                  gridAutoRows: "200px",
+                  gap: "12px",
+                }}
+              >
+                {bucketProjects.map((p, i) => (
+                  <div
                     key={p.id}
-                    className="bucket-card project-card group text-left rounded-xl overflow-hidden cursor-none w-full"
-                    onClick={() => onSelect(p)}
+                    className="project-card-wrap"
+                    style={{
+                      gridRow: i % 5 === 0 ? "span 2" : "span 1",
+                    }}
                   >
-                    <div className="overflow-hidden" style={{ aspectRatio: "16/9" }}>
-                      <ProjectMockup projectId={p.id} className="w-full h-full transition-transform duration-500 group-hover:scale-105" />
-                    </div>
-                    <div className="p-4">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <h4 className="font-medium text-sm leading-tight" style={{ color: "var(--fg)" }}>{p.name}</h4>
-                        <div className="flex flex-col gap-1 items-end flex-shrink-0">
-                          {p.liveUrl && <span className="skill-tag" style={{ fontSize: "0.55rem", color: "#22c55e", borderColor: "#22c55e40" }}>Live</span>}
-                        </div>
-                      </div>
-                      <p className="section-label mb-2" style={{ fontSize: "0.6rem" }}>{p.tagline}</p>
-                      <div className="flex flex-wrap gap-1">
-                        {p.tech.slice(0, 3).map(t => <span key={t} className="skill-tag" style={{ fontSize: "0.55rem", padding: "0.15rem 0.45rem" }}>{t}</span>)}
-                        {p.tech.length > 3 && <span className="skill-tag" style={{ fontSize: "0.55rem", padding: "0.15rem 0.45rem" }}>+{p.tech.length - 3}</span>}
-                      </div>
-                    </div>
-                  </button>
+                    <ProjectCard project={p} index={i} onSelect={onSelect} />
+                  </div>
                 ))}
               </div>
             </div>
@@ -261,20 +342,30 @@ function ProjectBuckets({ onSelect }: { onSelect: (p: Project) => void }) {
   );
 }
 
-/* ─── Main Export ────────────────────────────────────── */
+/* ─── Main Export ─────────────────────────────────────── */
 export default function Projects() {
   const [selected, setSelected] = useState<Project | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".projects-top-header", {
-        y: 80, opacity: 0, scale: 0.85,
-        duration: 1.4, ease: "expo.out",
+      // Header entrance
+      gsap.from(".projects-headline span", {
+        y: 80, opacity: 0,
+        stagger: 0.1, duration: 1.2, ease: "expo.out",
         scrollTrigger: {
-          trigger: ".projects-top-header",
+          trigger: ".projects-headline",
           start: "top 88%",
-          toggleActions: "play none none reverse",
+          toggleActions: "play none none none",
+        },
+      });
+      // Counter
+      gsap.from(".projects-counter", {
+        x: 60, opacity: 0, duration: 1, ease: "expo.out",
+        scrollTrigger: {
+          trigger: ".projects-counter",
+          start: "top 90%",
+          toggleActions: "play none none none",
         },
       });
     }, sectionRef);
@@ -282,37 +373,49 @@ export default function Projects() {
   }, []);
 
   return (
-    <section id="projects" ref={sectionRef} className="relative overflow-hidden">
-
+    <section id="projects" ref={sectionRef} className="relative">
       {/* Section header */}
-      <div className="py-20 px-6 md:px-16" style={{ background: "var(--bg)" }}>
+      <div className="pt-24 pb-16 px-6 md:px-16" style={{ background: "var(--bg)" }}>
         <div className="max-w-7xl mx-auto">
           <div className="divider mb-20" />
-          <div className="projects-top-header">
-            <div className="flex items-center gap-4 mb-4">
-              <span className="section-label">04 / 07</span>
-              <div className="w-8 h-px" style={{ background: "var(--border-color)" }} />
-              <span className="section-label">Work</span>
+          <div className="flex items-end justify-between gap-8 flex-wrap">
+            <div>
+              <div className="flex items-center gap-4 mb-5">
+                <span className="section-label">04 / 07</span>
+                <div className="w-8 h-px" style={{ background: "var(--border-color)" }} />
+                <span className="section-label">Work</span>
+              </div>
+              <div className="projects-headline" style={{ overflow: "hidden" }}>
+                {["Things", "I've", "shipped."].map((word, i) => (
+                  <span
+                    key={i}
+                    className="font-serif inline-block mr-4"
+                    style={{
+                      fontSize: "clamp(2.8rem, 6vw, 5.5rem)",
+                      fontWeight: i === 2 ? 800 : 300,
+                      fontStyle: i !== 2 ? "italic" : "normal",
+                      color: "var(--fg)",
+                      lineHeight: 1.05,
+                      display: "inline-block",
+                    }}
+                  >
+                    {word}
+                  </span>
+                ))}
+              </div>
             </div>
-            <h2 className="font-serif" style={{
-              fontSize: "clamp(2.5rem, 6vw, 5.5rem)",
-              fontWeight: 300, fontStyle: "italic",
-              color: "var(--fg)", lineHeight: 1.05,
-            }}>
-              Things I've <strong style={{ fontStyle: "normal", fontWeight: 800 }}>shipped.</strong>
-            </h2>
-            <p className="mt-4 text-sm" style={{ color: "var(--fg-muted)" }}>
-              {projects.length} projects across AI, mobile, blockchain, enterprise & freelance — most live in production.
-              Scroll through the spotlight below, then browse all projects by category.
-            </p>
+            <div className="projects-counter text-right">
+              <div className="font-mono" style={{ fontSize: "clamp(3rem, 7vw, 5rem)", fontWeight: 700, color: "var(--border-color)", lineHeight: 1 }}>
+                {projects.length}
+              </div>
+              <p className="section-label">projects total</p>
+              <p className="section-label mt-1">most in production</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Tunnel spotlight */}
-      <TunnelProjects onSelect={setSelected} />
-
-      {/* All projects by bucket */}
+      {/* All projects bucketed */}
       <ProjectBuckets onSelect={setSelected} />
 
       <AnimatePresence>
