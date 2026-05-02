@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { useTheme } from "@/App";
 import FlowBackground from "@/components/FlowBackground";
 import Hero from "@/components/Hero";
+import LandsatName from "@/components/LandsatName";
 import About from "@/components/About";
 import Journey from "@/components/Journey";
 import Projects from "@/components/Projects";
@@ -104,6 +105,7 @@ export default function VisualMode() {
       <div style={{ paddingTop: 60 }}>
         <main>
           <Hero />
+          <LandsatName />
           <About />
           <Journey />
           <Projects />
