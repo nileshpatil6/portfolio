@@ -14,6 +14,9 @@ export default function Cursor() {
   const raf       = useRef(0);
 
   useEffect(() => {
+    /* Skip entirely on touch-only devices — they have no hover/mouse */
+    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+
     const dot     = dotRef.current!;
     const auraEl  = auraRef.current!;
     const labelEl = labelRef.current!;

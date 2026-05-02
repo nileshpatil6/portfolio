@@ -572,3 +572,27 @@
   will-change: transform, opacity;
   display: inline-block;
 }
+
+/* ─── TOUCH DEVICE OVERRIDES ─────────────────────────── */
+/* On phones/tablets: restore native cursor, hide custom cursor elements */
+@media (hover: none) and (pointer: coarse) {
+  html, body, * {
+    cursor: auto !important;
+  }
+  .c-dot,
+  .c-aura,
+  .c-label {
+    display: none !important;
+  }
+}
+
+/* ─── MOBILE TERMINAL ASCII ART ──────────────────────── */
+/* Scale down the wide ASCII banner on narrow screens */
+@media (max-width: 480px) {
+  .terminal-ascii {
+    font-size: 6.5px !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0 !important;
+  }
+}
+

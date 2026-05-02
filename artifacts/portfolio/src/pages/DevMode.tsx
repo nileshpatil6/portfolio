@@ -54,7 +54,7 @@ function GlitchAscii() {
   }, []);
 
   return (
-    <div className="mb-1 select-none">
+    <div className="mb-1 select-none terminal-ascii overflow-x-auto">
       {lines.map((line, i) => (
         <div
           key={i}

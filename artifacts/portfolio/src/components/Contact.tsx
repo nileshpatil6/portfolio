@@ -24,7 +24,6 @@ export default function Contact() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Huge headline words converge from extreme positions
       const words = gsap.utils.toArray<HTMLElement>(".contact-word");
       const positions = [
         { x: -600, y: -200, rotation: -18, scale: 0.4 },
@@ -48,7 +47,6 @@ export default function Contact() {
         });
       });
 
-      // Two blobs converge from sides as user enters contact
       gsap.fromTo(".cb1", { x: "-60vw", opacity: 0 }, {
         x: 0, opacity: 1,
         scrollTrigger: {
@@ -68,7 +66,6 @@ export default function Contact() {
         }
       });
 
-      // Then the blobs morph together
       gsap.to([".cb1", ".cb2"], {
         borderRadius: "50%",
         scale: 0.3,
@@ -81,7 +78,6 @@ export default function Contact() {
         }
       });
 
-      // Links stagger in from bottom
       gsap.from(".contact-link", {
         y: 60,
         opacity: 0,
@@ -95,7 +91,6 @@ export default function Contact() {
         }
       });
 
-      // CTA buttons
       gsap.from(".contact-cta", {
         y: 40,
         opacity: 0,
@@ -141,7 +136,7 @@ export default function Contact() {
         <div className="mb-24">
           <p className="section-label mb-6">07 / 07 · Let's talk</p>
           <h2 className="contact-headline font-serif" style={{
-            fontSize: "clamp(3rem, 9vw, 8rem)",
+            fontSize: "clamp(2.4rem, 9vw, 8rem)",
             fontWeight: 300, fontStyle: "italic",
             color: "var(--fg)", lineHeight: 0.95,
             letterSpacing: "-0.02em",
@@ -174,19 +169,33 @@ export default function Contact() {
               rel="noopener noreferrer"
               data-testid={`link-contact-${link.label.toLowerCase()}`}
               data-cursor-text={link.label + " ↗"}
-              className="contact-link group flex items-center justify-between py-6 transition-all duration-200"
+              className="contact-link group block py-5 transition-all duration-200"
               style={{
                 borderTop: "1px solid var(--border-color)",
                 borderBottom: i === links.length - 1 ? "1px solid var(--border-color)" : "none",
               }}
             >
-              <div className="flex items-center gap-8">
-                <span className="section-label w-28">{link.label}</span>
-                <span className="text-base font-medium transition-all duration-200 group-hover:translate-x-2" style={{ color: "var(--fg)" }}>
-                  {link.value}
-                </span>
+              <div className="flex items-start sm:items-center justify-between gap-2">
+                {/* Label + value — stacked on mobile, row on sm+ */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-8 min-w-0 flex-1">
+                  <span
+                    className="section-label flex-shrink-0 sm:w-28 mb-0.5 sm:mb-0"
+                    style={{ display: "block" }}
+                  >
+                    {link.label}
+                  </span>
+                  <span
+                    className="text-sm sm:text-base font-medium transition-all duration-200 group-hover:translate-x-2 truncate"
+                    style={{ color: "var(--fg)" }}
+                  >
+                    {link.value}
+                  </span>
+                </div>
+                <span
+                  className="text-xl flex-shrink-0 opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1 self-center"
+                  style={{ color: "var(--fg-subtle)" }}
+                >↗</span>
               </div>
-              <span className="text-xl opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:translate-x-1" style={{ color: "var(--fg-subtle)" }}>↗</span>
             </a>
           ))}
         </div>

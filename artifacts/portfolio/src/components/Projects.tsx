@@ -7,6 +7,19 @@ import ProjectMockup from "@/components/ProjectMockup";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* ─── Mobile detection hook ───────────────────────────── */
+function useMobile() {
+  const [mobile, setMobile] = useState(
+    () => typeof window !== "undefined" && window.innerWidth < 768
+  );
+  useEffect(() => {
+    const handler = () => setMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handler, { passive: true });
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return mobile;
+}
+
 /* ─── TypeWriter ───────────────────────────────────────── */
 function TypeWriter({
   text, speed = 14, delay = 0, className, style,
@@ -178,7 +191,7 @@ function PreviewPanel({ active }: { active: Project }) {
         <div className="flex items-center gap-4 pt-1">
           {active.liveUrl && (
             <a href={active.liveUrl} target="_blank" rel="noopener noreferrer"
-              className="cursor-none font-mono flex items-center gap-2"
+              className="font-mono flex items-center gap-2"
               style={{ fontSize: "0.7rem", color: active.color, textDecoration: "none" }}>
               <span style={{
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
@@ -190,7 +203,7 @@ function PreviewPanel({ active }: { active: Project }) {
           )}
           {active.githubUrl && (
             <a href={active.githubUrl} target="_blank" rel="noopener noreferrer"
-              className="cursor-none font-mono flex items-center gap-2"
+              className="font-mono flex items-center gap-2"
               style={{ fontSize: "0.7rem", color: "var(--fg-muted)", textDecoration: "none" }}>
               <span style={{
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
@@ -210,14 +223,15 @@ function PreviewPanel({ active }: { active: Project }) {
 
 /* ─── List Row ─────────────────────────────────────────── */
 function ProjectRow({
-  project, globalIndex, isActive, onHover,
-}: { project: Project; globalIndex: number; isActive: boolean; onHover: () => void }) {
+  project, globalIndex, isActive, onHover, onClick,
+}: { project: Project; globalIndex: number; isActive: boolean; onHover: () => void; onClick?: () => void }) {
   return (
     <motion.div
       onMouseEnter={onHover}
+      onClick={onClick}
       className="relative overflow-hidden"
       data-cursor-text={project.liveUrl ? "Open live ↗" : "View project"}
-      style={{ borderBottom: "1px solid var(--border-color)", cursor: "none" }}
+      style={{ borderBottom: "1px solid var(--border-color)", cursor: "inherit" }}
       initial={{ opacity: 0, x: -24 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "0px 0px -30px 0px" }}
@@ -296,12 +310,34 @@ function ProjectRow({
   );
 }
 
+/* ─── Mobile Inline Preview ────────────────────────────── */
+function MobileExpandedPanel({ project }: { project: Project }) {
+  return (
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+      style={{ overflow: "hidden" }}
+    >
+      <div
+        className="p-4"
+        style={{ background: "var(--bg-elevated)", borderBottom: "1px solid var(--border-color)" }}
+      >
+        <PreviewPanel active={project} />
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─── Main ─────────────────────────────────────────────── */
 export default function Projects() {
   const [activeId, setActiveId] = useState(PROJ_ROWS[0].project.id);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const active = projects.find(p => p.id === activeId)!;
   const sectionRef = useRef<HTMLElement>(null);
   const listRef    = useRef<HTMLDivElement>(null);
+  const isMobile   = useMobile();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -327,6 +363,12 @@ export default function Projects() {
     return () => io.disconnect();
   }, []);
 
+  const handleRowClick = (id: string) => {
+    if (!isMobile) return;
+    setExpandedId(prev => prev === id ? null : id);
+    setActiveId(id);
+  };
+
   return (
     <section id="projects" ref={sectionRef} style={{ background: "var(--bg)" }}>
 
@@ -348,7 +390,7 @@ export default function Projects() {
                   key={i}
                   className={`font-serif inline-block ${i > 0 ? "ml-4" : ""}`}
                   style={{
-                    fontSize: "clamp(3rem, 7vw, 6rem)",
+                    fontSize: "clamp(2.2rem, 7vw, 6rem)",
                     fontWeight: i === 2 ? 800 : 300,
                     fontStyle: i !== 2 ? "italic" : "normal",
                     color: "var(--fg)", lineHeight: 0.95,
@@ -363,19 +405,24 @@ export default function Projects() {
           <div className="proj-meta-line text-right">
             <div
               className="font-mono"
-              style={{ fontSize: "clamp(4rem, 9vw, 7rem)", fontWeight: 900, color: "var(--border-color)", lineHeight: 1, letterSpacing: "-0.05em" }}
+              style={{ fontSize: "clamp(3rem, 9vw, 7rem)", fontWeight: 900, color: "var(--border-color)", lineHeight: 1, letterSpacing: "-0.05em" }}
             >{projects.length}</div>
             <p className="section-label">shipped projects</p>
           </div>
         </div>
       </div>
 
-      {/* ── Split ── */}
+      {/* ── Split / List ── */}
       <div
         className="px-6 md:px-16 pb-28 max-w-7xl mx-auto"
-        style={{ display: "grid", gridTemplateColumns: "5fr 4fr", gap: "clamp(24px, 4vw, 56px)", alignItems: "start" }}
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "5fr 4fr",
+          gap: "clamp(24px, 4vw, 56px)",
+          alignItems: "start",
+        }}
       >
-        {/* LEFT */}
+        {/* LEFT — project list */}
         <div ref={listRef}>
           {ROWS.map((row, i) => {
             if (row.type === "bucket") {
@@ -383,12 +430,7 @@ export default function Projects() {
                 <div
                   key={row.label + i}
                   className="flex items-center gap-4"
-                  style={{
-                    paddingTop: i === 0 ? 0 : "2.5rem",
-                    paddingBottom: "0.5rem",
-                    marginBottom: "0",
-                    borderTop: i === 0 ? "none" : "none",
-                  }}
+                  style={{ paddingTop: i === 0 ? 0 : "2.5rem", paddingBottom: "0.5rem" }}
                 >
                   <span
                     className="font-mono"
@@ -407,34 +449,50 @@ export default function Projects() {
                   project={row.project}
                   globalIndex={row.globalIndex}
                   isActive={activeId === row.project.id}
-                  onHover={() => setActiveId(row.project.id)}
+                  onHover={() => !isMobile && setActiveId(row.project.id)}
+                  onClick={() => handleRowClick(row.project.id)}
                 />
+                {/* Mobile: inline expanded preview */}
+                <AnimatePresence>
+                  {isMobile && expandedId === row.project.id && (
+                    <MobileExpandedPanel key={row.project.id + "-panel"} project={row.project} />
+                  )}
+                </AnimatePresence>
               </div>
             );
           })}
         </div>
 
-        {/* RIGHT — always centered in viewport */}
-        <div
-          style={{
-            position: "sticky",
-            top: 0,
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            paddingTop: 76,
-            paddingBottom: 32,
-            boxSizing: "border-box",
-          }}
-        >
-          <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
-            <AnimatePresence mode="wait">
-              <PreviewPanel key={activeId} active={active} />
-            </AnimatePresence>
+        {/* RIGHT — sticky preview (desktop only) */}
+        {!isMobile && (
+          <div
+            style={{
+              position: "sticky",
+              top: 0,
+              height: "100vh",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              paddingTop: 76,
+              paddingBottom: 32,
+              boxSizing: "border-box",
+            }}
+          >
+            <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+              <AnimatePresence mode="wait">
+                <PreviewPanel key={activeId} active={active} />
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
+        )}
       </div>
+
+      {/* Mobile hint */}
+      {isMobile && (
+        <p className="px-6 pb-6 section-label" style={{ textAlign: "center" }}>
+          Tap any project to expand details
+        </p>
+      )}
     </section>
   );
 }
