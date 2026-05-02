@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { AnimatePresence, motion } from "framer-motion";
@@ -8,17 +8,18 @@ import ProjectMockup from "@/components/ProjectMockup";
 gsap.registerPlugin(ScrollTrigger);
 
 const BUCKETS = [
-  { label: "AI & Web",          ids: ["triponbuddy","yukti-ai","roofvision","ai-social","dataverseai","text2db","finadvise"] },
-  { label: "Mobile & ML",       ids: ["mediassist","detox-ai","mindread","promptinject","multiagent-rag","rag-pinecone"] },
-  { label: "Blockchain",        ids: ["agentic-commerce","college-erp"] },
-  { label: "Freelance",         ids: ["prasanhom","unyfiny","akcarrentals","cmn"] },
+  { label: "AI & Web",     ids: ["triponbuddy","yukti-ai","roofvision","ai-social","dataverseai","text2db","finadvise"] },
+  { label: "Mobile & ML", ids: ["mediassist","detox-ai","mindread","promptinject","multiagent-rag","rag-pinecone"] },
+  { label: "Blockchain",  ids: ["agentic-commerce","college-erp"] },
+  { label: "Freelance",   ids: ["prasanhom","unyfiny","akcarrentals","cmn"] },
 ];
 
-/* build ordered list with bucket separators */
-type Row = { type: "project"; project: Project; globalIndex: number } | { type: "bucket"; label: string };
+type Row =
+  | { type: "project"; project: Project; globalIndex: number }
+  | { type: "bucket";  label: string };
+
 function buildRows(): Row[] {
-  const rows: Row[] = [];
-  let gi = 0;
+  const rows: Row[] = []; let gi = 0;
   for (const b of BUCKETS) {
     rows.push({ type: "bucket", label: b.label });
     for (const id of b.ids) {
@@ -29,179 +30,291 @@ function buildRows(): Row[] {
   return rows;
 }
 const ROWS = buildRows();
-const PROJECT_ROWS = ROWS.filter(r => r.type === "project") as Extract<Row, { type: "project" }>[];
+const PROJ_ROWS = ROWS.filter(r => r.type === "project") as Extract<Row,{type:"project"}>[];
 
-/* ─── Preview Panel ───────────────────────────────────── */
+/* ─── Preview Panel ────────────────────────────────────── */
 function PreviewPanel({ active }: { active: Project }) {
   return (
-    <div key={active.id} className="h-full flex flex-col">
-      {/* Illustration */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 16 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="flex-1 overflow-hidden"
-        style={{ borderRadius: 16, minHeight: 0 }}
+    <motion.div
+      key={active.id}
+      className="flex flex-col h-full"
+      initial={{ opacity: 0, y: 28 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {/* ── Illustration ── */}
+      <div
+        className="relative overflow-hidden flex-1"
+        style={{ borderRadius: 18, minHeight: 0, background: "#0a0a0a" }}
       >
         <ProjectMockup projectId={active.id} className="w-full h-full" />
-      </motion.div>
 
-      {/* Info */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.08 }}
-        className="pt-6 space-y-3"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h3 className="font-serif" style={{
-              fontSize: "clamp(1.4rem, 2.5vw, 2rem)",
-              fontWeight: 600, color: "var(--fg)", lineHeight: 1.1,
-            }}>{active.name}</h3>
-            <p className="font-mono mt-1" style={{ fontSize: "0.7rem", color: "var(--fg-muted)", letterSpacing: "0.06em" }}>
-              {active.tagline}
-            </p>
+        {/* Color accent bar at top */}
+        <div className="absolute top-0 left-0 right-0 h-1"
+          style={{ background: active.color, opacity: 0.9 }} />
+
+        {/* Bottom gradient scrim */}
+        <div className="absolute bottom-0 left-0 right-0 h-28 pointer-events-none"
+          style={{ background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%)" }} />
+
+        {/* Floating category badge */}
+        <div className="absolute top-4 right-4">
+          <span
+            className="font-mono"
+            style={{
+              fontSize: "0.6rem", letterSpacing: "0.12em", textTransform: "uppercase",
+              padding: "4px 10px", borderRadius: 999,
+              background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)",
+              color: "rgba(255,255,255,0.7)",
+            }}
+          >{active.category}</span>
+        </div>
+
+        {/* Live badge */}
+        {active.liveUrl && (
+          <div className="absolute top-4 left-4">
+            <span className="font-mono flex items-center gap-1.5"
+              style={{
+                fontSize: "0.6rem", padding: "4px 10px", borderRadius: 999,
+                background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)",
+                color: "#4ade80",
+              }}>
+              <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#4ade80", display: "inline-block" }} />
+              Live
+            </span>
           </div>
-          <div className="flex flex-col gap-1 items-end flex-shrink-0">
-            {active.liveUrl && (
-              <span style={{ fontSize: "0.6rem", color: "#22c55e", fontFamily: "var(--font-mono)" }}>● Live</span>
-            )}
-            <span className="skill-tag" style={{ fontSize: "0.6rem" }}>{active.category}</span>
+        )}
+      </div>
+
+      {/* ── Info strip ── */}
+      <div className="pt-5 space-y-3">
+        {/* Name + tagline */}
+        <div>
+          <div className="flex items-start gap-3">
+            <div
+              className="mt-1 flex-shrink-0"
+              style={{ width: 3, height: "100%", minHeight: 28, borderRadius: 2, background: active.color }}
+            />
+            <div>
+              <h3
+                className="font-serif leading-tight"
+                style={{ fontSize: "clamp(1.3rem, 2.2vw, 1.7rem)", fontWeight: 600, color: "var(--fg)" }}
+              >
+                {active.name}
+              </h3>
+              <p
+                className="font-mono mt-0.5"
+                style={{ fontSize: "0.68rem", color: "var(--fg-muted)", letterSpacing: "0.04em" }}
+              >
+                {active.tagline}
+              </p>
+            </div>
           </div>
         </div>
 
+        {/* Highlight */}
         {active.highlight && (
-          <p className="font-mono" style={{ fontSize: "0.65rem", color: "var(--fg-muted)", background: "var(--bg)", padding: "6px 10px", borderRadius: 6, border: "1px solid var(--border-color)" }}>
+          <div
+            className="font-mono"
+            style={{
+              fontSize: "0.62rem", padding: "6px 12px", borderRadius: 8,
+              background: "var(--bg-elevated)", border: `1px solid ${active.color}40`,
+              color: "var(--fg-muted)",
+            }}
+          >
             ★ {active.highlight}
-          </p>
+          </div>
         )}
 
+        {/* Description */}
+        <p style={{
+          fontSize: "0.78rem", lineHeight: 1.65, color: "var(--fg-muted)",
+          display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>
+          {active.description}
+        </p>
+
+        {/* Tech */}
         <div className="flex flex-wrap gap-1.5">
           {active.tech.slice(0, 5).map(t => (
-            <span key={t} className="skill-tag" style={{ fontSize: "0.58rem" }}>{t}</span>
+            <span
+              key={t}
+              className="font-mono"
+              style={{
+                fontSize: "0.58rem", padding: "3px 8px", borderRadius: 999,
+                border: "1px solid var(--border-color)", color: "var(--fg-muted)",
+              }}
+            >{t}</span>
           ))}
           {active.tech.length > 5 && (
-            <span className="skill-tag" style={{ fontSize: "0.58rem" }}>+{active.tech.length - 5}</span>
+            <span
+              className="font-mono"
+              style={{ fontSize: "0.58rem", color: "var(--fg-subtle)", alignSelf: "center" }}
+            >+{active.tech.length - 5}</span>
           )}
         </div>
 
-        <div className="flex items-center gap-5 pt-1">
+        {/* Links */}
+        <div className="flex items-center gap-4 pt-1">
           {active.liveUrl && (
-            <a href={active.liveUrl} target="_blank" rel="noopener noreferrer"
-              className="btn-primary cursor-none" style={{ fontSize: "0.7rem", padding: "6px 16px" }}>
-              Live ↗
+            <a
+              href={active.liveUrl} target="_blank" rel="noopener noreferrer"
+              className="cursor-none font-mono flex items-center gap-2 group/link"
+              style={{
+                fontSize: "0.72rem", color: active.color,
+                textDecoration: "none",
+              }}
+            >
+              <span
+                className="group-hover/link:scale-110 transition-transform"
+                style={{
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  width: 24, height: 24, borderRadius: "50%",
+                  border: `1.5px solid ${active.color}`, fontSize: "0.7rem",
+                }}
+              >↗</span>
+              Live site
             </a>
           )}
           {active.githubUrl && (
-            <a href={active.githubUrl} target="_blank" rel="noopener noreferrer"
-              className="btn-outline cursor-none" style={{ fontSize: "0.7rem", padding: "6px 16px" }}>
-              GitHub →
+            <a
+              href={active.githubUrl} target="_blank" rel="noopener noreferrer"
+              className="cursor-none font-mono flex items-center gap-2"
+              style={{ fontSize: "0.72rem", color: "var(--fg-muted)", textDecoration: "none" }}
+            >
+              <span
+                style={{
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  width: 24, height: 24, borderRadius: "50%",
+                  border: "1.5px solid var(--border-color)", fontSize: "0.7rem",
+                  color: "var(--fg-muted)",
+                }}
+              >→</span>
+              GitHub
             </a>
           )}
         </div>
-      </motion.div>
-    </div>
-  );
-}
-
-/* ─── Project List Row ────────────────────────────────── */
-function ProjectListRow({
-  project, globalIndex, isActive, onHover,
-}: {
-  project: Project; globalIndex: number; isActive: boolean; onHover: () => void;
-}) {
-  return (
-    <motion.div
-      className="project-list-row group relative"
-      onMouseEnter={onHover}
-      style={{
-        borderBottom: "1px solid var(--border-color)",
-        cursor: "none",
-        overflow: "hidden",
-      }}
-      initial={{ opacity: 0, x: -32 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true, margin: "0px 0px -40px 0px" }}
-      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: (globalIndex % 6) * 0.04 }}
-    >
-      {/* Active bg sweep */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        animate={{ scaleX: isActive ? 1 : 0 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        style={{ background: "var(--fg)", transformOrigin: "left", zIndex: 0 }}
-      />
-
-      <div className="relative z-10 flex items-center gap-3 py-3.5 px-0 pr-4">
-        {/* Index */}
-        <motion.span
-          animate={{ color: isActive ? "rgba(255,255,255,0.2)" : "var(--border-color)" }}
-          transition={{ duration: 0.2 }}
-          style={{ fontSize: "0.6rem", width: 36, textAlign: "right", fontFamily: "var(--font-mono)", flexShrink: 0 }}
-        >
-          {String(globalIndex + 1).padStart(2, "0")}
-        </motion.span>
-
-        {/* Name */}
-        <motion.span
-          animate={{ color: isActive ? "var(--bg)" : "var(--fg)" }}
-          transition={{ duration: 0.2 }}
-          className="font-serif flex-1 truncate"
-          style={{ fontSize: "clamp(0.9rem, 1.8vw, 1.25rem)", fontWeight: 500 }}
-        >
-          {project.name}
-        </motion.span>
-
-        {/* Live dot */}
-        {project.liveUrl && (
-          <motion.span
-            animate={{ color: isActive ? "#4ade80" : "#22c55e" }}
-            style={{ fontSize: "0.6rem", flexShrink: 0 }}
-          >●</motion.span>
-        )}
-
-        {/* Arrow */}
-        <motion.span
-          animate={{
-            x: isActive ? 4 : 0,
-            color: isActive ? "rgba(255,255,255,0.4)" : "var(--fg-muted)",
-          }}
-          transition={{ duration: 0.2 }}
-          style={{ fontSize: "0.9rem", flexShrink: 0 }}
-        >→</motion.span>
       </div>
     </motion.div>
   );
 }
 
-/* ─── Main Component ──────────────────────────────────── */
+/* ─── List Row ─────────────────────────────────────────── */
+function ProjectRow({
+  project, globalIndex, isActive, onHover,
+}: { project: Project; globalIndex: number; isActive: boolean; onHover: () => void }) {
+  return (
+    <motion.div
+      onMouseEnter={onHover}
+      className="relative overflow-hidden"
+      style={{ borderBottom: "1px solid var(--border-color)", cursor: "none" }}
+      initial={{ opacity: 0, x: -24 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: "0px 0px -30px 0px" }}
+      transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: (globalIndex % 7) * 0.035 }}
+    >
+      {/* Ink fill */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        animate={{ scaleX: isActive ? 1 : 0 }}
+        transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+        style={{ background: "var(--fg)", transformOrigin: "left", zIndex: 0 }}
+      />
+
+      {/* Ghost index */}
+      <div
+        className="absolute right-4 top-1/2 -translate-y-1/2 font-mono pointer-events-none select-none z-0"
+        style={{
+          fontSize: "3.5rem", fontWeight: 900, lineHeight: 1,
+          color: isActive ? "rgba(255,255,255,0.04)" : "var(--border-subtle)",
+          transition: "color 0.3s",
+        }}
+      >
+        {String(globalIndex + 1).padStart(2, "0")}
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 flex items-center gap-4 px-2 py-4">
+
+        {/* Color dot */}
+        <motion.div
+          animate={{ opacity: isActive ? 1 : 0, scale: isActive ? 1 : 0.3 }}
+          transition={{ duration: 0.25 }}
+          className="flex-shrink-0"
+          style={{ width: 7, height: 7, borderRadius: "50%", background: project.color }}
+        />
+
+        {/* Left: name + tagline */}
+        <div className="flex-1 min-w-0">
+          <motion.p
+            animate={{ color: isActive ? "var(--bg)" : "var(--fg)" }}
+            transition={{ duration: 0.2 }}
+            className="font-serif leading-tight truncate"
+            style={{ fontSize: "clamp(1.15rem, 2.8vw, 1.9rem)", fontWeight: 500 }}
+          >
+            {project.name}
+          </motion.p>
+
+          {/* Tagline expands when active */}
+          <motion.div
+            animate={{ height: isActive ? "auto" : 0, opacity: isActive ? 1 : 0, marginTop: isActive ? 2 : 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            style={{ overflow: "hidden" }}
+          >
+            <p className="font-mono" style={{ fontSize: "0.62rem", color: "rgba(255,255,255,0.5)", letterSpacing: "0.04em" }}>
+              {project.tagline}
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Right: live + arrow */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {project.liveUrl && (
+            <motion.span
+              animate={{ color: isActive ? "#4ade80" : "var(--fg-subtle)" }}
+              style={{ fontSize: "0.55rem", fontFamily: "var(--font-mono)" }}
+            >● LIVE</motion.span>
+          )}
+          <motion.span
+            animate={{ x: isActive ? 5 : 0, color: isActive ? "rgba(255,255,255,0.35)" : "var(--border-color)" }}
+            transition={{ duration: 0.25 }}
+            style={{ fontSize: "1rem" }}
+          >→</motion.span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Main ─────────────────────────────────────────────── */
 export default function Projects() {
-  const [activeId, setActiveId] = useState(PROJECT_ROWS[0].project.id);
-  const activeProject = projects.find(p => p.id === activeId)!;
+  const [activeId, setActiveId] = useState(PROJ_ROWS[0].project.id);
+  const active = projects.find(p => p.id === activeId)!;
   const sectionRef = useRef<HTMLElement>(null);
+  const listRef    = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".projects-hdr", {
-        y: 60, opacity: 0, duration: 1.1, ease: "expo.out",
-        scrollTrigger: { trigger: ".projects-hdr", start: "top 88%", toggleActions: "play none none none" },
+      gsap.from(".proj-headline > span", {
+        y: 90, opacity: 0, stagger: 0.08, duration: 1.3, ease: "expo.out",
+        scrollTrigger: { trigger: ".proj-headline", start: "top 88%", toggleActions: "play none none none" },
+      });
+      gsap.from(".proj-meta-line", {
+        x: 50, opacity: 0, duration: 0.9, ease: "expo.out",
+        scrollTrigger: { trigger: ".proj-meta-line", start: "top 90%", toggleActions: "play none none none" },
       });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
 
-  /* Intersection-based auto-activate while scrolling the list */
-  const listRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!listRef.current) return;
-    const rows = listRef.current.querySelectorAll<HTMLElement>("[data-project-id]");
+    const els = listRef.current.querySelectorAll<HTMLElement>("[data-pid]");
     const io = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) setActiveId(e.target.getAttribute("data-project-id")!);
-      });
-    }, { root: listRef.current, threshold: 0.6 });
-    rows.forEach(r => io.observe(r));
+      entries.forEach(e => { if (e.isIntersecting) setActiveId((e.target as HTMLElement).dataset.pid!); });
+    }, { root: null, rootMargin: "-45% 0px -45% 0px", threshold: 0 });
+    els.forEach(el => io.observe(el));
     return () => io.disconnect();
   }, []);
 
@@ -209,53 +322,79 @@ export default function Projects() {
     <section id="projects" ref={sectionRef} style={{ background: "var(--bg)" }}>
 
       {/* ── Header ── */}
-      <div className="pt-24 pb-10 px-6 md:px-16 max-w-7xl mx-auto">
+      <div className="pt-24 pb-12 px-6 md:px-16 max-w-7xl mx-auto">
         <div className="divider mb-20" />
-        <div className="projects-hdr flex items-end justify-between gap-6 flex-wrap">
+
+        <div className="flex items-end justify-between gap-8 flex-wrap mb-2">
+          {/* Headline */}
           <div>
-            <div className="flex items-center gap-4 mb-5">
+            <div className="flex items-center gap-3 mb-5">
               <span className="section-label">04 / 07</span>
               <div className="w-8 h-px" style={{ background: "var(--border-color)" }} />
               <span className="section-label">Work</span>
             </div>
-            <h2 className="font-serif" style={{
-              fontSize: "clamp(2.8rem, 6vw, 5rem)",
-              fontWeight: 800, lineHeight: 0.95, color: "var(--fg)",
-            }}>
-              Things I've<br />
-              <span style={{ fontWeight: 300, fontStyle: "italic" }}>built.</span>
-            </h2>
+            <div className="proj-headline" style={{ overflow: "hidden" }}>
+              {["Things", "I've", "built."].map((w, i) => (
+                <span
+                  key={i}
+                  className={`font-serif inline-block ${i > 0 ? "ml-4" : ""}`}
+                  style={{
+                    fontSize: "clamp(3rem, 7vw, 6rem)",
+                    fontWeight: i === 2 ? 800 : 300,
+                    fontStyle: i !== 2 ? "italic" : "normal",
+                    color: "var(--fg)", lineHeight: 0.95,
+                    display: "inline-block",
+                  }}
+                >{w}</span>
+              ))}
+            </div>
           </div>
-          <p className="section-label text-right" style={{ maxWidth: 220 }}>
-            Hover any row.<br />
-            {projects.length} projects — most live.
-          </p>
+
+          {/* Big count */}
+          <div className="proj-meta-line text-right">
+            <div
+              className="font-mono"
+              style={{ fontSize: "clamp(4rem, 9vw, 7rem)", fontWeight: 900, color: "var(--border-color)", lineHeight: 1, letterSpacing: "-0.05em" }}
+            >{projects.length}</div>
+            <p className="section-label">shipped projects</p>
+          </div>
         </div>
       </div>
 
-      {/* ── Split view ── */}
+      {/* ── Split ── */}
       <div
-        className="px-6 md:px-16 pb-24 max-w-7xl mx-auto"
-        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "start" }}
+        className="px-6 md:px-16 pb-28 max-w-7xl mx-auto"
+        style={{ display: "grid", gridTemplateColumns: "5fr 4fr", gap: "clamp(24px, 4vw, 56px)", alignItems: "start" }}
       >
-        {/* LEFT: scrollable list */}
+        {/* LEFT */}
         <div ref={listRef}>
           {ROWS.map((row, i) => {
             if (row.type === "bucket") {
               return (
-                <div key={row.label + i} className="flex items-center gap-3 pt-8 pb-3"
-                  style={{ borderTop: i === 0 ? "2px solid var(--fg)" : "none" }}>
-                  <span className="font-mono" style={{
-                    fontSize: "0.6rem", letterSpacing: "0.2em",
-                    textTransform: "uppercase", color: "var(--fg)", fontWeight: 700,
-                  }}>{row.label}</span>
-                  <div className="flex-1 h-px" style={{ background: "var(--border-color)" }} />
+                <div
+                  key={row.label + i}
+                  className="flex items-center gap-4"
+                  style={{
+                    paddingTop: i === 0 ? 0 : "2.5rem",
+                    paddingBottom: "0.5rem",
+                    marginBottom: "0",
+                    borderTop: i === 0 ? "none" : "none",
+                  }}
+                >
+                  <span
+                    className="font-mono"
+                    style={{
+                      fontSize: "0.58rem", letterSpacing: "0.25em",
+                      textTransform: "uppercase", color: "var(--fg-subtle)", fontWeight: 700,
+                    }}
+                  >{row.label}</span>
+                  <div className="flex-1 h-px" style={{ background: "var(--border-subtle)" }} />
                 </div>
               );
             }
             return (
-              <div key={row.project.id} data-project-id={row.project.id}>
-                <ProjectListRow
+              <div key={row.project.id} data-pid={row.project.id}>
+                <ProjectRow
                   project={row.project}
                   globalIndex={row.globalIndex}
                   isActive={activeId === row.project.id}
@@ -266,10 +405,17 @@ export default function Projects() {
           })}
         </div>
 
-        {/* RIGHT: sticky preview */}
-        <div style={{ position: "sticky", top: 24, height: "calc(100vh - 48px)" }}>
+        {/* RIGHT */}
+        <div
+          style={{
+            position: "sticky",
+            top: "calc(60px + 24px)",
+            height: "calc(100vh - 108px)",
+            minHeight: 400,
+          }}
+        >
           <AnimatePresence mode="wait">
-            <PreviewPanel key={activeId} active={activeProject} />
+            <PreviewPanel key={activeId} active={active} />
           </AnimatePresence>
         </div>
       </div>

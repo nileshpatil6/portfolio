@@ -11,7 +11,7 @@ export default function Hero() {
   const [roleIdx, setRoleIdx] = useState(0);
   const [displayed, setDisplayed] = useState("");
   const [deleting, setDeleting] = useState(false);
-  const tickRef = useRef<ReturnType<typeof setTimeout>>();
+  const tickRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     const target = roles[roleIdx];
