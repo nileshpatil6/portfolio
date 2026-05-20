@@ -1,3 +1,4 @@
+﻿"use client";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useInView } from "framer-motion";
 
@@ -389,3 +390,4 @@ export default function LandsatName() {
     </section>
   );
 }
+

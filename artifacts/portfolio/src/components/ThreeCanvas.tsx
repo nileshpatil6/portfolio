@@ -1,3 +1,4 @@
+﻿"use client";
 import { useEffect, useRef } from "react";
 
 interface Particle {
@@ -172,3 +173,4 @@ export default function ThreeCanvas() {
     />
   );
 }
+

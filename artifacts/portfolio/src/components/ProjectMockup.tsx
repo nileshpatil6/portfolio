@@ -1,3 +1,4 @@
+﻿"use client";
 import { type Project } from "@/data/projects";
 
 /* ─── Per-project SVG illustrations ─────────────────── */
@@ -630,3 +631,4 @@ export default function ProjectMockup({ projectId, className = "" }: ProjectMock
     </div>
   );
 }
+

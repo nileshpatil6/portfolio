@@ -1,3 +1,4 @@
+﻿"use client";
 import { useEffect, useRef } from "react";
 
 export default function FlowBackground() {
@@ -51,3 +52,4 @@ export default function FlowBackground() {
     </svg>
   );
 }
+
