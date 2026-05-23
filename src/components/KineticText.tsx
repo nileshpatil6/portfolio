@@ -64,12 +64,13 @@ export default function KineticText() {
     <section
       ref={sectionRef}
       aria-label="Kinetic type"
-      style={{ background: "var(--fg)", position: "relative" }}
+      style={{ background: "color-mix(in srgb, var(--fg) 92%, var(--bg))", position: "relative" }}
     >
-      {/* ── fade from page bg ── */}
+      {/* ── fade from page bg (long, smooth) ── */}
       <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 90, zIndex: 20,
-        background: "linear-gradient(to bottom, var(--bg), transparent)", pointerEvents: "none",
+        position: "absolute", top: 0, left: 0, right: 0, height: "60vh", zIndex: 20,
+        background: "linear-gradient(to bottom, var(--bg) 0%, color-mix(in srgb, var(--bg) 40%, transparent) 45%, transparent 100%)",
+        pointerEvents: "none",
       }} />
 
       {/* ── floating label ── */}
@@ -111,7 +112,7 @@ export default function KineticText() {
               display:        "flex",
               alignItems:     "center",
               justifyContent: "center",
-              background:     "var(--fg)",
+              background:     "color-mix(in srgb, var(--fg) 92%, var(--bg))",
               /* clip horizontal bleed without breaking sticky */
               overflowX:      "clip",
               overflowY:      "visible",
@@ -194,10 +195,11 @@ export default function KineticText() {
         );
       })}
 
-      {/* ── fade to page bg ── */}
+      {/* ── fade to page bg (long, smooth) ── */}
       <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0, height: 90, zIndex: 20,
-        background: "linear-gradient(to top, var(--bg), transparent)", pointerEvents: "none",
+        position: "absolute", bottom: 0, left: 0, right: 0, height: "60vh", zIndex: 20,
+        background: "linear-gradient(to top, var(--bg) 0%, color-mix(in srgb, var(--bg) 40%, transparent) 45%, transparent 100%)",
+        pointerEvents: "none",
       }} />
     </section>
   );

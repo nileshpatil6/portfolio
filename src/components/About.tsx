@@ -175,10 +175,10 @@ export default function About() {
           {/* Right — stat cards */}
           <div className="grid grid-cols-2 gap-4">
             {[
-              { n: "8×", label: "Hackathon wins", sub: "GDG, NASA, CodeBharat…" },
-              { n: "19+", label: "Projects", sub: "Most live in production" },
-              { n: "₹2L", label: "Govt. funded", sub: "Karnataka NAIN 2.0" },
-              { n: "2+", label: "Years building", sub: "Fullstack & AI/ML" },
+              { n: "19+", label: "Projects",       sub: "Most live in production" },
+              { n: "7",   label: "In production",  sub: "Real users, real impact" },
+              { n: "3",   label: "Countries",      sub: "India · USA · Japan" },
+              { n: "2+",  label: "Years building", sub: "Fullstack & AI/ML" },
             ].map(({ n, label, sub }) => (
               <div
                 key={label}

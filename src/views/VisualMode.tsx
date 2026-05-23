@@ -192,10 +192,10 @@ export default function VisualMode() {
           <LandsatName />
           <About />
           <Journey />
-          <KineticText />
           <Projects />
           <Skills />
           <Achievements />
+          <KineticText />
           <Contact />
         </main>
       </div>

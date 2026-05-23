@@ -9,9 +9,8 @@ const achievements = [
   { index: "01", title: "8× Hackathon Winner", body: "GDG, CodeBharat (₹50K), ONEST (₹25K), and 5 more competitions." },
   { index: "02", title: "NASA SpaceApps 1st Place", body: "Local round champion — competed globally with top engineers worldwide." },
   { index: "03", title: "₹2L Government Funded", body: "NAIN 2.0 Grant by Govt. of Karnataka. Co-founded MediAssist AI for real patients." },
-  { index: "04", title: "IIT Bombay Internship", body: "Prestigious internship at India's premier technical institute." },
-  { index: "05", title: "7 Live Production Products", body: "TripOnBuddy, Unyfiny, CMN Services, Prasan Hom, AK Car Rentals, DataVerseAI, Text2DB." },
-  { index: "06", title: "Freelance — India, USA, Japan", body: "Clients across 3 countries. Real-world impact in multiple domains." },
+  { index: "04", title: "7 Live Production Products", body: "TripOnBuddy, Unyfiny, CMN Services, Prasan Hom, AK Car Rentals, DataVerseAI, Text2DB." },
+  { index: "05", title: "Freelance — India, USA, Japan", body: "Clients across 3 countries. Real-world impact in multiple domains." },
 ];
 
 export default function Achievements() {

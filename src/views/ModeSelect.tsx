@@ -64,7 +64,7 @@ export default function ModeSelect() {
         <p className="section-label mb-8 tracking-[0.22em]">nilesh s. patil — portfolio</p>
 
         {/* Big headline */}
-        <div className="text-center mb-6 max-w-4xl">
+        <div className="text-center mb-16 max-w-4xl">
           <h1
             className="hero-headline"
             style={{ fontSize: "clamp(3.5rem, 10vw, 8rem)" }}
@@ -74,13 +74,6 @@ export default function ModeSelect() {
             <em>&</em>
             <br />GenAI Builder
           </h1>
-        </div>
-
-        {/* Badges */}
-        <div className="flex flex-wrap gap-2 justify-center mb-16">
-          {["8× Hackathon Winner", "NASA SpaceApps 1st", "IIT Bombay", "₹2L Funded"].map(tag => (
-            <span key={tag} className="skill-tag">{tag}</span>
-          ))}
         </div>
 
         {/* Mode cards */}

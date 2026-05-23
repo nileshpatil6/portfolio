@@ -222,8 +222,8 @@ export default function Hero() {
         <div className="mt-16 pt-8 grid grid-cols-2 md:grid-cols-4 gap-x-12 gap-y-8 anim-fade-up" style={{ borderTop: "1px solid var(--border-color)", animationDelay: "2s" }}>
           {[
             { n: "19+", label: "Projects shipped",   cursor: "Built & shipped" },
-            { n: "8×",  label: "Hackathon wins",     cursor: "Champion ✦" },
-            { n: "₹2L", label: "Government funded",  cursor: "Funded by GOI" },
+            { n: "7",   label: "Live in production", cursor: "Real users" },
+            { n: "3",   label: "Countries served",   cursor: "India · USA · Japan" },
             { n: "2+",  label: "Years building",     cursor: "And counting" },
           ].map(({ n, label, cursor }) => (
             <div key={label} data-cursor-text={cursor}>
