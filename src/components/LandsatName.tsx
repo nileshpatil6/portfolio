@@ -270,7 +270,7 @@ export default function LandsatName() {
       ref={sectionRef}
       style={{
         position: "relative", overflow: "hidden",
-        background: "linear-gradient(180deg, var(--bg) 0%, #030609 6%, #060d12 50%, #030609 94%, var(--bg) 100%)",
+        background: "var(--bg)",
       }}
     >
       {/* ── Orbital arc decoration ── */}
@@ -323,7 +323,7 @@ export default function LandsatName() {
             </div>
             <span style={{
               fontFamily: "var(--app-font-mono)", fontSize: "0.5rem", letterSpacing: "0.14em",
-              color: "rgba(255,255,255,0.2)", textTransform: "uppercase",
+              color: "var(--fg-muted)", textTransform: "uppercase",
             }}>
               OLI / TIRS · Surface Reflectance
             </span>
@@ -369,19 +369,19 @@ export default function LandsatName() {
             maxWidth: 1280, margin: "32px auto 0",
             padding: "0 clamp(1.5rem, 5vw, 4rem)",
             display: "flex", alignItems: "center", justifyContent: "space-between",
-            borderTop: "1px solid rgba(255,255,255,0.05)",
+            borderTop: "1px solid var(--border-subtle)",
             paddingTop: 16,
           }}
         >
           <span style={{
             fontFamily: "var(--app-font-mono)", fontSize: "0.46rem",
-            color: "rgba(255,255,255,0.13)", letterSpacing: "0.1em",
+            color: "var(--fg-subtle)", letterSpacing: "0.1em",
           }}>
             Each tile is a real landscape photographed from orbit
           </span>
           <span style={{
             fontFamily: "var(--app-font-mono)", fontSize: "0.46rem",
-            color: "rgba(255,255,255,0.13)", letterSpacing: "0.1em",
+            color: "var(--fg-subtle)", letterSpacing: "0.1em",
           }}>
             NASA / USGS · Landsat Science
           </span>

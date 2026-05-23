@@ -64,15 +64,8 @@ export default function KineticText() {
     <section
       ref={sectionRef}
       aria-label="Kinetic type"
-      style={{ background: "color-mix(in srgb, var(--fg) 92%, var(--bg))", position: "relative" }}
+      style={{ background: "var(--bg)", position: "relative" }}
     >
-      {/* ── fade from page bg (long, smooth) ── */}
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: "60vh", zIndex: 20,
-        background: "linear-gradient(to bottom, var(--bg) 0%, color-mix(in srgb, var(--bg) 40%, transparent) 45%, transparent 100%)",
-        pointerEvents: "none",
-      }} />
-
       {/* ── floating label ── */}
       <div style={{
         position: "absolute", top: "5vh", left: "clamp(1.5rem, 5vw, 4rem)", zIndex: 25,
@@ -81,7 +74,7 @@ export default function KineticText() {
         <span style={{
           fontFamily: "var(--app-font-mono)", fontSize: "0.5rem",
           letterSpacing: "0.2em", textTransform: "uppercase",
-          color: "color-mix(in srgb, var(--bg) 20%, transparent)",
+          color: "var(--fg-subtle)",
         }}>
           Builder · Mantra
         </span>
@@ -112,7 +105,7 @@ export default function KineticText() {
               display:        "flex",
               alignItems:     "center",
               justifyContent: "center",
-              background:     "color-mix(in srgb, var(--fg) 92%, var(--bg))",
+              background:     "var(--bg)",
               /* clip horizontal bleed without breaking sticky */
               overflowX:      "clip",
               overflowY:      "visible",
@@ -122,7 +115,7 @@ export default function KineticText() {
                 position: "absolute", left: "clamp(1.5rem, 5vw, 4rem)", bottom: "10vh",
                 fontFamily: "var(--app-font-mono)", fontSize: "0.5rem",
                 letterSpacing: "0.2em", textTransform: "uppercase",
-                color: "color-mix(in srgb, var(--bg) 18%, transparent)",
+                color: "var(--fg-subtle)",
               }}>
                 0{li + 1}
               </span>
@@ -143,8 +136,8 @@ export default function KineticText() {
                         fontWeight:      isFill ? 900 : 100,
                         fontStyle:       isFill ? "normal" : "italic",
                         lineHeight:      0.88,
-                        color:           isFill ? "var(--bg)" : "transparent",
-                        WebkitTextStroke: isFill ? undefined : "1.5px var(--bg)",
+                        color:           isFill ? "var(--fg)" : "transparent",
+                        WebkitTextStroke: isFill ? undefined : "1.5px var(--fg)",
                       }}
                     >
                       {char}
@@ -173,11 +166,11 @@ export default function KineticText() {
                         lineHeight:      0.88,
                         /* slightly dimmed colour */
                         color: isFill
-                          ? "color-mix(in srgb, var(--bg) 30%, transparent)"
+                          ? "color-mix(in srgb, var(--fg) 30%, transparent)"
                           : "transparent",
                         WebkitTextStroke: isFill
                           ? undefined
-                          : "1px color-mix(in srgb, var(--bg) 25%, transparent)",
+                          : "1px color-mix(in srgb, var(--fg) 25%, transparent)",
                         /* fade out toward the bottom so it reads as a drip */
                         maskImage:       "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 75%)",
                         WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 75%)",
@@ -195,12 +188,6 @@ export default function KineticText() {
         );
       })}
 
-      {/* ── fade to page bg (long, smooth) ── */}
-      <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0, height: "60vh", zIndex: 20,
-        background: "linear-gradient(to top, var(--bg) 0%, color-mix(in srgb, var(--bg) 40%, transparent) 45%, transparent 100%)",
-        pointerEvents: "none",
-      }} />
     </section>
   );
 }
