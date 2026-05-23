@@ -23,8 +23,8 @@ const milestones = [
   {
     year: "2024",
     title: "Government Funded",
-    desc: "Co-founded MediAssist AI and received ₹2L NAIN 2.0 grant from Govt. of Karnataka. Interned at IIT Bombay — India's premier tech institute.",
-    tags: ["MediAssist AI", "Flutter", "RAG", "IIT Bombay"],
+    desc: "Co-founded MediAssist AI and received ₹2L NAIN 2.0 grant from Govt. of Karnataka. Built real-world healthcare AI for actual patients.",
+    tags: ["MediAssist AI", "Flutter", "RAG", "Healthcare AI"],
     side: "left",
   },
   {
@@ -36,7 +36,7 @@ const milestones = [
   },
   {
     year: "2025",
-    title: "19+ Products in Production",
+    title: "7 Products in Production",
     desc: "TripOnBuddy, Unyfiny, DataVerseAI, Text2DB, AK Car Rentals, CMN Services, Prasan Hom — all live. Freelancing globally across India, USA, and Japan.",
     tags: ["Production", "Freelance", "Global", "AI Agents"],
     side: "left",

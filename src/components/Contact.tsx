@@ -111,7 +111,7 @@ export default function Contact() {
   }, []);
 
   return (
-    <section id="contact" ref={sectionRef} className="relative py-40 px-6 md:px-16 overflow-hidden">
+    <section id="contact" ref={sectionRef} className="relative pt-32 pb-12 md:pt-40 md:pb-16 px-6 md:px-16 overflow-hidden">
 
       {/* Blob left */}
       <div className="cb1 absolute pointer-events-none" style={{
@@ -201,9 +201,17 @@ export default function Contact() {
           ))}
         </div>
 
-        <div className="mt-24 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="mt-16 pt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3" style={{ borderTop: "1px solid var(--border-color)" }}>
           <p className="section-label">© {new Date().getFullYear()} Nilesh S. Patil · Belgaum, India</p>
-          <p className="section-label">Built with React + Vite + GSAP + Fraunces</p>
+          <div className="flex flex-wrap items-center gap-3 md:gap-5">
+            <a href="https://github.com/nileshpatil6" target="_blank" rel="noopener noreferrer" className="section-label hover:text-[var(--fg)] transition-colors" data-cursor-text="GitHub ↗">GitHub</a>
+            <span className="section-label opacity-30">/</span>
+            <a href="https://linkedin.com/in/nileshpatil6" target="_blank" rel="noopener noreferrer" className="section-label hover:text-[var(--fg)] transition-colors" data-cursor-text="LinkedIn ↗">LinkedIn</a>
+            <span className="section-label opacity-30">/</span>
+            <a href="mailto:technil6436@gmail.com" className="section-label hover:text-[var(--fg)] transition-colors" data-cursor-text="Email ↗">Email</a>
+            <span className="section-label opacity-30">·</span>
+            <p className="section-label">Built with Next.js · GSAP · Fraunces</p>
+          </div>
         </div>
       </div>
     </section>

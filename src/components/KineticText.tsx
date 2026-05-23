@@ -25,12 +25,10 @@ export default function KineticText() {
         const mainChars  = gsap.utils.toArray<HTMLElement>(".kt-main",   row);
         const dripInners = gsap.utils.toArray<HTMLElement>(".kt-drip-i", row);
 
-        /* Explicit starting states — GSAP fully owns these transforms */
-        gsap.set(mainChars,  { scaleY: 1, transformOrigin: "50% 0%" });
-        gsap.set(dripInners, { scaleY: 0, opacity: 0, transformOrigin: "50% 0%" });
+        gsap.set(mainChars,  { scaleY: 1, transformOrigin: "50% 0%", immediateRender: true });
+        gsap.set(dripInners, { scaleY: 0, opacity: 0, transformOrigin: "50% 0%", immediateRender: true });
 
         const n       = mainChars.length;
-        /* Spread stagger across ~55 % of the scroll range; last tween finishes at ~85 % */
         const step    = n > 1 ? 0.55 / (n - 1) : 0;
         const charDur = 0.30;
 
@@ -38,17 +36,23 @@ export default function KineticText() {
           scrollTrigger: {
             trigger: row,
             start:   "top top",
-            end:     "bottom top",   /* full ROW_VH of scroll */
+            end:     "bottom top",
             scrub:   1,
+            invalidateOnRefresh: true,
           },
         });
 
         mainChars.forEach((char, i) => {
-          const t0 = i * step;               /* starts at 0 → 0.55 */
+          const t0 = i * step;
           tl.to(char,         { scaleY: 0,    ease: "none", duration: charDur }, t0);
-          tl.to(dripInners[i],{ scaleY: 0.8, opacity: 0.28, ease: "none", duration: charDur + 0.05 }, t0);
+          tl.to(dripInners[i],{ scaleY: 0.9, opacity: 0.7, ease: "none", duration: charDur + 0.05 }, t0);
         });
       });
+
+      /* Refresh after layout settles so triggers register at correct positions
+         (section was moved between Achievements and Contact). */
+      const refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 100);
+      return () => clearTimeout(refreshTimer);
     }, sectionRef);
 
     return () => ctx.revert();
@@ -164,13 +168,13 @@ export default function KineticText() {
                         fontWeight:      isFill ? 900 : 100,
                         fontStyle:       isFill ? "normal" : "italic",
                         lineHeight:      0.88,
-                        /* slightly dimmed colour */
+                        /* drip colour — strong enough to read on light bg */
                         color: isFill
-                          ? "color-mix(in srgb, var(--fg) 30%, transparent)"
+                          ? "color-mix(in srgb, var(--fg) 65%, transparent)"
                           : "transparent",
                         WebkitTextStroke: isFill
                           ? undefined
-                          : "1px color-mix(in srgb, var(--fg) 25%, transparent)",
+                          : "1.2px color-mix(in srgb, var(--fg) 55%, transparent)",
                         /* fade out toward the bottom so it reads as a drip */
                         maskImage:       "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 75%)",
                         WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 75%)",

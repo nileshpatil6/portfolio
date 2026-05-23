@@ -159,7 +159,7 @@ export default function About() {
               ))}
             </div>
 
-            <div className="flex gap-3 mt-12">
+            <div className="flex flex-wrap gap-2 mt-12">
               {[
                 { label: "GitHub ↗", href: "https://github.com/nileshpatil6" },
                 { label: "LinkedIn ↗", href: "https://linkedin.com/in/nileshpatil6" },

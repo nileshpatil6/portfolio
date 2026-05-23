@@ -101,7 +101,7 @@ function Tile({
       transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1], delay: index * 0.05 }}
       style={{
         position:    "relative",
-        width:       "clamp(58px, 8.5vw, 118px)",
+        width:       "clamp(40px, 8.5vw, 118px)",
         aspectRatio: "1 / 1",
         overflow:    "hidden",
         borderRadius: 6,
