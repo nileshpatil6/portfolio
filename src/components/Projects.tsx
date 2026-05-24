@@ -483,19 +483,21 @@ export default function Projects() {
 
         {/* RIGHT — sticky preview (desktop only) */}
         {!isMobile && (
-          <div
-            style={{
-              position: "sticky",
-              top: "10vh",
-              height: "80vh",
-              display: "flex",
-              flexDirection: "column",
-              boxSizing: "border-box",
-            }}
-          >
-            <AnimatePresence mode="wait">
-              <PreviewPanel key={activeId} active={active} />
-            </AnimatePresence>
+          <div style={{ alignSelf: "stretch", position: "relative" }}>
+            <div
+              style={{
+                position: "sticky",
+                top: "10vh",
+                height: "80vh",
+                display: "flex",
+                flexDirection: "column",
+                boxSizing: "border-box",
+              }}
+            >
+              <AnimatePresence mode="wait">
+                <PreviewPanel key={activeId} active={active} />
+              </AnimatePresence>
+            </div>
           </div>
         )}
       </div>
