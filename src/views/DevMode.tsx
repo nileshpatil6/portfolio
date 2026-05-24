@@ -144,7 +144,8 @@ const EDUCATION_CONTENT: Record<string, string[]> = {
     "  See ~/achievements/ for the full breakdown.",
   ],
 };
-type NanoState = { open: false } | { open: true; project: typeof projects[0] };
+type TextFile = { name: string; lines: string[] };
+type NanoState = { open: false } | { open: true; project: typeof projects[0] } | { open: true; textFile: TextFile };
 
 /* ══════════════════════════════════════════════════════════
    GlitchAscii — logo corrupts random chars periodically
@@ -249,7 +250,19 @@ function LoadingDots({ message }: { message: string }) {
 /* ══════════════════════════════════════════════════════════
    NanoViewer
 ══════════════════════════════════════════════════════════ */
-function NanoViewer({ project, onClose }: { project: typeof projects[0]; onClose: () => void }) {
+function NanoFooter() {
+  return (
+    <div className="nano-footer px-2 py-1 text-xs flex flex-wrap gap-4">
+      <span><span className="bg-[#00d4ff] text-[#0a0a0f] px-1">^X</span> Exit</span>
+      <span><span className="bg-[#00d4ff] text-[#0a0a0f] px-1">ESC</span> Close</span>
+      <span><span className="bg-[#a0aec0] text-[#0a0a0f] px-1">^G</span> Help</span>
+      <span><span className="bg-[#a0aec0] text-[#0a0a0f] px-1">^O</span> Write Out</span>
+      <span><span className="bg-[#a0aec0] text-[#0a0a0f] px-1">^W</span> Where Is</span>
+    </div>
+  );
+}
+
+function NanoViewer({ state, onClose }: { state: Exclude<NanoState, { open: false }>; onClose: () => void }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape" || (e.ctrlKey && e.key === "x")) onClose();
@@ -258,6 +271,43 @@ function NanoViewer({ project, onClose }: { project: typeof projects[0]; onClose
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
+  /* Text file view (README.md, contact.md, achievement files, etc.) */
+  if ("textFile" in state) {
+    const { name, lines } = state.textFile;
+    return (
+      <div className="absolute inset-0 z-50 flex flex-col nano-editor">
+        <div className="nano-header px-4 py-1 text-sm flex items-center justify-between">
+          <span>GNU nano 6.2 — {name}</span>
+          <span>[ Read Only ]</span>
+        </div>
+        <div className="flex-1 p-6 overflow-auto font-mono text-sm space-y-0.5">
+          {lines.map((line, i) => {
+            const isH1 = line.startsWith("# ");
+            const isH2 = line.startsWith("## ");
+            const isCode = line.startsWith("  ");
+            return (
+              <div
+                key={i}
+                className={
+                  isH1 ? "text-[#00d4ff] font-bold text-lg" :
+                  isH2 ? "text-[#00ff88] font-semibold mt-3" :
+                  isCode ? "text-[#a0aec0]" :
+                  line === "" ? "h-2" :
+                  "text-[#e2e8f0]"
+                }
+              >
+                {line || " "}
+              </div>
+            );
+          })}
+        </div>
+        <NanoFooter />
+      </div>
+    );
+  }
+
+  /* Project file view */
+  const { project } = state;
   return (
     <div className="absolute inset-0 z-50 flex flex-col nano-editor">
       <div className="nano-header px-4 py-1 text-sm flex items-center justify-between">
@@ -304,14 +354,7 @@ function NanoViewer({ project, onClose }: { project: typeof projects[0]; onClose
           )}
         </div>
       </div>
-      <div className="nano-footer px-2 py-1 text-xs flex flex-wrap gap-4">
-        <span><span className="bg-[#00d4ff] text-[#0a0a0f] px-1">^X</span> Exit</span>
-        <span><span className="bg-[#00d4ff] text-[#0a0a0f] px-1">ESC</span> Close</span>
-        <span><span className="bg-[#a0aec0] text-[#0a0a0f] px-1">^G</span> Help</span>
-        <span><span className="bg-[#a0aec0] text-[#0a0a0f] px-1">^O</span> Write Out</span>
-        <span><span className="bg-[#a0aec0] text-[#0a0a0f] px-1">^R</span> Read File</span>
-        <span><span className="bg-[#a0aec0] text-[#0a0a0f] px-1">^W</span> Where Is</span>
-      </div>
+      <NanoFooter />
     </div>
   );
 }
@@ -737,18 +780,67 @@ export default function DevMode() {
     }
 
     if (command === "nano") {
-      const projectName = args.join(" ").toLowerCase().replace(/\//g, "").replace(/\.md$/, "").trim();
-      if (!projectName) {
-        add({ input: trimmed, output: ["Usage: nano <project-name>", "Try: nano triponbuddy"], type: "error" });
+      const rawArg = args.join(" ").trim();
+      const fileName = rawArg.replace(/\//g, "").trim();
+      const projectName = fileName.replace(/\.md$/, "").toLowerCase();
+      if (!fileName) {
+        add({ input: trimmed, output: ["Usage: nano <file>", "Try: nano contact.md  or  nano triponbuddy"], type: "error" });
         return;
       }
+      // Text files: README.md, contact.md
+      if (fileName === "README.md" || fileName === "readme.md") {
+        add({ input: trimmed, output: [] });
+        setNano({ open: true, textFile: { name: "README.md", lines: [
+          "# About Nilesh Patil",
+          "",
+          "Third-year B.E. (AI & DS) student and serial builder with 3+ years",
+          "of production development experience.",
+          "",
+          "Co-founded MediAssist AI (Rs.2L funded by Government of Karnataka),",
+          "shipped triponbuddy.com serving live users, and won 8 hackathon",
+          "competitions including GDG and NASA SpaceApps 1st place.",
+          "",
+          "Proficient across the full stack: React, Next.js, Node.js,",
+          "Python (Flask/FastAPI), Flutter, and cloud-native infrastructure.",
+          "",
+          "Deep experience in Agentic AI, RAG pipelines, and MCP.",
+        ]}});
+        return;
+      }
+      if (fileName === "contact.md") {
+        add({ input: trimmed, output: [] });
+        setNano({ open: true, textFile: { name: "contact.md", lines: [
+          "# Contact",
+          "",
+          "Email:    technil6436@gmail.com",
+          "Phone:    +91 8431496045",
+          "GitHub:   https://github.com/nileshpatil6",
+          "LinkedIn: https://linkedin.com/in/nileshpatil6",
+          "HF:       https://huggingface.co/Mr66",
+          "Location: Belgaum, Karnataka, India",
+        ]}});
+        return;
+      }
+      // Achievement files
+      if (ACHIEVEMENT_CONTENT[fileName]) {
+        add({ input: trimmed, output: [] });
+        setNano({ open: true, textFile: { name: fileName, lines: ACHIEVEMENT_CONTENT[fileName] } });
+        return;
+      }
+      // Education files
+      if (EDUCATION_CONTENT[fileName]) {
+        add({ input: trimmed, output: [] });
+        setNano({ open: true, textFile: { name: fileName, lines: EDUCATION_CONTENT[fileName] } });
+        return;
+      }
+      // Project files
       const project = projects.find(p =>
         p.id === projectName || p.name.toLowerCase().includes(projectName) || p.id.includes(projectName)
       );
       if (project) { add({ input: trimmed, output: [] }); setNano({ open: true, project }); return; }
       add({
         input: trimmed,
-        output: [`nano: ${projectName}: No such file`, "Available projects:", ...projects.map(p => `  ${p.id}`).slice(0, 10), "  ...and more. Run: ls projects/"],
+        output: [`nano: ${fileName}: No such file`, "Available: README.md, contact.md, or any project name.", "Run: ls  or  ls projects/"],
         type: "error",
       });
       return;
@@ -973,7 +1065,19 @@ export default function DevMode() {
       if (isFirstWord) {
         match = COMMANDS.find(c => c.startsWith(partial));
       } else if (firstWord === "nano") {
-        match = projects.find(p => p.id.startsWith(partial))?.id;
+        // Context-aware: projects always available, plus files in current dir
+        const projectMatch = projects.find(p => p.id.startsWith(partial))?.id;
+        let fileMatch: string | undefined;
+        if (currentDir === "~") {
+          fileMatch = ["README.md","contact.md"].find(f => f.toLowerCase().startsWith(partial));
+        } else if (currentDir === "~/achievements") {
+          fileMatch = ACHIEVEMENTS_LIST.find(f => f.toLowerCase().startsWith(partial));
+        } else if (currentDir === "~/education") {
+          fileMatch = EDUCATION_LIST.find(f => f.toLowerCase().startsWith(partial));
+        } else if (currentDir === "~/projects") {
+          fileMatch = projects.map(p => `${p.id}.md`).find(f => f.toLowerCase().startsWith(partial));
+        }
+        match = fileMatch ?? projectMatch;
       } else if (firstWord === "cd" || firstWord === "ls") {
         let dirs: string[];
         if (currentDir === "~") {
@@ -1030,7 +1134,7 @@ export default function DevMode() {
         </button>
       </div>
 
-      {nano.open && <NanoViewer project={nano.project} onClose={() => setNano({ open: false })} />}
+      {nano.open && <NanoViewer state={nano} onClose={() => setNano({ open: false })} />}
 
       {/* Output area */}
       <div
