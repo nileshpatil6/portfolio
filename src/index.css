@@ -452,43 +452,24 @@
 .dark .theme-icon-sun  { transform: translateY(-24px) rotate(30deg); opacity: 0; }
 .dark .theme-icon-moon { transform: translateY(0)  rotate(0deg);     opacity: 1; }
 
-/* ─── THEME SWITCH OVERLAY ───────────────────────────── */
-@keyframes theme-overlay-in {
-  0%   { opacity: 0; }
-  18%  { opacity: 1; }
-  75%  { opacity: 1; }
-  100% { opacity: 0; }
+/* ─── THEME SWITCH (View Transitions circular reveal) ── */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
-@keyframes theme-line-in {
-  from { opacity: 0; transform: translateX(-8px); }
-  to   { opacity: 1; transform: translateX(0); }
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) {
+  z-index: 9999;
+  animation: theme-reveal 0.55s cubic-bezier(0.4, 0, 0.2, 1);
 }
-@keyframes theme-bar-fill {
-  from { width: 0; }
-  to   { width: 100%; }
-}
-.theme-switch-overlay {
-  background: rgba(0,0,0,0.82);
-  animation: theme-overlay-in 0.62s ease-in-out forwards;
-}
-.theme-switch-text {
-  background: rgba(0,0,0,0.6);
-  border: 1px solid rgba(0,255,136,0.3);
-  padding: 1rem 1.5rem;
-  letter-spacing: 0.06em;
-  min-width: 260px;
-}
-.theme-switch-line {
-  opacity: 0;
-  animation: theme-line-in 0.18s ease-out forwards;
-}
-.theme-switch-bar {
-  height: 2px;
-  background: linear-gradient(90deg, #00ff88, #00d4ff);
-  margin-top: 0.75rem;
-  animation: theme-bar-fill 0.42s cubic-bezier(0.16,1,0.3,1) 0.12s forwards;
-  width: 0;
-  box-shadow: 0 0 8px rgba(0,255,136,0.6);
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--theme-x, 50%) var(--theme-y, 50%));
+  }
+  to {
+    clip-path: circle(150vmax at var(--theme-x, 50%) var(--theme-y, 50%));
+  }
 }
 
 /* ─── HORIZONTAL SCROLL ──────────────────────────────── */

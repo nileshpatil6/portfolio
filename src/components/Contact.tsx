@@ -79,35 +79,6 @@ export default function Contact() {
         }
       });
 
-      gsap.from(".contact-link", {
-        y: 60,
-        opacity: 0,
-        stagger: 0.08,
-        duration: 1,
-        ease: "expo.out",
-        scrollTrigger: {
-          trigger: ".contact-links",
-          start: "top 92%",
-          toggleActions: "play none none none",
-          once: true,
-        }
-      });
-
-      gsap.from(".contact-cta", {
-        y: 40,
-        opacity: 0,
-        scale: 0.9,
-        stagger: 0.1,
-        duration: 1,
-        ease: "back.out(1.7)",
-        scrollTrigger: {
-          trigger: ".contact-cta",
-          start: "top 95%",
-          toggleActions: "play none none none",
-          once: true,
-        }
-      });
-
     }, sectionRef);
     return () => ctx.revert();
   }, []);
