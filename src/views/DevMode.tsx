@@ -24,7 +24,25 @@ interface HistoryEntry {
   input?: string;
   output: string[];
   type?: "error" | "success" | "info" | "system";
+  prompt?: string; // snapshot of prompt at the moment the command was entered
 }
+
+/* ── Filesystem map (drives cd/ls correctness) ───────────────── */
+const FS_TREE: Record<string, string[]> = {
+  "~":              ["projects","skills","achievements","education"],
+  "~/projects":     [], // populated dynamically from projects data
+  "~/skills":       ["languages","frontend","backend","ai-ml","databases","infrastructure","blockchain"],
+  "~/achievements": [],
+  "~/education":    [],
+};
+const ACHIEVEMENTS_LIST = [
+  "8x-hackathon-winner.md",
+  "nasa-spaceapps-1st-place.md",
+  "nain-2.0-grant-rs2L.md",
+  "7-live-production-products.md",
+  "freelance-india-usa-japan.md",
+];
+const EDUCATION_LIST = ["sgbit-be-ai-ds.md"];
 type NanoState = { open: false } | { open: true; project: typeof projects[0] };
 
 /* ══════════════════════════════════════════════════════════
@@ -214,7 +232,7 @@ export default function DevMode() {
         "│  HOW TO USE                                             │",
         "│  · Type a command below and press  Enter  to run it    │",
         "│  · Press  ↑ / ↓  to cycle through command history      │",
-        "│  · Press  Tab    to autocomplete project names          │",
+        "│  · Press  Tab    to autocomplete commands/dirs          │",
         "│  · Click anywhere in the terminal to focus the input   │",
         "├─────────────────────────────────────────────────────────┤",
         "│  QUICK START                                            │",
@@ -293,9 +311,17 @@ export default function DevMode() {
     setCmdHistory(prev => [trimmed, ...prev]);
     setHistIdx(-1);
 
+    /* Snapshot the prompt at the moment the command was entered.
+       cd updates currentDir mid-flight, so without this snapshot all
+       prior prompts would re-render with the *new* directory. */
+    const promptSnapshot = getPrompt();
+
+    /* Wrapper: auto-attaches the prompt snapshot */
+    const add = (e: HistoryEntry) => addHistory({ ...e, prompt: e.prompt ?? promptSnapshot });
+
     /* Helper: run a command that needs a loading delay */
     const runAsync = (message: string, delayMs: number, output: string[], type?: HistoryEntry["type"]) => {
-      addHistory({ input: trimmed, output: [] });
+      add({ input: trimmed, output: [] });
       setLoadingCmd({ message });
       setTimeout(() => resolveLastEntry(output, type), delayMs);
     };
@@ -305,35 +331,35 @@ export default function DevMode() {
     if (command === "exit" || command === "quit") { router.push("/"); return; }
 
     if (command === "pwd") {
-      addHistory({ input: trimmed, output: [currentDir === "~" ? "/home/nilesh" : `/home/nilesh/${currentDir.replace("~/", "")}`] });
+      add({ input: trimmed, output: [currentDir === "~" ? "/home/nilesh" : `/home/nilesh/${currentDir.replace("~/", "")}`] });
       return;
     }
 
     if (command === "echo") {
-      addHistory({ input: trimmed, output: [args.join(" ")] });
+      add({ input: trimmed, output: [args.join(" ")] });
       return;
     }
 
     if (command === "history") {
       const ordered = [...cmdHistory].reverse();
-      addHistory({ input: trimmed, output: ordered.slice(-20).map((c, i) => `  ${String(i + 1).padStart(3)}  ${c}`) });
+      add({ input: trimmed, output: ordered.slice(-20).map((c, i) => `  ${String(i + 1).padStart(3)}  ${c}`) });
       return;
     }
 
     if (command === "man" || command === "info") {
-      addHistory({ input: trimmed, output: ["Use 'help' for the full command reference."], type: "info" });
+      add({ input: trimmed, output: ["Use 'help' for the full command reference."], type: "info" });
       return;
     }
 
     if (command === "uname") {
       const flag = args[0];
-      if (flag === "-a") addHistory({ input: trimmed, output: ["Linux portfolio 6.6.36-microsoft-standard #1 SMP x86_64 GNU/Linux"] });
-      else addHistory({ input: trimmed, output: ["Linux"] });
+      if (flag === "-a") add({ input: trimmed, output: ["Linux portfolio 6.6.36-microsoft-standard #1 SMP x86_64 GNU/Linux"] });
+      else add({ input: trimmed, output: ["Linux"] });
       return;
     }
 
     if (command === "help") {
-      addHistory({
+      add({
         input: trimmed,
         output: [
           "╔═════════════════════════════════════════════════════════╗",
@@ -342,7 +368,7 @@ export default function DevMode() {
           "║  HOW TO USE                                            ║",
           "║  · Type a command and press  Enter  to execute         ║",
           "║  · Press  ↑ / ↓  arrow keys to scroll command history  ║",
-          "║  · Press  Tab    to autocomplete project names         ║",
+          "║  · Press  Tab    to autocomplete commands/dirs/projects║",
           "║  · Click anywhere in the window to focus the input     ║",
           "║  · Type  clear   to wipe the screen                   ║",
           "║  · Type  exit    to return to the mode select screen   ║",
@@ -388,7 +414,7 @@ export default function DevMode() {
     }
 
     if (command === "whoami") {
-      addHistory({
+      add({
         input: trimmed,
         output: [
           "┌─────────────────────────────────────────────┐",
@@ -416,17 +442,26 @@ export default function DevMode() {
     }
 
     if (command === "ls") {
-      const arg       = args[0];
-      const isLa      = args.includes("-la") || args.includes("-l");
-      const effectiveArg = (!arg || arg === "-la" || arg === "-l") ? null : arg;
-      const resolvedDir  = effectiveArg ?? currentDir;
+      const arg       = args.find(a => !a.startsWith("-"));
+      const isLa      = args.some(a => a === "-la" || a === "-l" || a === "-a");
+      const snap      = promptSnapshot;
 
-      const isHome     = resolvedDir === "~" || resolvedDir === "/home/nilesh";
-      const isProjects = ["~/projects","projects","projects/"].includes(resolvedDir);
-      const isSkills   = ["~/skills","skills","skills/"].includes(resolvedDir);
+      // Resolve target directory
+      let target = currentDir;
+      if (arg) {
+        const clean = arg.replace(/\/$/, "");
+        if (clean === "~" || clean === "/home/nilesh") target = "~";
+        else if (clean.startsWith("~/")) target = clean;
+        else if (FS_TREE[currentDir]?.includes(clean)) {
+          target = currentDir === "~" ? `~/${clean}` : `${currentDir}/${clean}`;
+        } else {
+          add({ input: trimmed, output: [`ls: cannot access '${arg}': No such file or directory`], type: "error", prompt: snap });
+          return;
+        }
+      }
 
-      if (isHome) {
-        addHistory({
+      if (target === "~") {
+        add({
           input: trimmed,
           output: isLa
             ? [
@@ -442,44 +477,79 @@ export default function DevMode() {
                 "-rwxr-xr-x  1 nilesh portfolio  8192 May 02 2026 portfolio.sh*",
               ]
             : ["README.md  contact.md  projects/  skills/  achievements/  education/  portfolio.sh"],
+          prompt: snap,
         });
         return;
       }
-      if (isProjects) {
-        addHistory({
+      if (target === "~/projects") {
+        add({
           input: trimmed,
           output: isLa
             ? [`total ${projects.length}`, ...projects.map(p => `drwxr-xr-x  1 nilesh portfolio  4096 May 02 2026 ${p.id}/`)]
             : projects.map(p => `${p.id}/    — ${p.tagline}`),
+          prompt: snap,
         });
         return;
       }
-      if (isSkills) {
-        addHistory({ input: trimmed, output: ["languages/  frontend/  backend/  ai-ml/  databases/  infrastructure/  blockchain/"] });
+      if (target === "~/skills") {
+        add({ input: trimmed, output: ["languages/  frontend/  backend/  ai-ml/  databases/  infrastructure/  blockchain/"], prompt: snap });
         return;
       }
-      addHistory({ input: trimmed, output: [`ls: cannot access '${effectiveArg ?? currentDir}': No such file or directory`], type: "error" });
+      if (target === "~/achievements") {
+        add({ input: trimmed, output: ACHIEVEMENTS_LIST.join("  ").length > 0 ? [ACHIEVEMENTS_LIST.join("  ")] : ["(empty)"], prompt: snap });
+        return;
+      }
+      if (target === "~/education") {
+        add({ input: trimmed, output: [EDUCATION_LIST.join("  ")], prompt: snap });
+        return;
+      }
+      // Skills subdirs — just say no entries (we don't drill into them)
+      if (target.startsWith("~/skills/")) {
+        add({ input: trimmed, output: ["(no further entries — run 'cd ..' to go back)"], prompt: snap });
+        return;
+      }
+      add({ input: trimmed, output: [`ls: cannot access '${target}': No such file or directory`], type: "error", prompt: snap });
       return;
     }
 
     if (command === "cd") {
       const dir = args[0];
-      if (!dir || dir === "~" || dir === "/home/nilesh") { currentDir = "~"; addHistory({ input: trimmed, output: [] }); }
-      else if (dir === "projects" || dir === "projects/") { currentDir = "~/projects"; addHistory({ input: trimmed, output: [] }); }
-      else if (dir === "skills"   || dir === "skills/")   { currentDir = "~/skills";   addHistory({ input: trimmed, output: [] }); }
-      else if (dir === "..") { currentDir = "~"; addHistory({ input: trimmed, output: [] }); }
-      else addHistory({ input: trimmed, output: [`cd: ${dir}: No such file or directory`], type: "error" });
+      const snap = promptSnapshot;
+
+      // No arg / home / absolute home
+      if (!dir || dir === "~" || dir === "/home/nilesh") {
+        currentDir = "~";
+        add({ input: trimmed, output: [], prompt: snap });
+        return;
+      }
+      // Parent
+      if (dir === "..") {
+        const parts = currentDir.split("/");
+        parts.pop();
+        currentDir = parts.length <= 1 ? "~" : parts.join("/");
+        add({ input: trimmed, output: [], prompt: snap });
+        return;
+      }
+      // Subdir of current dir (matches FS_TREE)
+      const clean = dir.replace(/\/$/, "");
+      const children = FS_TREE[currentDir] ?? [];
+      if (children.includes(clean)) {
+        currentDir = currentDir === "~" ? `~/${clean}` : `${currentDir}/${clean}`;
+        add({ input: trimmed, output: [], prompt: snap });
+        return;
+      }
+      add({ input: trimmed, output: [`cd: ${dir}: No such file or directory`], type: "error", prompt: snap });
       return;
     }
 
     if (command === "cat") {
       const file = args[0];
       if (!file) {
-        addHistory({ input: trimmed, output: ["Usage: cat <file>", "Available: README.md, contact.md"], type: "error" });
+        add({ input: trimmed, output: ["Usage: cat <file>", "Available: README.md, contact.md"], type: "error" });
         return;
       }
       if (file === "README.md" || file === "~/README.md") {
-        addHistory({
+        add({
           input: trimmed,
           output: [
             "# About Nilesh Patil",
@@ -503,7 +573,7 @@ export default function DevMode() {
         return;
       }
       if (file === "contact.md") {
-        addHistory({
+        add({
           input: trimmed,
           output: [
             "# Contact",
@@ -519,21 +589,21 @@ export default function DevMode() {
         });
         return;
       }
-      addHistory({ input: trimmed, output: [`cat: ${file}: No such file or directory`], type: "error" });
+      add({ input: trimmed, output: [`cat: ${file}: No such file or directory`], type: "error" });
       return;
     }
 
     if (command === "nano") {
       const projectName = args.join(" ").toLowerCase().replace(/\//g, "").trim();
       if (!projectName) {
-        addHistory({ input: trimmed, output: ["Usage: nano <project-name>", "Try: nano triponbuddy"], type: "error" });
+        add({ input: trimmed, output: ["Usage: nano <project-name>", "Try: nano triponbuddy"], type: "error" });
         return;
       }
       const project = projects.find(p =>
         p.id === projectName || p.name.toLowerCase().includes(projectName) || p.id.includes(projectName)
       );
-      if (project) { addHistory({ input: trimmed, output: [] }); setNano({ open: true, project }); return; }
-      addHistory({
+      if (project) { add({ input: trimmed, output: [] }); setNano({ open: true, project }); return; }
+      add({
         input: trimmed,
         output: [`nano: ${projectName}: No such file`, "Available projects:", ...projects.map(p => `  ${p.id}`).slice(0, 10), "  ...and more. Run: ls projects/"],
         type: "error",
@@ -577,7 +647,7 @@ export default function DevMode() {
         return;
       }
       const gitSub = sub ?? "";
-      addHistory({ input: trimmed, output: [`git: '${gitSub}' is not a git command. Try: git log, git status`], type: "error" });
+      add({ input: trimmed, output: [`git: '${gitSub}' is not a git command. Try: git log, git status`], type: "error" });
       return;
     }
 
@@ -604,7 +674,7 @@ export default function DevMode() {
 
     if (command === "curl") {
       if (!args[0]) {
-        addHistory({ input: trimmed, output: ["curl: try 'curl nilesh.dev/skills'"], type: "error" });
+        add({ input: trimmed, output: ["curl: try 'curl nilesh.dev/skills'"], type: "error" });
         return;
       }
       if (args.join(" ").includes("nilesh.dev/skills")) {
@@ -621,13 +691,13 @@ export default function DevMode() {
         ], "success");
         return;
       }
-      addHistory({ input: trimmed, output: [`curl: (6) Could not resolve host: ${args[0]}`], type: "error" });
+      add({ input: trimmed, output: [`curl: (6) Could not resolve host: ${args[0]}`], type: "error" });
       return;
     }
 
     if (command === "ping") {
       if (!args[0]) {
-        addHistory({ input: trimmed, output: ["Usage: ping <host>", "Example: ping google.com"], type: "error" });
+        add({ input: trimmed, output: ["Usage: ping <host>", "Example: ping google.com"], type: "error" });
         return;
       }
       if (args[0] === "google.com" || args[0] === "google") {
@@ -643,13 +713,13 @@ export default function DevMode() {
         ], "success");
         return;
       }
-      addHistory({ input: trimmed, output: [`ping: ${args[0]}: Name or service not known`], type: "error" });
+      add({ input: trimmed, output: [`ping: ${args[0]}: Name or service not known`], type: "error" });
       return;
     }
 
     if (command === "ssh") {
       if (!args[0]) {
-        addHistory({ input: trimmed, output: ["Usage: ssh <user>@<host>", "Example: ssh nilesh@portfolio.dev"], type: "error" });
+        add({ input: trimmed, output: ["Usage: ssh <user>@<host>", "Example: ssh nilesh@portfolio.dev"], type: "error" });
         return;
       }
       if (args[0].includes("nilesh")) {
@@ -664,7 +734,7 @@ export default function DevMode() {
         ], "success");
         return;
       }
-      addHistory({ input: trimmed, output: [`ssh: connect to host ${args[0]} port 22: Connection refused`], type: "error" });
+      add({ input: trimmed, output: [`ssh: connect to host ${args[0]} port 22: Connection refused`], type: "error" });
       return;
     }
 
@@ -698,7 +768,7 @@ export default function DevMode() {
     }
 
     if (trimmed.includes("sudo rm -rf") && trimmed.includes("boring-portfolio")) {
-      addHistory({
+      add({
         input: trimmed,
         output: [
           "sudo: Permission denied.",
@@ -710,11 +780,11 @@ export default function DevMode() {
     }
 
     if (command === "sudo") {
-      addHistory({ input: trimmed, output: ["[sudo] password for nilesh:", "Sorry, try again.", "sudo: 3 incorrect password attempts"], type: "error" });
+      add({ input: trimmed, output: ["[sudo] password for nilesh:", "Sorry, try again.", "sudo: 3 incorrect password attempts"], type: "error" });
       return;
     }
 
-    addHistory({ input: trimmed, output: [`${command}: command not found`, "Type 'help' for available commands."], type: "error" });
+    add({ input: trimmed, output: [`${command}: command not found`, "Type 'help' for available commands."], type: "error" });
   }, [addHistory, router, resolveLastEntry]);
 
   /* ── Keyboard handler ─────────────────────────────────── */
@@ -825,7 +895,7 @@ export default function DevMode() {
                     className="text-[#00d4ff] whitespace-nowrap select-none"
                     style={{ textShadow: "0 0 8px rgba(0,212,255,0.45)" }}
                   >
-                    {getPrompt()}
+                    {entry.prompt ?? getPrompt()}
                   </span>
                   {" "}
                   <span className="text-white">{entry.input}</span>
