@@ -239,13 +239,17 @@ export default function DevMode() {
   const [loadingCmd, setLoadingCmd] = useState<{ message: string } | null>(null);
   const [booting, setBooting]     = useState(true);
 
-  const latestEntryRef = useRef<HTMLDivElement>(null);
+  const latestEntryRef    = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef    = useRef<HTMLInputElement>(null);
   const inputBarRef = useRef<HTMLDivElement>(null);
 
-  /* Scroll latest command to top so output is readable from the start */
+  /* Scroll so the latest command prompt sits at the top of the output area */
   useEffect(() => {
-    latestEntryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const el = latestEntryRef.current;
+    const container = scrollContainerRef.current;
+    if (!el || !container) return;
+    container.scrollTop = el.offsetTop;
   }, [history]);
   /* Focus input on mount */
   useEffect(() => { inputRef.current?.focus(); }, []);
@@ -778,6 +782,7 @@ export default function DevMode() {
 
       {/* Output area */}
       <div
+        ref={scrollContainerRef}
         className="relative z-10 flex-1 overflow-y-auto p-4 space-y-0.5"
         onClick={() => inputRef.current?.focus()}
       >
