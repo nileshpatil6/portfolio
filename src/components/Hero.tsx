@@ -197,13 +197,13 @@ export default function Hero() {
             </div>
           </div>
         </div>
-
+{/* 
         <div className="flex items-center gap-2 mb-8 anim-fade-in" style={{ animationDelay: "2.2s" }}>
           <div className="status-dot" />
           <span className="section-label" style={{ color: "var(--fg-muted)" }}>
             Available for work - Belgaum, Karnataka
           </span>
-        </div>
+        </div> */}
 
         <h1 className="hero-headline" style={{ fontSize: "clamp(1.8rem, 4vw, 4rem)" }}>
           <span className="hero-word inline-block">Building</span>{" "}

@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowUpRight, GitMerge } from "lucide-react";
+import GitHubActivity from "@/components/GitHubActivity";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -495,6 +496,9 @@ export default function OpenSource() {
             </a>
           ))}
         </div>
+
+        {/* Live GitHub contribution heatmap */}
+        <GitHubActivity />
 
         {/* Footer */}
         <div className="mt-12 md:mt-14 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-6"

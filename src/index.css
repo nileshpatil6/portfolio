@@ -196,6 +196,12 @@
   z-index: 1;
 }
 
+/* ── GitHub live pulse ──────────────────────────────── */
+@keyframes gh-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+
 /* ── Cursor blink ─────────────────────────────────────── */
 @keyframes blink {
   0%, 50% { opacity: 1; }
