@@ -43,6 +43,107 @@ const ACHIEVEMENTS_LIST = [
   "freelance-india-usa-japan.md",
 ];
 const EDUCATION_LIST = ["sgbit-be-ai-ds.md"];
+
+const ACHIEVEMENT_CONTENT: Record<string, string[]> = {
+  "8x-hackathon-winner.md": [
+    "# 8x Hackathon Winner",
+    "",
+    "Won 8 hackathon competitions across national and international events.",
+    "",
+    "## Wins",
+    "  1. NASA SpaceApps Challenge     — 1st Place (Local Round)",
+    "  2. GDG Solution Challenge        — Winner",
+    "  3. CodeBharat Hackathon          — 1st Place (Rs.50,000 prize)",
+    "  4. ONEST Hackathon               — Winner (Rs.25,000 prize)",
+    "  5. Smart India Hackathon         — Finalist",
+    "  6–8. 3 more regional/college level competitions",
+    "",
+    "Every win had a working, deployed demo — not just a pitch.",
+  ],
+  "nasa-spaceapps-1st-place.md": [
+    "# NASA SpaceApps Challenge — 1st Place",
+    "",
+    "Won the local round of NASA International SpaceApps Challenge 2024.",
+    "",
+    "## Project",
+    "  Satellite data visualization platform using NASA open datasets.",
+    "  Real-time orbital tracking with AI-powered anomaly analysis.",
+    "",
+    "## Result",
+    "  1st place, local round. Nominated for global judging.",
+    "",
+    "## Stack",
+    "  React, Python, NASA EarthData API, Three.js, Gemini AI",
+  ],
+  "nain-2.0-grant-rs2L.md": [
+    "# NAIN 2.0 Grant — Rs.2,00,000",
+    "",
+    "Received Rs.2 Lakh funding from Government of Karnataka",
+    "under the NAIN 2.0 (National AI Innovation) program.",
+    "",
+    "## Project funded",
+    "  MediAssist AI — Healthcare AI assistant for rural patients.",
+    "  RAG-based symptom checker with multilingual voice interface.",
+    "",
+    "## Impact",
+    "  Deployed in 2 clinics in rural Karnataka.",
+    "  Processed 500+ patient queries during beta.",
+    "",
+    "## Stack",
+    "  Flutter, FastAPI, RAG pipeline, Gemini, PostgreSQL",
+  ],
+  "7-live-production-products.md": [
+    "# 7 Live Production Products",
+    "",
+    "All seven are live and serving real users.",
+    "",
+    "## Products",
+    "  1. TripOnBuddy     — AI travel planner (triponbuddy.in)",
+    "  2. Unyfiny         — B2B SaaS dashboard platform",
+    "  3. DataVerseAI     — Data analytics copilot",
+    "  4. Text2DB         — Natural language to SQL engine",
+    "  5. AK Car Rentals  — Vehicle rental management system",
+    "  6. CMN Services    — Services marketplace",
+    "  7. Prasan Hom      — Hospitality booking platform",
+    "",
+    "Run 'ls projects/' or 'nano <project>' for full details.",
+  ],
+  "freelance-india-usa-japan.md": [
+    "# Freelance Work — India, USA, Japan",
+    "",
+    "Delivered freelance software projects across 3 countries.",
+    "",
+    "## Scope",
+    "  Full-stack web apps, mobile apps, AI integrations,",
+    "  dashboard systems, and REST API development.",
+    "",
+    "## Client types",
+    "  Startups, small businesses, individual founders.",
+    "",
+    "## Stack",
+    "  Next.js, Flutter, FastAPI, Node.js, Supabase, Firebase",
+  ],
+};
+
+const EDUCATION_CONTENT: Record<string, string[]> = {
+  "sgbit-be-ai-ds.md": [
+    "# B.E. in Artificial Intelligence & Data Science",
+    "",
+    "Institution: S.G. Balekundari Institute of Technology (SGBIT)",
+    "Location:    Belgaum, Karnataka, India",
+    "Duration:    2023 — 2027",
+    "Status:      Currently enrolled (3rd year)",
+    "",
+    "## Coursework",
+    "  Machine Learning, Deep Learning, Computer Vision,",
+    "  Data Structures & Algorithms, Database Systems,",
+    "  Natural Language Processing, Cloud Computing.",
+    "",
+    "## Achievements during degree",
+    "  8 hackathon wins, Rs.2L govt. grant, 7 production products.",
+    "  See ~/achievements/ for the full breakdown.",
+  ],
+};
 type NanoState = { open: false } | { open: true; project: typeof projects[0] };
 
 /* ══════════════════════════════════════════════════════════
@@ -252,6 +353,7 @@ export default function DevMode() {
 
   const [input, setInput]         = useState("");
   const [cmdHistory, setCmdHistory] = useState<string[]>([]);
+  const cmdHistoryRef = useRef<string[]>([]);
   const [histIdx, setHistIdx]     = useState(-1);
   const [nano, setNano]           = useState<NanoState>({ open: false });
   const [loadingCmd, setLoadingCmd] = useState<{ message: string } | null>(null);
@@ -308,7 +410,11 @@ export default function DevMode() {
     const command = parts[0].toLowerCase();
     const args    = parts.slice(1);
 
-    setCmdHistory(prev => [trimmed, ...prev]);
+    setCmdHistory(prev => {
+      const next = [trimmed, ...prev];
+      cmdHistoryRef.current = next;
+      return next;
+    });
     setHistIdx(-1);
 
     /* Snapshot the prompt at the moment the command was entered.
@@ -341,7 +447,7 @@ export default function DevMode() {
     }
 
     if (command === "history") {
-      const ordered = [...cmdHistory].reverse();
+      const ordered = [...cmdHistoryRef.current].reverse();
       add({ input: trimmed, output: ordered.slice(-20).map((c, i) => `  ${String(i + 1).padStart(3)}  ${c}`) });
       return;
     }
@@ -485,8 +591,8 @@ export default function DevMode() {
         add({
           input: trimmed,
           output: isLa
-            ? [`total ${projects.length}`, ...projects.map(p => `drwxr-xr-x  1 nilesh portfolio  4096 May 02 2026 ${p.id}/`)]
-            : projects.map(p => `${p.id}/    — ${p.tagline}`),
+            ? [`total ${projects.length}`, ...projects.map(p => `-rw-r--r--  1 nilesh portfolio  4096 May 02 2026 ${p.id}.md`)]
+            : projects.map(p => `${p.id}.md    — ${p.tagline}`),
           prompt: snap,
         });
         return;
@@ -589,12 +695,49 @@ export default function DevMode() {
         });
         return;
       }
+      // Achievement files
+      if (ACHIEVEMENT_CONTENT[file]) {
+        add({ input: trimmed, output: ACHIEVEMENT_CONTENT[file], type: "info" });
+        return;
+      }
+      // Education files
+      if (EDUCATION_CONTENT[file]) {
+        add({ input: trimmed, output: EDUCATION_CONTENT[file], type: "info" });
+        return;
+      }
+      // Project files (id.md or just id)
+      const projectId = file.replace(/\.md$/, "");
+      const proj = projects.find(p => p.id === projectId || p.name.toLowerCase() === projectId);
+      if (proj) {
+        add({
+          input: trimmed,
+          output: [
+            `# ${proj.name}`,
+            "",
+            `> ${proj.tagline}`,
+            "",
+            proj.description,
+            "",
+            "## Tech Stack",
+            `  ${proj.tech.join(", ")}`,
+            "",
+            ...(proj.highlight ? ["## Highlight", `  ${proj.highlight}`, ""] : []),
+            "## Links",
+            ...(proj.liveUrl   ? [`  LIVE:   ${proj.liveUrl}`]   : []),
+            ...(proj.githubUrl ? [`  GITHUB: ${proj.githubUrl}`] : []),
+            "",
+            `(Run 'nano ${proj.id}' to open the full interactive view)`,
+          ],
+          type: "info",
+        });
+        return;
+      }
       add({ input: trimmed, output: [`cat: ${file}: No such file or directory`], type: "error" });
       return;
     }
 
     if (command === "nano") {
-      const projectName = args.join(" ").toLowerCase().replace(/\//g, "").trim();
+      const projectName = args.join(" ").toLowerCase().replace(/\//g, "").replace(/\.md$/, "").trim();
       if (!projectName) {
         add({ input: trimmed, output: ["Usage: nano <project-name>", "Try: nano triponbuddy"], type: "error" });
         return;
@@ -824,7 +967,6 @@ export default function DevMode() {
         "./portfolio.sh",
       ];
       const HOME_DIRS = ["projects/","skills/","achievements/","education/"];
-      const FILES     = ["README.md","contact.md","portfolio.sh"];
 
       let match: string | undefined;
 
@@ -833,12 +975,27 @@ export default function DevMode() {
       } else if (firstWord === "nano") {
         match = projects.find(p => p.id.startsWith(partial))?.id;
       } else if (firstWord === "cd" || firstWord === "ls") {
-        const dirs = currentDir === "~"
-          ? [...HOME_DIRS.map(d => d.replace(/\/$/, "")), ".."]
-          : [".."];
+        let dirs: string[];
+        if (currentDir === "~") {
+          dirs = [...HOME_DIRS.map(d => d.replace(/\/$/, "")), ".."];
+        } else if (currentDir === "~/skills") {
+          dirs = [...(FS_TREE["~/skills"] ?? []), ".."];
+        } else {
+          dirs = [".."];
+        }
         match = dirs.find(d => d.startsWith(partial));
       } else if (firstWord === "cat") {
-        match = FILES.find(f => f.toLowerCase().startsWith(partial));
+        let availableFiles: string[];
+        if (currentDir === "~/achievements") {
+          availableFiles = ACHIEVEMENTS_LIST;
+        } else if (currentDir === "~/education") {
+          availableFiles = EDUCATION_LIST;
+        } else if (currentDir === "~/projects") {
+          availableFiles = projects.map(p => `${p.id}.md`);
+        } else {
+          availableFiles = ["README.md", "contact.md", "portfolio.sh"];
+        }
+        match = availableFiles.find(f => f.toLowerCase().startsWith(partial));
       }
 
       if (match) {
