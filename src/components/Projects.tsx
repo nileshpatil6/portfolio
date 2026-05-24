@@ -356,12 +356,30 @@ export default function Projects() {
 
   useEffect(() => {
     if (!listRef.current) return;
-    const els = listRef.current.querySelectorAll<HTMLElement>("[data-pid]");
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) setActiveId((e.target as HTMLElement).dataset.pid!); });
-    }, { root: null, rootMargin: "-20% 0px -85% 0px", threshold: 0 });
-    els.forEach(el => io.observe(el));
-    return () => io.disconnect();
+    const els = Array.from(listRef.current.querySelectorAll<HTMLElement>("[data-pid]"));
+    let raf = 0;
+    const update = () => {
+      const trigger = window.innerHeight * 0.22;
+      let candidate: HTMLElement | null = null;
+      for (const el of els) {
+        const top = el.getBoundingClientRect().top;
+        if (top <= trigger) candidate = el;
+        else break;
+      }
+      if (candidate) setActiveId(candidate.dataset.pid!);
+    };
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => { raf = 0; update(); });
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   const handleRowClick = (id: string) => {
