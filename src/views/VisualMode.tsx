@@ -32,6 +32,7 @@ function Nav() {
   const { theme, toggle } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [toast, setToast] = useState<{ id: number; next: string } | null>(null);
 
   useEffect(() => {
     const onScroll = () => {
@@ -54,8 +55,11 @@ function Nav() {
     document.documentElement.style.setProperty("--theme-x", `${x}px`);
     document.documentElement.style.setProperty("--theme-y", `${y}px`);
 
-    // Use View Transitions API for the circular reveal (Chromium/Safari TP)
-    // Fallback: plain toggle for browsers without support
+    const next = theme === "dark" ? "light" : "dark";
+    const id = Date.now();
+    setToast({ id, next });
+    setTimeout(() => setToast(t => (t?.id === id ? null : t)), 1500);
+
     const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
     if (typeof doc.startViewTransition === "function") {
       doc.startViewTransition(() => toggle());
@@ -66,6 +70,18 @@ function Nav() {
 
   return (
     <>
+      {toast && (
+        <div key={toast.id} className="theme-toast" role="status" aria-live="polite">
+          <span className="theme-toast-prompt">$</span>
+          <span className="theme-toast-fn">theme</span>
+          <span className="theme-toast-dot">.</span>
+          <span className="theme-toast-fn">set</span>
+          <span className="theme-toast-paren">(</span>
+          <span className="theme-toast-str">&quot;{toast.next}&quot;</span>
+          <span className="theme-toast-paren">)</span>
+          <span className="theme-toast-cursor" />
+        </div>
+      )}
       <nav
         className="site-nav px-6 md:px-16"
         style={{ borderBottomColor: scrolled ? "var(--border-subtle)" : "transparent" }}
