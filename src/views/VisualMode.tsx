@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/lib/theme";
 import { Sun, Moon, TerminalSquare } from "lucide-react";
@@ -43,72 +43,195 @@ function ThemeRevampPanel({ to, onApply, onDone }: {
 }) {
   const [morphed, setMorphed] = useState(false);
   const [closing, setClosing] = useState(false);
-  const fromKey = to === "dark" ? "light" : "dark";
+  const fromKey: "light" | "dark" = to === "dark" ? "light" : "dark";
+
+  // Hold latest callbacks in refs so the timer sequence runs ONCE on mount,
+  // regardless of parent re-renders (theme change re-renders Nav, which would
+  // otherwise restart the timers and create a flip-flop loop).
+  const onApplyRef = useRef(onApply);
+  const onDoneRef  = useRef(onDone);
+  onApplyRef.current = onApply;
+  onDoneRef.current  = onDone;
 
   useEffect(() => {
-    const tMorph = setTimeout(() => setMorphed(true), 380);
-    const tApply = setTimeout(() => onApply(),       760);
-    const tOut   = setTimeout(() => setClosing(true), 1320);
-    const tDone  = setTimeout(() => onDone(),         1700);
-    return () => { clearTimeout(tMorph); clearTimeout(tApply); clearTimeout(tOut); clearTimeout(tDone); };
-  }, [onApply, onDone]);
+    const t1 = setTimeout(() => setMorphed(true), 280);
+    const t2 = setTimeout(() => {
+      // Apply theme with native View Transitions for the circular reveal
+      // happening underneath the panel.
+      const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
+      if (typeof doc.startViewTransition === "function") {
+        doc.startViewTransition(() => onApplyRef.current());
+      } else {
+        onApplyRef.current();
+      }
+    }, 580);
+    const t3 = setTimeout(() => setClosing(true), 900);
+    const t4 = setTimeout(() => onDoneRef.current(), 1200);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const MONO = "'JetBrains Mono', ui-monospace, monospace";
 
   return (
-    <div className={`theme-revamp-overlay ${closing ? "is-closing" : ""}`}>
-      <div className="theme-revamp-panel">
-        <div className="theme-revamp-titlebar">
-          <div className="theme-revamp-dots">
-            <span style={{ background: "#ff5f57" }} />
-            <span style={{ background: "#febc2e" }} />
-            <span style={{ background: "#28c840" }} />
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center px-4"
+      style={{
+        background: "rgba(8,8,10,0.62)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        opacity: closing ? 0 : 1,
+        transition: "opacity 0.36s ease-in-out",
+        animation: "trv-fade-in 0.28s ease-out",
+      }}
+    >
+      <div
+        style={{
+          background: "#0b0b0e",
+          border: "1px solid #232328",
+          borderRadius: 12,
+          minWidth: "min(560px, 94vw)",
+          maxWidth: "94vw",
+          fontFamily: MONO,
+          boxShadow: "0 32px 80px -16px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.04)",
+          overflow: "hidden",
+          transform: closing ? "scale(0.97) translateY(-4px)" : "scale(1) translateY(0)",
+          opacity: closing ? 0 : 1,
+          transition: "transform 0.34s ease-in, opacity 0.3s ease-in",
+          animation: "trv-panel-in 0.42s cubic-bezier(0.16,1,0.3,1) both",
+        }}
+      >
+        {/* Title bar */}
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: 12,
+            padding: "10px 14px",
+            background: "#070708",
+            borderBottom: "1px solid #1d1d22",
+          }}
+        >
+          <div style={{ display: "flex", gap: 6 }}>
+            <span style={{ width: 11, height: 11, borderRadius: "50%", background: "#ff5f57", opacity: 0.85 }} />
+            <span style={{ width: 11, height: 11, borderRadius: "50%", background: "#febc2e", opacity: 0.85 }} />
+            <span style={{ width: 11, height: 11, borderRadius: "50%", background: "#28c840", opacity: 0.85 }} />
           </div>
-          <span className="theme-revamp-path">~/src/app/globals.css</span>
-          <span className="theme-revamp-badge">M</span>
+          <span style={{ flex: 1, textAlign: "center", fontSize: 11.5, color: "#6b6b75", letterSpacing: "0.04em" }}>
+            ~/src/app/globals.css
+          </span>
+          <span style={{
+            fontSize: 9.5, fontWeight: 700, color: "#fbbf24",
+            padding: "1px 6px", border: "1px solid rgba(251,191,36,0.35)",
+            borderRadius: 3, letterSpacing: "0.08em",
+          }}>M</span>
         </div>
 
-        <div className="theme-revamp-code">
-          <div className="theme-revamp-line">
-            <span className="theme-revamp-num">1</span>
-            <span><span className="trv-keyword">:root</span><span className="trv-mute">.</span><span className="trv-keyword">{fromKey === "dark" ? "dark" : "light"}</span> <span className="trv-mute">{"{"}</span></span>
+        {/* Code body */}
+        <div style={{ padding: "14px 0", background: "#0b0b0e", fontSize: 13, lineHeight: 1.85 }}>
+          {/* Selector line */}
+          <div style={{ display: "flex", alignItems: "center", padding: "0 18px" }}>
+            <span style={lineNumStyle}>1</span>
+            <span style={{ color: "#c084fc" }}>:root</span>
+            <span style={{ color: "#5a5a62" }}>.</span>
+            <span style={{ color: "#c084fc" }}>{fromKey}</span>
+            <span style={{ color: "#5a5a62" }}> {"{"}</span>
           </div>
+
+          {/* Token lines */}
           {THEME_TOKENS.map((tok, i) => {
-            const fromVal = tok[fromKey as "light" | "dark"];
-            const toVal   = tok[to as "light" | "dark"];
-            const stagger = 60 + i * 55;
+            const fromVal = tok[fromKey];
+            const toVal   = tok[to];
             return (
-              <div key={tok.name} className="theme-revamp-line theme-revamp-line-stagger" style={{ animationDelay: `${stagger}ms` }}>
-                <span className="theme-revamp-num">{i + 2}</span>
-                <span className="trv-prop">{tok.name}</span>
-                <span className="trv-mute">: </span>
-                <span className="trv-hex-stack">
-                  <span className={`trv-hex trv-hex-from ${morphed ? "is-gone" : ""}`}>{fromVal}</span>
-                  <span className={`trv-hex trv-hex-to ${morphed ? "is-here" : ""}`}>{toVal}</span>
+              <div
+                key={tok.name}
+                style={{
+                  display: "flex", alignItems: "center", padding: "0 18px",
+                  opacity: 0,
+                  animation: `trv-line-in 0.22s cubic-bezier(0.16,1,0.3,1) ${60 + i * 55}ms forwards`,
+                }}
+              >
+                <span style={lineNumStyle}>{i + 2}</span>
+                <span style={{ color: "#60a5fa" }}>{tok.name}</span>
+                <span style={{ color: "#5a5a62" }}>: </span>
+                <span style={{
+                  position: "relative",
+                  display: "inline-block",
+                  width: 80,
+                  height: "1.2em",
+                  lineHeight: 1.2,
+                }}>
+                  <span style={{
+                    position: "absolute", top: 0, left: 0,
+                    color: "#f87171", fontWeight: 500,
+                    opacity: morphed ? 0 : 1,
+                    transform: morphed ? "translateY(-7px)" : "translateY(0)",
+                    transition: "opacity 0.45s cubic-bezier(0.4,0,0.2,1), transform 0.45s cubic-bezier(0.4,0,0.2,1)",
+                  }}>{fromVal}</span>
+                  <span style={{
+                    position: "absolute", top: 0, left: 0,
+                    color: "#34d399", fontWeight: 500,
+                    opacity: morphed ? 1 : 0,
+                    transform: morphed ? "translateY(0)" : "translateY(7px)",
+                    transition: "opacity 0.45s cubic-bezier(0.4,0,0.2,1), transform 0.45s cubic-bezier(0.4,0,0.2,1)",
+                  }}>{toVal}</span>
                 </span>
-                <span
-                  className="trv-swatch"
-                  style={{ background: morphed ? toVal : fromVal, transitionDelay: `${i * 40}ms` }}
-                />
-                <span className="trv-mute">;</span>
+                <span style={{
+                  display: "inline-block",
+                  width: 12, height: 12,
+                  borderRadius: 3,
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  marginLeft: 8, marginRight: 2,
+                  verticalAlign: "middle",
+                  background: morphed ? toVal : fromVal,
+                  transition: `background 0.55s cubic-bezier(0.4,0,0.2,1) ${i * 40}ms`,
+                }} />
+                <span style={{ color: "#5a5a62" }}>;</span>
               </div>
             );
           })}
-          <div className="theme-revamp-line">
-            <span className="theme-revamp-num">{THEME_TOKENS.length + 2}</span>
-            <span className="trv-mute">{"}"}</span>
+
+          {/* Closing brace */}
+          <div style={{ display: "flex", alignItems: "center", padding: "0 18px" }}>
+            <span style={lineNumStyle}>{THEME_TOKENS.length + 2}</span>
+            <span style={{ color: "#5a5a62" }}>{"}"}</span>
           </div>
         </div>
 
-        <div className="theme-revamp-statusbar">
-          <span className={`trv-status-dot ${morphed ? "is-done" : ""}`} />
-          <span className="trv-status-text">
+        {/* Status bar */}
+        <div
+          style={{
+            display: "flex", alignItems: "center", gap: 10,
+            padding: "7px 16px",
+            background: "#070708",
+            borderTop: "1px solid #1d1d22",
+            fontSize: 10.5, color: "#8b8b95", letterSpacing: "0.05em",
+          }}
+        >
+          <span style={{
+            width: 7, height: 7, borderRadius: "50%",
+            background: morphed ? "#34d399" : "#fbbf24",
+            boxShadow: morphed
+              ? "0 0 10px rgba(52,211,153,0.65)"
+              : "0 0 8px rgba(251,191,36,0.55)",
+            transition: "background 0.3s, box-shadow 0.3s",
+          }} />
+          <span style={{ flex: 1 }}>
             {morphed ? `applied · theme=${to}` : `compiling · theme=${to}`}
           </span>
-          <span className="trv-status-right">CSS · UTF-8 · LF</span>
+          <span style={{ color: "#4a4a52" }}>CSS · UTF-8 · LF</span>
         </div>
       </div>
     </div>
   );
 }
+
+const lineNumStyle: React.CSSProperties = {
+  color: "#2f2f36",
+  width: 26,
+  textAlign: "right",
+  paddingRight: 14,
+  fontSize: 11,
+  userSelect: "none",
+};
 
 function Nav() {
   const router = useRouter();
@@ -131,8 +254,11 @@ function Nav() {
     setMobileOpen(false);
   };
 
-  const handleToggle = () => {
-    if (revamp) return; // ignore clicks while transition active
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (revamp) return; // ignore clicks while a transition is active
+    const rect = e.currentTarget.getBoundingClientRect();
+    document.documentElement.style.setProperty("--theme-x", `${rect.left + rect.width  / 2}px`);
+    document.documentElement.style.setProperty("--theme-y", `${rect.top  + rect.height / 2}px`);
     const next: "light" | "dark" = theme === "dark" ? "light" : "dark";
     setRevamp({ id: Date.now(), to: next });
   };
