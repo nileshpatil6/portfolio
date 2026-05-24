@@ -438,7 +438,6 @@ export default function Projects() {
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : "5fr 4fr",
           gap: "clamp(24px, 4vw, 56px)",
-          alignItems: "start",
         }}
       >
         {/* LEFT — project list */}
