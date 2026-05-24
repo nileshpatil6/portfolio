@@ -273,10 +273,10 @@ export default function DevMode() {
         "├─────────────────────────────────────────────────────────┤",
         "│  QUICK START                                            │",
         "│    whoami         →  Who is Nilesh?                    │",
-        "│    ls projects/   →  Browse all 19 projects            │",
+        "│    ls projects/   →  Browse all 20 projects            │",
         "│    nano <name>    →  Open a project (ESC to close)     │",
         "│    git log        →  View commit history               │",
-        "│    ./portfolio.sh →  Run the easter egg 🚀             │",
+        "│    ./portfolio.sh →  Run the portfolio script          │",
         "└─────────────────────────────────────────────────────────┘",
         "",
         "Type  'help'  for the full command reference.",
@@ -352,6 +352,33 @@ export default function DevMode() {
     if (command === "clear") { setHistory([]); return; }
     if (command === "exit" || command === "quit") { router.push("/"); return; }
 
+    if (command === "pwd") {
+      addHistory({ input: trimmed, output: [currentDir === "~" ? "/home/nilesh" : `/home/nilesh/${currentDir.replace("~/", "")}`] });
+      return;
+    }
+
+    if (command === "echo") {
+      addHistory({ input: trimmed, output: [args.join(" ")] });
+      return;
+    }
+
+    if (command === "history") {
+      addHistory({ input: trimmed, output: cmdHistory.slice(0, 20).map((c, i) => `  ${i + 1}  ${c}`) });
+      return;
+    }
+
+    if (command === "man" || command === "info") {
+      addHistory({ input: trimmed, output: ["Use 'help' for the full command reference."], type: "info" });
+      return;
+    }
+
+    if (command === "uname") {
+      const flag = args[0];
+      if (flag === "-a") addHistory({ input: trimmed, output: ["Linux portfolio 6.6.36-microsoft-standard #1 SMP x86_64 GNU/Linux"] });
+      else addHistory({ input: trimmed, output: ["Linux"] });
+      return;
+    }
+
     if (command === "help") {
       addHistory({
         input: trimmed,
@@ -373,12 +400,16 @@ export default function DevMode() {
           "╠═════════════════════════════════════════════════════════╣",
           "║  FILESYSTEM                                            ║",
           "║    ls                    — list current directory      ║",
-          "║    ls projects/          — list all 19 projects        ║",
+          "║    ls projects/          — list all 20 projects        ║",
           "║    ls -la                — detailed listing            ║",
           "║    cd projects           — change into projects/       ║",
           "║    cd ..                 — go up one level             ║",
+          "║    pwd                   — print working directory     ║",
           "║    cat README.md         — read about section          ║",
           "║    cat contact.md        — read contact info           ║",
+          "║    echo <text>           — print text                  ║",
+          "║    history               — show command history        ║",
+          "║    uname -a              — system information          ║",
           "╠═════════════════════════════════════════════════════════╣",
           "║  PROJECTS                                              ║",
           "║    nano <project-name>   — open project in editor      ║",
@@ -393,9 +424,9 @@ export default function DevMode() {
           "║    ping google.com       — network latency test        ║",
           "╠═════════════════════════════════════════════════════════╣",
           "║  EASTER EGGS                                           ║",
-          "║    ./portfolio.sh        — run the portfolio script 🚀 ║",
+          "║    ./portfolio.sh        — run the portfolio script    ║",
           "║    bash portfolio.sh     — same as above               ║",
-          "║    sudo rm -rf boring-portfolio/   — try it ;)         ║",
+          "║    sudo rm -rf boring-portfolio/   — try it            ║",
           "╚═════════════════════════════════════════════════════════╝",
         ],
         type: "info",
@@ -420,9 +451,9 @@ export default function DevMode() {
           "├─────────────────────────────────────────────┤",
           "│  CREDENTIALS:                               │",
           "│  > 8x Hackathon Winner                      │",
-          "│  > IIT Bombay Intern                        │",
-          "│  > Rs.2L Funded Founder                     │",
           "│  > NASA SpaceApps 1st Place (Local)         │",
+          "│  > Rs.2L Funded Founder (NAIN 2.0)          │",
+          "│  > 7 Live Production Products               │",
           "│  > B.E. AI & DS (2023–2027)                 │",
           "└─────────────────────────────────────────────┘",
         ],
@@ -451,7 +482,7 @@ export default function DevMode() {
                 "drwxr-xr-x  3 nilesh portfolio  4096 May 02 2026 ..",
                 "-rw-r--r--  1 nilesh portfolio  2048 May 02 2026 README.md",
                 "-rw-r--r--  1 nilesh portfolio   512 May 02 2026 contact.md",
-                "drwxr-xr-x 19 nilesh portfolio  4096 May 02 2026 projects/",
+                "drwxr-xr-x 20 nilesh portfolio  4096 May 02 2026 projects/",
                 "drwxr-xr-x  7 nilesh portfolio  4096 May 02 2026 skills/",
                 "drwxr-xr-x  5 nilesh portfolio  4096 May 02 2026 achievements/",
                 "drwxr-xr-x  3 nilesh portfolio  4096 May 02 2026 education/",
@@ -559,16 +590,16 @@ export default function DevMode() {
       if (sub === "log") {
         runAsync("Reading repository history", 420, [
           "a1b2c3d (HEAD -> main) feat: add agentic commerce protocol",
-          "b2c3d4e feat: ship mediassist ai v2.0",
-          "c3d4e5f feat: yukti-ai — 1000+ science components",
-          "d4e5f6a feat: triponbuddy v3 with gemini integration",
-          "e5f6a7b feat: college erp — full RBAC system",
-          "f6a7b8c feat: nasa spaceapps project — 1st place",
+          "b2c3d4e feat: ship mediassist ai v2.0 with rag pipeline",
+          "c3d4e5f feat: yukti-ai — 1000+ science q&a components",
+          "d4e5f6a feat: triponbuddy v3 with gemini live integration",
+          "e5f6a7b feat: college erp — full rbac multi-tenant system",
+          "f6a7b8c feat: nasa spaceapps — 1st place local round",
           "a7b8c9d feat: ai social media automation pipeline",
-          "b8c9d0e feat: roofvision ai satellite detection",
+          "b8c9d0e feat: roofvision ai — satellite roof detection",
           "c9d0e1f feat: detox ai android launcher",
           "d0e1f2a feat: 8th hackathon win — codebharat rs.50k",
-          "e1f2a3b feat: iit bombay internship complete",
+          "e1f2a3b feat: nain 2.0 grant approved — rs.2l funded",
           "f2a3b4c init: repository initialized",
         ]);
         return;
@@ -576,7 +607,7 @@ export default function DevMode() {
       if (sub === "status") {
         runAsync("Checking working tree", 280, [
           "On branch main",
-          "Your branch is 47 commits ahead of 'origin/master'",
+          "Your branch is up to date with 'origin/main'",
           "",
           "Working on: next product",
           "",
@@ -596,20 +627,19 @@ export default function DevMode() {
     if (command === "neofetch") {
       runAsync("Gathering system information", 380, [
         "         _  _         nilesh@portfolio",
-        "        (_)(_)        ────────────────",
-        "     _  _  _ _       OS: FullStack Linux v3.0",
-        "    | || || | |      Kernel: GenAI-4.2-agentic",
-        "    | || || | |      Uptime: 3+ years",
-        "    |_||_||_|_|      Shell: React/Next.js",
+        "        (_)(_)        ────────────────────────────────────",
+        "     _  _  _ _       OS: Ubuntu 24.04 LTS (WSL2)",
+        "    | || || | |      Kernel: 6.6.36-microsoft-standard",
+        "    | || || | |      Uptime: 3 years, 4 months",
+        "    |_||_||_|_|      Shell: zsh 5.9",
         "     _ _ _ _ _       Resolution: 1920x1080",
-        "    | | | | | |      DE: Component-Based",
-        "    |_|_|_|_|_|      WM: Tailwind CSS",
-        "                     Terminal: JetBrains Mono",
-        " [nilesh@portfolio]  CPU: Brain @ 200GHz",
-        "                     Memory: 128GB Projects",
-        "                     Packages: React, Flutter, Python,",
-        "                              Node.js, TypeScript, Solidity,",
-        "                              Docker, PostgreSQL, Supabase",
+        "    | | | | | |      DE: Next.js 15 / React 19",
+        "    |_|_|_|_|_|      WM: Tailwind CSS v4",
+        "                     Terminal: JetBrains Mono 13",
+        " [nilesh@portfolio]  CPU: AMD Ryzen 5 5600H (12) @ 3.3GHz",
+        "                     Memory: 2.1GiB / 16.0GiB",
+        "                     Packages: 847 (npm)",
+        "                     Languages: TS, Python, Dart, Go, Solidity",
         "                     Colors: ██████████████████",
       ], "system");
       return;
@@ -644,7 +674,7 @@ export default function DevMode() {
           "",
           "--- google.com ping statistics ---",
           "3 packets transmitted, 3 received, 0% packet loss",
-          "round-trip min/avg/max = 1/1/1 ms (he's too fast)",
+          "round-trip min/avg/max/stddev = 11.2/12.4/14.1/1.1 ms",
         ], "success");
         return;
       }
@@ -658,11 +688,10 @@ export default function DevMode() {
           "Connecting to nilesh@portfolio.dev...",
           "Authenticating with public key...",
           "",
-          "Connection established. Welcome to the mainframe.",
-          "Access level: GOD MODE",
+          "Connection established.",
+          "Authenticated as: nilesh (uid=1000)",
           "",
-          "Warning: You have entered the mind of a serial builder.",
-          "Proceed with awe.",
+          "Welcome to portfolio.dev — type 'help' to get started.",
         ], "success");
         return;
       }
@@ -678,24 +707,23 @@ export default function DevMode() {
         "#!/bin/bash",
         "# portfolio.sh — Nilesh Patil v3.0.0",
         "",
-        "Initializing Nilesh Patil OS...",
+        "Initializing...",
         "",
-        "[██████████████████████████████] 100%",
+        "[████████████████████████████████] 100%",
         "",
-        "✓ Loading 19 projects         … done",
-        "✓ Importing 8 hackathon wins  … done",
-        "✓ Mounting IIT Bombay creds   … done",
-        "✓ Spinning up AI pipelines    … done",
-        "✓ Connecting to portfolio.dev … done",
+        "  loading projects          ... done (20 entries)",
+        "  loading skills            ... done (7 categories)",
+        "  loading achievements      ... done (8 hackathon wins)",
+        "  mounting ai pipelines     ... done",
+        "  connecting to portfolio   ... done",
         "",
-        "┌──────────────────────────────────────────────────┐",
-        "│  NILESH PATIL — Full Stack & GenAI Engineer       │",
-        "│  Status: Building the internet's next layer 🚀    │",
-        "│  Mode:   GOD MODE ACTIVATED                       │",
-        "└──────────────────────────────────────────────────┘",
+        "┌────────────────────────────────────────────────────┐",
+        "│  NILESH PATIL — Full Stack & GenAI Engineer        │",
+        "│  Status: Available for work                        │",
+        "│  Location: Belgaum, Karnataka, India               │",
+        "└────────────────────────────────────────────────────┘",
         "",
-        "Run 'whoami' to see credentials, or 'ls projects/' to",
-        "browse 19 production-grade projects.",
+        "Run 'whoami' for credentials, 'ls projects/' to browse.",
       ], "success");
       return;
     }
@@ -704,9 +732,8 @@ export default function DevMode() {
       addHistory({
         input: trimmed,
         output: [
-          "sudo: Permission denied",
-          "This portfolio is too good to delete.",
-          "Access denied. You cannot delete excellence.",
+          "sudo: Permission denied.",
+          "rm: cannot remove 'boring-portfolio/': No such file or directory",
         ],
         type: "error",
       });
