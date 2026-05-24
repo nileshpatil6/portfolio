@@ -359,7 +359,7 @@ export default function Projects() {
     const els = listRef.current.querySelectorAll<HTMLElement>("[data-pid]");
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) setActiveId((e.target as HTMLElement).dataset.pid!); });
-    }, { root: null, rootMargin: "-45% 0px -45% 0px", threshold: 0 });
+    }, { root: null, rootMargin: "-10% 0px -85% 0px", threshold: 0 });
     els.forEach(el => io.observe(el));
     return () => io.disconnect();
   }, []);

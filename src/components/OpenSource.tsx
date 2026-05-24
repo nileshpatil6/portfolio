@@ -144,7 +144,7 @@ const merges: Merge[] = [
     title: "Add missing ES2022.Regexp and ES2023.Intl lib entries to tsconfig",
     url: "https://github.com/SchemaStore/schemastore/pull/5643",
     impact: "Updated the TypeScript config schema with missing modern lib entries. Powers autocomplete and validation for every tsconfig.json across the JS/TS ecosystem.",
-    weight: "major",
+    weight: "flagship",
     stack: ["TypeScript", "JSON Schema"],
     accent: "#7c3aed",
   },
