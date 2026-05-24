@@ -445,7 +445,7 @@ export default function Projects() {
 
       {/* ── Split / List ── */}
       <div
-        className="px-6 md:px-16 pb-28 max-w-7xl mx-auto"
+        className="px-6 md:px-16 pb-8 max-w-7xl mx-auto"
         style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : "5fr 4fr",
