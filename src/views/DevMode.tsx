@@ -128,60 +128,6 @@ function LoadingDots({ message }: { message: string }) {
 }
 
 /* ══════════════════════════════════════════════════════════
-   MatrixRain — very subtle falling char canvas background
-══════════════════════════════════════════════════════════ */
-function MatrixRain() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const setSize = () => {
-      canvas.width  = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
-    setSize();
-    window.addEventListener("resize", setSize);
-
-    const FS = 11;
-    const CHARS = "01アイウエカキクサシスタチツナニハヒフ10ヲン";
-    let drops: number[] = [];
-    const initDrops = () => {
-      const cols = Math.max(1, Math.floor((canvas.width || 1) / FS));
-      drops = Array(cols).fill(0).map(() => -Math.floor(Math.random() * 70));
-    };
-    initDrops();
-    ctx.font = `${FS}px "JetBrains Mono", monospace`;
-
-    const tick = () => {
-      ctx.fillStyle = "rgba(10,10,9,0.042)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "rgba(0,255,136,0.52)";
-      drops.forEach((y, i) => {
-        const ch = CHARS[Math.floor(Math.random() * CHARS.length)];
-        ctx.fillText(ch, i * FS, y * FS);
-        if (y * FS > canvas.height && Math.random() > 0.974) drops[i] = 0;
-        drops[i] += 0.38;
-      });
-    };
-
-    const id = setInterval(tick, 55);
-    return () => { clearInterval(id); window.removeEventListener("resize", setSize); };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full"
-      style={{ opacity: 0.14, mixBlendMode: "screen", pointerEvents: "none", zIndex: 0 }}
-    />
-  );
-}
-
-/* ══════════════════════════════════════════════════════════
    NanoViewer
 ══════════════════════════════════════════════════════════ */
 function NanoViewer({ project, onClose }: { project: typeof projects[0]; onClose: () => void }) {
@@ -293,12 +239,14 @@ export default function DevMode() {
   const [loadingCmd, setLoadingCmd] = useState<{ message: string } | null>(null);
   const [booting, setBooting]     = useState(true);
 
-  const bottomRef   = useRef<HTMLDivElement>(null);
+  const latestEntryRef = useRef<HTMLDivElement>(null);
   const inputRef    = useRef<HTMLInputElement>(null);
   const inputBarRef = useRef<HTMLDivElement>(null);
 
-  /* Auto-scroll */
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [history, loadingCmd]);
+  /* Scroll latest command to top so output is readable from the start */
+  useEffect(() => {
+    latestEntryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [history]);
   /* Focus input on mount */
   useEffect(() => { inputRef.current?.focus(); }, []);
   /* Boot flicker: remove class after animation */
@@ -363,7 +311,8 @@ export default function DevMode() {
     }
 
     if (command === "history") {
-      addHistory({ input: trimmed, output: cmdHistory.slice(0, 20).map((c, i) => `  ${i + 1}  ${c}`) });
+      const ordered = [...cmdHistory].reverse();
+      addHistory({ input: trimmed, output: ordered.slice(-20).map((c, i) => `  ${String(i + 1).padStart(3)}  ${c}`) });
       return;
     }
 
@@ -521,6 +470,10 @@ export default function DevMode() {
 
     if (command === "cat") {
       const file = args[0];
+      if (!file) {
+        addHistory({ input: trimmed, output: ["Usage: cat <file>", "Available: README.md, contact.md"], type: "error" });
+        return;
+      }
       if (file === "README.md" || file === "~/README.md") {
         addHistory({
           input: trimmed,
@@ -609,18 +562,18 @@ export default function DevMode() {
           "On branch main",
           "Your branch is up to date with 'origin/main'",
           "",
-          "Working on: next product",
+          "Changes not staged for commit:",
+          "  (use 'git add <file>' to update what will be committed)",
           "",
-          "Changes to be committed:",
-          "  (use 'git restore --staged <file>' to unstage)",
-          "        new file: projects/next-big-thing.md",
-          "        modified: achievements/hackathon-wins.md",
+          "        modified: src/components/Projects.tsx",
+          "        modified: src/data/projects.ts",
           "",
-          "nothing to commit (working tree clean)",
+          "no changes added to commit (use 'git add' and/or 'git commit -a')",
         ]);
         return;
       }
-      addHistory({ input: trimmed, output: [`git: '${sub}' is not a git command. Try: git log, git status`], type: "error" });
+      const gitSub = sub ?? "";
+      addHistory({ input: trimmed, output: [`git: '${gitSub}' is not a git command. Try: git log, git status`], type: "error" });
       return;
     }
 
@@ -646,6 +599,10 @@ export default function DevMode() {
     }
 
     if (command === "curl") {
+      if (!args[0]) {
+        addHistory({ input: trimmed, output: ["curl: try 'curl nilesh.dev/skills'"], type: "error" });
+        return;
+      }
       if (args.join(" ").includes("nilesh.dev/skills")) {
         runAsync("Fetching nilesh.dev/skills", 500, [
           '{"skills": {',
@@ -665,16 +622,20 @@ export default function DevMode() {
     }
 
     if (command === "ping") {
+      if (!args[0]) {
+        addHistory({ input: trimmed, output: ["Usage: ping <host>", "Example: ping google.com"], type: "error" });
+        return;
+      }
       if (args[0] === "google.com" || args[0] === "google") {
         runAsync(`Pinging ${args[0]}`, 680, [
           `PING ${args[0]} (142.250.182.46): 56 data bytes`,
-          "64 bytes from 142.250.182.46: icmp_seq=0 ttl=64 time=1ms",
-          "64 bytes from 142.250.182.46: icmp_seq=1 ttl=64 time=1ms",
-          "64 bytes from 142.250.182.46: icmp_seq=2 ttl=64 time=1ms",
+          "64 bytes from 142.250.182.46: icmp_seq=0 ttl=64 time=11.2 ms",
+          "64 bytes from 142.250.182.46: icmp_seq=1 ttl=64 time=12.4 ms",
+          "64 bytes from 142.250.182.46: icmp_seq=2 ttl=64 time=13.1 ms",
           "",
           "--- google.com ping statistics ---",
           "3 packets transmitted, 3 received, 0% packet loss",
-          "round-trip min/avg/max/stddev = 11.2/12.4/14.1/1.1 ms",
+          "round-trip min/avg/max/stddev = 11.2/12.2/13.1/0.8 ms",
         ], "success");
         return;
       }
@@ -683,9 +644,13 @@ export default function DevMode() {
     }
 
     if (command === "ssh") {
-      if (args[0] && args[0].includes("nilesh")) {
+      if (!args[0]) {
+        addHistory({ input: trimmed, output: ["Usage: ssh <user>@<host>", "Example: ssh nilesh@portfolio.dev"], type: "error" });
+        return;
+      }
+      if (args[0].includes("nilesh")) {
         runAsync("Authenticating with public key", 850, [
-          "Connecting to nilesh@portfolio.dev...",
+          `Connecting to ${args[0]}...`,
           "Authenticating with public key...",
           "",
           "Connection established.",
@@ -787,11 +752,6 @@ export default function DevMode() {
   /* ── Render ───────────────────────────────────────────── */
   return (
     <div className={`relative h-screen w-full terminal-body flex flex-col overflow-hidden ${booting ? "terminal-boot" : ""}`}>
-      {/* Matrix rain */}
-      <MatrixRain />
-      {/* CRT overlays */}
-      <div className="terminal-scanlines" />
-      <div className="scanline-sweep" />
       <div className="terminal-vignette" />
 
       {/* Title bar */}
@@ -825,32 +785,33 @@ export default function DevMode() {
         <GlitchAscii />
 
         {/* History entries */}
-        {history.map((entry, i) => (
-          <div key={i}>
-            {entry.input !== undefined && (
-              <div className="font-mono text-sm flex gap-1 mt-1">
-                <span
-                  className="text-[#00d4ff] whitespace-nowrap select-none"
-                  style={{ textShadow: "0 0 8px rgba(0,212,255,0.45)" }}
-                >
-                  {getPrompt()}
-                </span>
-                {" "}
-                <span className="text-white">{entry.input}</span>
-              </div>
-            )}
-            <AnimatedOutput
-              lines={entry.output}
-              type={entry.type}
-              speed={i === 0 ? 12 : 22}
-            />
-          </div>
-        ))}
+        {history.map((entry, i) => {
+          const isLast = i === history.length - 1;
+          return (
+            <div key={i} ref={isLast && entry.input !== undefined ? latestEntryRef : null}>
+              {entry.input !== undefined && (
+                <div className="font-mono text-sm flex gap-1 mt-1">
+                  <span
+                    className="text-[#00d4ff] whitespace-nowrap select-none"
+                    style={{ textShadow: "0 0 8px rgba(0,212,255,0.45)" }}
+                  >
+                    {getPrompt()}
+                  </span>
+                  {" "}
+                  <span className="text-white">{entry.input}</span>
+                </div>
+              )}
+              <AnimatedOutput
+                lines={entry.output}
+                type={entry.type}
+                speed={i === 0 ? 12 : 22}
+              />
+            </div>
+          );
+        })}
 
         {/* Loading indicator */}
         {loadingCmd && <LoadingDots message={loadingCmd.message} />}
-
-        <div ref={bottomRef} />
       </div>
 
       {/* Input bar */}
