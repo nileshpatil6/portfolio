@@ -6,22 +6,55 @@ import { ArrowUpRight, GitMerge } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const OrgLogo = ({ org, size = 20 }: { org: string; size?: number }) => {
+  if (org === "OpenAI") return (
+    <svg width={size} height={size} viewBox="0 0 28 28" fill="currentColor" style={{ color: "#10a37f", flexShrink: 0 }}>
+      <path d="M26.153 11.46a6.888 6.888 0 0 0-.608-5.51 7.064 7.064 0 0 0-7.626-3.38A7.025 7.025 0 0 0 12.64.116a7.064 7.064 0 0 0-6.738 4.875 7.036 7.036 0 0 0-4.708 3.393 7.064 7.064 0 0 0 .88 8.273 6.889 6.889 0 0 0 .607 5.51 7.065 7.065 0 0 0 7.627 3.38 7.028 7.028 0 0 0 5.28 2.453 7.065 7.065 0 0 0 6.74-4.877 7.036 7.036 0 0 0 4.707-3.393 7.065 7.065 0 0 0-.88-8.27zm-9.801 13.548a5.266 5.266 0 0 1-3.37-1.219c.042-.023.116-.063.165-.094l5.594-3.205a.91.91 0 0 0 .462-.793V13.25l2.363 1.356a.085.085 0 0 1 .046.064v6.48c-.002 2.9-2.363 5.257-5.26 5.258zM4.26 20.278a5.235 5.235 0 0 1-.636-3.531c.042.026.115.07.165.099l5.594 3.205a.916.916 0 0 0 .925 0l6.83-3.918V18.5a.087.087 0 0 1-.034.072l-5.657 3.245a5.261 5.261 0 0 1-7.187-1.54zm-1.699-12.14a5.24 5.24 0 0 1 2.75-2.31V12.5a.91.91 0 0 0 .461.793l6.83 3.916-2.363 1.356a.086.086 0 0 1-.08.009L4.5 15.333a5.261 5.261 0 0 1-1.939-7.195zm19.393 4.503l-6.83-3.918 2.363-1.354a.085.085 0 0 1 .08-.009l5.659 3.24a5.254 5.254 0 0 1-.814 9.47V14.25a.91.91 0 0 0-.458-.81zm2.35-3.547c-.043-.026-.116-.07-.166-.099l-5.593-3.205a.916.916 0 0 0-.926 0L10.789 9.71V7.5a.087.087 0 0 1 .034-.072l5.657-3.242a5.26 5.26 0 0 1 7.823 5.449v.008zm-14.82 4.844L7.12 12.58a.086.086 0 0 1-.046-.065V6.034a5.26 5.26 0 0 1 8.63-4.027 4.75 4.75 0 0 0-.165.094l-5.594 3.205a.91.91 0 0 0-.461.793v7.838L7.484 13.938zm1.284-2.759l3.04-1.742 3.04 1.74v3.481l-3.04 1.742-3.04-1.742V11.18z" />
+    </svg>
+  );
+  if (org === "Google") return (
+    <svg width={size} height={size} viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+    </svg>
+  );
+  if (org === "Hugging Face") return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <circle cx="12" cy="11" r="8.5" fill="#ffcc4d" />
+      <circle cx="9.2" cy="10" r="1.15" fill="#664500" />
+      <circle cx="14.8" cy="10" r="1.15" fill="#664500" />
+      <path d="M8.5 13.8c.8 1.5 2.2 2.2 3.5 2.2s2.7-.7 3.5-2.2" stroke="#664500" strokeWidth="1.1" strokeLinecap="round" fill="none" />
+      <path d="M7 6.5c-.5-1.4-2.2-1.8-3-0.6" stroke="#ffaa00" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+      <path d="M17 6.5c.5-1.4 2.2-1.8 3-0.6" stroke="#ffaa00" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+    </svg>
+  );
+  // SchemaStore
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <rect x="2" y="3" width="20" height="18" rx="3" stroke="#7c3aed" strokeWidth="1.8" />
+      <path d="M8 9l-3 3 3 3M16 9l3 3-3 3" stroke="#7c3aed" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M13 8l-2 8" stroke="#a78bfa" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+};
+
 type Merge = {
   org: string;
-  orgLogo: string;        // unicode/glyph or short tag rendered in a chip
   repo: string;
   pr: number;
   title: string;
   url: string;
   impact: string;
-  weight: "flagship" | "major";  // visual emphasis
+  weight: "flagship" | "major";
   stack: string[];
+  accent: string;
 };
 
 const merges: Merge[] = [
   {
     org: "OpenAI",
-    orgLogo: "◉",
     repo: "openai/openai-agents-python",
     pr: 2931,
     title: "Surface run-loop exceptions after stream_events() completes",
@@ -29,10 +62,10 @@ const merges: Merge[] = [
     impact: "Patched silent error suppression in OpenAI's official Python Agents SDK. Errors thrown inside the run loop after streaming now propagate correctly to the caller instead of disappearing.",
     weight: "flagship",
     stack: ["Python", "asyncio", "Agents SDK"],
+    accent: "#10a37f",
   },
   {
     org: "Google",
-    orgLogo: "G",
     repo: "google/osv-scanner",
     pr: 2762,
     title: "Skip packages with short commit hashes instead of aborting scan",
@@ -40,10 +73,10 @@ const merges: Merge[] = [
     impact: "Made Google's open-source vulnerability scanner resilient to malformed commit hashes. Previously a single short hash would crash the entire dependency scan; now the offending package is skipped and the scan continues.",
     weight: "flagship",
     stack: ["Go", "Security", "SBOM"],
+    accent: "#4285f4",
   },
   {
     org: "Hugging Face",
-    orgLogo: "🤗",
     repo: "huggingface/transformers",
     pr: 46006,
     title: "Fix owned_by field in GET /v1/models returns list instead of string",
@@ -51,10 +84,10 @@ const merges: Merge[] = [
     impact: "Repaired the OpenAI-compatible /v1/models endpoint in transformers-serve. Was returning a list and breaking every client SDK that follows the OpenAI spec.",
     weight: "flagship",
     stack: ["Python", "FastAPI", "transformers-serve"],
+    accent: "#ffaa00",
   },
   {
     org: "SchemaStore",
-    orgLogo: "{ }",
     repo: "SchemaStore/schemastore",
     pr: 5707,
     title: "Allow wildcard-only args like Read(*) and Skill(*) in claude-code-settings",
@@ -62,10 +95,10 @@ const merges: Merge[] = [
     impact: "Extended the Claude Code settings JSON schema consumed by VS Code, JetBrains, Sublime, and every editor that imports SchemaStore. Wildcard tool args no longer trigger false validation errors.",
     weight: "major",
     stack: ["JSON Schema", "DX"],
+    accent: "#7c3aed",
   },
   {
     org: "SchemaStore",
-    orgLogo: "{ }",
     repo: "SchemaStore/schemastore",
     pr: 5643,
     title: "Add missing ES2022.Regexp and ES2023.Intl lib entries to tsconfig",
@@ -73,6 +106,7 @@ const merges: Merge[] = [
     impact: "Updated the TypeScript config schema with missing modern lib entries. Powers autocomplete and validation for every tsconfig.json across the JS/TS ecosystem.",
     weight: "major",
     stack: ["TypeScript", "JSON Schema"],
+    accent: "#7c3aed",
   },
 ];
 
@@ -179,20 +213,19 @@ export default function OpenSource() {
           <p className="section-label mb-4">Code shipped into</p>
           <div className="flex flex-wrap gap-2 md:gap-3">
             {[
-              { name: "OpenAI",       glyph: "◉",   accent: "#10a37f" },
-              { name: "Google",       glyph: "G",   accent: "#4285f4" },
-              { name: "Hugging Face", glyph: "🤗",  accent: "#ffaa00" },
-              { name: "SchemaStore",  glyph: "{ }", accent: "#7c3aed" },
+              { name: "OpenAI",       accent: "#10a37f" },
+              { name: "Google",       accent: "#4285f4" },
+              { name: "Hugging Face", accent: "#ffaa00" },
+              { name: "SchemaStore",  accent: "#7c3aed" },
             ].map(org => (
               <div key={org.name}
-                   className="os-logo-chip flex items-center gap-2 px-3 py-2 md:px-4 md:py-2.5 rounded-full"
+                   className="os-logo-chip flex items-center gap-2.5 px-4 py-2.5 rounded-full"
                    style={{
-                     border: "1px solid var(--border-color)",
-                     background: "var(--bg-elevated)",
+                     border: `1px solid ${org.accent}40`,
+                     background: `${org.accent}0d`,
                    }}>
-                <span className="font-mono text-base md:text-lg leading-none"
-                      style={{ color: org.accent }}>{org.glyph}</span>
-                <span className="text-xs md:text-sm font-medium" style={{ color: "var(--fg)" }}>
+                <OrgLogo org={org.name} size={18} />
+                <span className="text-sm font-semibold" style={{ color: "var(--fg)" }}>
                   {org.name}
                 </span>
               </div>
@@ -219,18 +252,19 @@ export default function OpenSource() {
               {m.weight === "flagship" && (
                 <span
                   className="absolute left-0 top-5 md:top-7 bottom-5 md:bottom-7 w-[3px] rounded-full"
-                  style={{ background: "var(--fg)" }}
+                  style={{ background: m.accent }}
                 />
               )}
 
               <div className="flex flex-col md:flex-row md:items-start md:gap-6">
-                {/* Left: org + repo */}
-                <div className="md:w-56 flex-shrink-0 mb-4 md:mb-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-mono text-lg leading-none" style={{ color: "var(--fg)" }}>
-                      {m.orgLogo}
-                    </span>
-                    <span className="font-serif font-semibold" style={{ color: "var(--fg)", fontSize: "1.05rem" }}>
+                {/* Left: org logo + name + repo */}
+                <div className="md:w-52 flex-shrink-0 mb-4 md:mb-0">
+                  <div
+                    className="inline-flex items-center gap-2.5 px-3 py-2 rounded-xl mb-2.5"
+                    style={{ background: `${m.accent}12`, border: `1px solid ${m.accent}30` }}
+                  >
+                    <OrgLogo org={m.org} size={22} />
+                    <span className="font-semibold text-sm" style={{ color: m.accent }}>
                       {m.org}
                     </span>
                   </div>
