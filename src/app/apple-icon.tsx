@@ -11,28 +11,29 @@ export default function AppleIcon() {
         style={{
           width: "100%",
           height: "100%",
-          background: "#0a0a0a",
+          background: "#fafaf9",
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-end",
           justifyContent: "center",
           fontFamily: "Georgia, serif",
-          fontSize: 128,
+          fontSize: 160,
           fontWeight: 700,
           fontStyle: "italic",
-          color: "#fafaf9",
-          letterSpacing: -2,
+          color: "#0a0a0a",
+          letterSpacing: -4,
           position: "relative",
+          paddingBottom: 4,
         }}
       >
-        N
+        n
         <div
           style={{
             position: "absolute",
-            bottom: 28,
-            right: 28,
-            width: 16,
-            height: 16,
-            borderRadius: 8,
+            bottom: 36,
+            right: 32,
+            width: 22,
+            height: 22,
+            borderRadius: 12,
             background: "#10a37f",
           }}
         />

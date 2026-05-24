@@ -11,29 +11,31 @@ export default function Icon() {
         style={{
           width: "100%",
           height: "100%",
-          background: "#0a0a0a",
+          background: "#fafaf9",
+          border: "2px solid #0a0a0a",
           borderRadius: 14,
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-end",
           justifyContent: "center",
           fontFamily: "Georgia, serif",
-          fontSize: 46,
+          fontSize: 60,
           fontWeight: 700,
           fontStyle: "italic",
-          color: "#fafaf9",
-          letterSpacing: -1,
+          color: "#0a0a0a",
+          letterSpacing: -2,
           position: "relative",
+          paddingBottom: 2,
         }}
       >
-        N
+        n
         <div
           style={{
             position: "absolute",
-            bottom: 8,
-            right: 8,
-            width: 8,
-            height: 8,
-            borderRadius: 4,
+            bottom: 12,
+            right: 10,
+            width: 9,
+            height: 9,
+            borderRadius: 5,
             background: "#10a37f",
           }}
         />
