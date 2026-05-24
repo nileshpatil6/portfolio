@@ -244,12 +244,12 @@ export default function DevMode() {
   const inputRef    = useRef<HTMLInputElement>(null);
   const inputBarRef = useRef<HTMLDivElement>(null);
 
-  /* Scroll so the latest command prompt sits at the top of the output area */
+  /* Scroll so the latest command prompt sits ~20% from the top of the viewport */
   useEffect(() => {
     const el = latestEntryRef.current;
     const container = scrollContainerRef.current;
     if (!el || !container) return;
-    container.scrollTop = el.offsetTop;
+    container.scrollTop = el.offsetTop - container.clientHeight * 0.2;
   }, [history]);
   /* Focus input on mount */
   useEffect(() => { inputRef.current?.focus(); }, []);
@@ -741,14 +741,39 @@ export default function DevMode() {
     }
     if (e.key === "Tab") {
       e.preventDefault();
-      const partial = input.split(" ").pop()?.toLowerCase() || "";
-      if (partial) {
-        const match = projects.find(p => p.id.startsWith(partial));
-        if (match) {
-          const words = input.split(" ");
-          words[words.length - 1] = match.id;
-          setInput(words.join(" "));
-        }
+      const parts = input.split(" ");
+      const partial = (parts[parts.length - 1] || "").toLowerCase();
+      if (!partial) return;
+
+      const firstWord  = (parts[0] || "").toLowerCase();
+      const isFirstWord = parts.length === 1;
+
+      const COMMANDS = [
+        "help","whoami","ls","cd","cat","pwd","echo","history","uname",
+        "clear","exit","nano","git","neofetch","curl","ssh","ping","sudo",
+        "./portfolio.sh",
+      ];
+      const HOME_DIRS = ["projects/","skills/","achievements/","education/"];
+      const FILES     = ["README.md","contact.md","portfolio.sh"];
+
+      let match: string | undefined;
+
+      if (isFirstWord) {
+        match = COMMANDS.find(c => c.startsWith(partial));
+      } else if (firstWord === "nano") {
+        match = projects.find(p => p.id.startsWith(partial))?.id;
+      } else if (firstWord === "cd" || firstWord === "ls") {
+        const dirs = currentDir === "~"
+          ? [...HOME_DIRS.map(d => d.replace(/\/$/, "")), ".."]
+          : [".."];
+        match = dirs.find(d => d.startsWith(partial));
+      } else if (firstWord === "cat") {
+        match = FILES.find(f => f.toLowerCase().startsWith(partial));
+      }
+
+      if (match) {
+        parts[parts.length - 1] = match;
+        setInput(parts.join(" "));
       }
     }
   };
@@ -818,36 +843,39 @@ export default function DevMode() {
         {/* Loading indicator */}
         {loadingCmd && <LoadingDots message={loadingCmd.message} />}
 
-        {/* Bottom spacer — ensures latest entry can always scroll to the top */}
-        <div aria-hidden style={{ minHeight: "85vh" }} />
-      </div>
+        {/* Input prompt — sits directly below the last output, like a real terminal */}
+        {!loadingCmd && (
+          <div
+            ref={inputBarRef}
+            className="flex items-center gap-1 mt-1"
+          >
+            <span
+              className="text-[#00d4ff] font-mono text-sm whitespace-nowrap select-none"
+              style={{ textShadow: "0 0 8px rgba(0,212,255,0.45)" }}
+            >
+              {getPrompt()}
+            </span>
+            {" "}
+            <input
+              ref={inputRef}
+              data-testid="input-terminal"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 bg-transparent text-white font-mono text-sm outline-none cursor-none caret-transparent"
+              autoComplete="off"
+              spellCheck={false}
+              autoFocus
+            />
+            <span
+              className="term-cursor"
+              style={{ boxShadow: "0 0 7px rgba(0,255,136,0.7)" }}
+            />
+          </div>
+        )}
 
-      {/* Input bar */}
-      <div
-        ref={inputBarRef}
-        className="relative z-10 flex items-center gap-2 px-4 py-3 border-t border-[#00ff88]/10 bg-[#0a0a09]/95"
-      >
-        <span
-          className="text-[#00d4ff] font-mono text-sm whitespace-nowrap select-none"
-          style={{ textShadow: "0 0 8px rgba(0,212,255,0.45)" }}
-        >
-          {getPrompt()}
-        </span>
-        <input
-          ref={inputRef}
-          data-testid="input-terminal"
-          value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="flex-1 bg-transparent text-white font-mono text-sm outline-none cursor-none caret-transparent"
-          autoComplete="off"
-          spellCheck={false}
-          autoFocus
-        />
-        <span
-          className="term-cursor"
-          style={{ boxShadow: "0 0 7px rgba(0,255,136,0.7)" }}
-        />
+        {/* Bottom spacer — gives headroom so the latest entry can scroll up into view */}
+        <div aria-hidden style={{ minHeight: "60vh" }} />
       </div>
     </div>
   );
