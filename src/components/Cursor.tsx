@@ -15,7 +15,7 @@ export default function Cursor() {
   const raf       = useRef(0);
 
   useEffect(() => {
-    /* Skip entirely on touch-only devices — they have no hover/mouse */
+    /* Skip entirely on touch-only devices - they have no hover/mouse */
     if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
 
     const dot     = dotRef.current!;
@@ -39,12 +39,12 @@ export default function Cursor() {
 
     /* ── rAF loop ── */
     const loop = () => {
-      /* aura — spring */
+      /* aura - spring */
       const lf = hover.current ? 0.16 : 0.1;
       auraPos.current.x += (mouse.current.x - auraPos.current.x) * lf;
       auraPos.current.y += (mouse.current.y - auraPos.current.y) * lf;
 
-      /* label — slightly different lag so it floats behind uniquely */
+      /* label - slightly different lag so it floats behind uniquely */
       const ll = 0.14;
       labelPos.current.x += (mouse.current.x - labelPos.current.x) * ll;
       labelPos.current.y += (mouse.current.y - labelPos.current.y) * ll;
@@ -56,11 +56,11 @@ export default function Cursor() {
       const angle = Math.atan2(vy, vx) * (180 / Math.PI);
       prev.current = { ...mouse.current };
 
-      /* dot — exact */
+      /* dot - exact */
       dot.style.transform =
         `translate(${mouse.current.x}px, ${mouse.current.y}px) translate(-50%,-50%)`;
 
-      /* aura — spring + velocity blob */
+      /* aura - spring + velocity blob */
       const stretch = Math.min(speed * 0.09, 0.75);
       const sx  = 1 + stretch;
       const sy  = Math.max(0.52, 1 - stretch * 0.38);
@@ -68,7 +68,7 @@ export default function Cursor() {
       auraEl.style.transform =
         `translate(${auraPos.current.x}px, ${auraPos.current.y}px) translate(-50%,-50%) ${rot}`;
 
-      /* label — offset top-right of cursor tip */
+      /* label - offset top-right of cursor tip */
       labelEl.style.transform =
         `translate(${labelPos.current.x + 16}px, ${labelPos.current.y - 40}px)`;
 
@@ -101,7 +101,7 @@ export default function Cursor() {
       document.querySelectorAll(
         "a, button, .magnetic, [data-cursor], [data-cursor-text]"
       ).forEach(el => {
-        /* identical fn refs are de-duped by the browser — safe to call repeatedly */
+        /* identical fn refs are de-duped by the browser - safe to call repeatedly */
         el.addEventListener("mouseenter", onEnter);
         el.addEventListener("mouseleave", onLeave);
       });

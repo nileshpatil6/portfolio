@@ -32,7 +32,7 @@ export default function Skills() {
         }
       });
 
-      // Category cards: even ones from left, odd from right — extreme positions
+      // Category cards: even ones from left, odd from right - extreme positions
       gsap.utils.toArray<HTMLElement>(".skill-cat-card").forEach((card, i) => {
         const fromLeft = i % 2 === 0;
         gsap.from(card, {
@@ -104,7 +104,7 @@ export default function Skills() {
   }, []);
 
   return (
-    <section id="skills" ref={sectionRef} className="relative py-40 px-6 md:px-16 overflow-hidden">
+    <section id="skills" ref={sectionRef} className="relative py-24 md:py-28 px-6 md:px-16 overflow-hidden">
 
       {/* Background morphing shape */}
       <div className="skills-bg-shape absolute pointer-events-none" style={{
@@ -172,7 +172,7 @@ export default function Skills() {
           ))}
         </div>
 
-        {/* Extra tech cloud — items fly in from all directions */}
+        {/* Extra tech cloud - items fly in from all directions */}
         <div className="extra-tech-cloud mt-16 p-10 rounded-2xl" style={{ border: "1px solid var(--border-color)", background: "var(--bg-elevated)" }}>
           <p className="section-label mb-6">Also experienced with</p>
           <div className="flex flex-wrap gap-2.5">

@@ -100,7 +100,7 @@ export default function About() {
   }, []);
 
   return (
-    <section id="about" ref={sectionRef} className="relative py-40 px-6 md:px-16 overflow-hidden">
+    <section id="about" ref={sectionRef} className="relative py-24 md:py-28 px-6 md:px-16 overflow-hidden">
 
       {/* Morphing background shape */}
       <div className="about-morph-shape absolute pointer-events-none top-10 right-0" style={{
@@ -142,9 +142,9 @@ export default function About() {
           <div>
             <div className="space-y-6">
               {[
-                "Third-year B.E. (AI & DS) student and serial builder — 3+ years shipping production software that real people use every day.",
+                "Third-year B.E. (AI & DS) student and serial builder - 3+ years shipping production software that real people use every day.",
                 "Co-founded MediAssist AI, funded ₹2L by the Government of Karnataka NAIN 2.0 program. Shipped TripOnBuddy with real live users. Won 8 hackathon competitions including GDG and NASA SpaceApps 1st place.",
-                "Deep experience in Agentic AI, RAG pipelines, and MCP. Building AI-native products at the intersection of LLMs, blockchain, and mobile — pushing the envelope of what software can do.",
+                "Deep experience in Agentic AI, RAG pipelines, and MCP. Building AI-native products at the intersection of LLMs, blockchain, and mobile - pushing the envelope of what software can do.",
               ].map((para, i) => (
                 <p
                   key={i}
@@ -172,7 +172,7 @@ export default function About() {
             </div>
           </div>
 
-          {/* Right — stat cards */}
+          {/* Right - stat cards */}
           <div className="grid grid-cols-2 gap-4">
             {[
               { n: "19+", label: "Projects",       sub: "Most live in production" },

@@ -37,7 +37,7 @@ const milestones = [
   {
     year: "2025",
     title: "7 Products in Production",
-    desc: "TripOnBuddy, Unyfiny, DataVerseAI, Text2DB, AK Car Rentals, CMN Services, Prasan Hom — all live. Freelancing globally across India, USA, and Japan.",
+    desc: "TripOnBuddy, Unyfiny, DataVerseAI, Text2DB, AK Car Rentals, CMN Services, Prasan Hom - all live. Freelancing globally across India, USA, and Japan.",
     tags: ["Production", "Freelance", "Global", "AI Agents"],
     side: "left",
   },
@@ -128,7 +128,7 @@ export default function Journey() {
   }, []);
 
   return (
-    <section id="journey" ref={sectionRef} className="relative py-40 px-6 md:px-16 overflow-hidden">
+    <section id="journey" ref={sectionRef} className="relative py-24 md:py-28 px-6 md:px-16 overflow-hidden">
 
       {/* Floating background blob */}
       <div className="journey-bg-shape absolute pointer-events-none" style={{

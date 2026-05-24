@@ -7,10 +7,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 const achievements = [
   { index: "01", title: "8× Hackathon Winner", body: "GDG, CodeBharat (₹50K), ONEST (₹25K), and 5 more competitions." },
-  { index: "02", title: "NASA SpaceApps 1st Place", body: "Local round champion — competed globally with top engineers worldwide." },
+  { index: "02", title: "NASA SpaceApps 1st Place", body: "Local round champion - competed globally with top engineers worldwide." },
   { index: "03", title: "₹2L Government Funded", body: "NAIN 2.0 Grant by Govt. of Karnataka. Co-founded MediAssist AI for real patients." },
   { index: "04", title: "7 Live Production Products", body: "TripOnBuddy, Unyfiny, CMN Services, Prasan Hom, AK Car Rentals, DataVerseAI, Text2DB." },
-  { index: "05", title: "Freelance — India, USA, Japan", body: "Clients across 3 countries. Real-world impact in multiple domains." },
+  { index: "05", title: "Freelance - India, USA, Japan", body: "Clients across 3 countries. Real-world impact in multiple domains." },
 ];
 
 export default function Achievements() {
@@ -99,7 +99,7 @@ export default function Achievements() {
   }, []);
 
   return (
-    <section id="achievements" ref={sectionRef} className="relative py-40 px-6 md:px-16 overflow-hidden">
+    <section id="achievements" ref={sectionRef} className="relative py-24 md:py-28 px-6 md:px-16 overflow-hidden">
 
       {/* Background shape */}
       <div className="ach-bg-shape absolute pointer-events-none" style={{

@@ -51,17 +51,17 @@ const ACHIEVEMENT_CONTENT: Record<string, string[]> = {
     "Won 8 hackathon competitions across national and international events.",
     "",
     "## Wins",
-    "  1. NASA SpaceApps Challenge     — 1st Place (Local Round)",
-    "  2. GDG Solution Challenge        — Winner",
-    "  3. CodeBharat Hackathon          — 1st Place (Rs.50,000 prize)",
-    "  4. ONEST Hackathon               — Winner (Rs.25,000 prize)",
-    "  5. Smart India Hackathon         — Finalist",
+    "  1. NASA SpaceApps Challenge     - 1st Place (Local Round)",
+    "  2. GDG Solution Challenge        - Winner",
+    "  3. CodeBharat Hackathon          - 1st Place (Rs.50,000 prize)",
+    "  4. ONEST Hackathon               - Winner (Rs.25,000 prize)",
+    "  5. Smart India Hackathon         - Finalist",
     "  6–8. 3 more regional/college level competitions",
     "",
-    "Every win had a working, deployed demo — not just a pitch.",
+    "Every win had a working, deployed demo - not just a pitch.",
   ],
   "nasa-spaceapps-1st-place.md": [
-    "# NASA SpaceApps Challenge — 1st Place",
+    "# NASA SpaceApps Challenge - 1st Place",
     "",
     "Won the local round of NASA International SpaceApps Challenge 2024.",
     "",
@@ -76,13 +76,13 @@ const ACHIEVEMENT_CONTENT: Record<string, string[]> = {
     "  React, Python, NASA EarthData API, Three.js, Gemini AI",
   ],
   "nain-2.0-grant-rs2L.md": [
-    "# NAIN 2.0 Grant — Rs.2,00,000",
+    "# NAIN 2.0 Grant - Rs.2,00,000",
     "",
     "Received Rs.2 Lakh funding from Government of Karnataka",
     "under the NAIN 2.0 (National AI Innovation) program.",
     "",
     "## Project funded",
-    "  MediAssist AI — Healthcare AI assistant for rural patients.",
+    "  MediAssist AI - Healthcare AI assistant for rural patients.",
     "  RAG-based symptom checker with multilingual voice interface.",
     "",
     "## Impact",
@@ -98,18 +98,18 @@ const ACHIEVEMENT_CONTENT: Record<string, string[]> = {
     "All seven are live and serving real users.",
     "",
     "## Products",
-    "  1. TripOnBuddy     — AI travel planner (triponbuddy.in)",
-    "  2. Unyfiny         — B2B SaaS dashboard platform",
-    "  3. DataVerseAI     — Data analytics copilot",
-    "  4. Text2DB         — Natural language to SQL engine",
-    "  5. AK Car Rentals  — Vehicle rental management system",
-    "  6. CMN Services    — Services marketplace",
-    "  7. Prasan Hom      — Hospitality booking platform",
+    "  1. TripOnBuddy     - AI travel planner (triponbuddy.in)",
+    "  2. Unyfiny         - B2B SaaS dashboard platform",
+    "  3. DataVerseAI     - Data analytics copilot",
+    "  4. Text2DB         - Natural language to SQL engine",
+    "  5. AK Car Rentals  - Vehicle rental management system",
+    "  6. CMN Services    - Services marketplace",
+    "  7. Prasan Hom      - Hospitality booking platform",
     "",
     "Run 'ls projects/' or 'nano <project>' for full details.",
   ],
   "freelance-india-usa-japan.md": [
-    "# Freelance Work — India, USA, Japan",
+    "# Freelance Work - India, USA, Japan",
     "",
     "Delivered freelance software projects across 3 countries.",
     "",
@@ -131,7 +131,7 @@ const EDUCATION_CONTENT: Record<string, string[]> = {
     "",
     "Institution: S.G. Balekundari Institute of Technology (SGBIT)",
     "Location:    Belgaum, Karnataka, India",
-    "Duration:    2023 — 2027",
+    "Duration:    2023 - 2027",
     "Status:      Currently enrolled (3rd year)",
     "",
     "## Coursework",
@@ -148,7 +148,7 @@ type TextFile = { name: string; lines: string[] };
 type NanoState = { open: false } | { open: true; project: typeof projects[0] } | { open: true; textFile: TextFile };
 
 /* ══════════════════════════════════════════════════════════
-   GlitchAscii — logo corrupts random chars periodically
+   GlitchAscii - logo corrupts random chars periodically
 ══════════════════════════════════════════════════════════ */
 function GlitchAscii() {
   const [lines, setLines] = useState(ASCII_ART);
@@ -190,7 +190,7 @@ function GlitchAscii() {
 }
 
 /* ══════════════════════════════════════════════════════════
-   AnimatedOutput — lines appear one-by-one with stagger
+   AnimatedOutput - lines appear one-by-one with stagger
 ══════════════════════════════════════════════════════════ */
 function AnimatedOutput({
   lines, type, speed = 22,
@@ -226,7 +226,7 @@ function AnimatedOutput({
 }
 
 /* ══════════════════════════════════════════════════════════
-   LoadingDots — animated spinner for async commands
+   LoadingDots - animated spinner for async commands
 ══════════════════════════════════════════════════════════ */
 function LoadingDots({ message }: { message: string }) {
   const [frame, setFrame] = useState(0);
@@ -277,7 +277,7 @@ function NanoViewer({ state, onClose }: { state: Exclude<NanoState, { open: fals
     return (
       <div className="absolute inset-0 z-50 flex flex-col nano-editor">
         <div className="nano-header px-4 py-1 text-sm flex items-center justify-between">
-          <span>GNU nano 6.2 — {name}</span>
+          <span>GNU nano 6.2 - {name}</span>
           <span>[ Read Only ]</span>
         </div>
         <div className="flex-1 p-6 overflow-auto font-mono text-sm space-y-0.5">
@@ -311,7 +311,7 @@ function NanoViewer({ state, onClose }: { state: Exclude<NanoState, { open: fals
   return (
     <div className="absolute inset-0 z-50 flex flex-col nano-editor">
       <div className="nano-header px-4 py-1 text-sm flex items-center justify-between">
-        <span>GNU nano 6.2 — {project.name}.md</span>
+        <span>GNU nano 6.2 - {project.name}.md</span>
         <span>[ Modified ]</span>
       </div>
       <div className="flex-1 p-6 overflow-auto text-sm">
@@ -360,7 +360,7 @@ function NanoViewer({ state, onClose }: { state: Exclude<NanoState, { open: fals
 }
 
 /* ══════════════════════════════════════════════════════════
-   DevMode — main terminal component
+   DevMode - main terminal component
 ══════════════════════════════════════════════════════════ */
 export default function DevMode() {
   const router = useRouter();
@@ -369,7 +369,7 @@ export default function DevMode() {
     {
       output: [
         "",
-        "SYSTEM://NILESH.SH — Terminal v3.0.0",
+        "SYSTEM://NILESH.SH - Terminal v3.0.0",
         "Last login: " + new Date().toLocaleString() + " from 192.168.1.1",
         "",
         "┌─────────────────────────────────────────────────────────┐",
@@ -512,7 +512,7 @@ export default function DevMode() {
         input: trimmed,
         output: [
           "╔═════════════════════════════════════════════════════════╗",
-          "║  NILESH.SH — TERMINAL REFERENCE                        ║",
+          "║  NILESH.SH - TERMINAL REFERENCE                        ║",
           "╠═════════════════════════════════════════════════════════╣",
           "║  HOW TO USE                                            ║",
           "║  · Type a command and press  Enter  to execute         ║",
@@ -523,38 +523,38 @@ export default function DevMode() {
           "║  · Type  exit    to return to the mode select screen   ║",
           "╠═════════════════════════════════════════════════════════╣",
           "║  IDENTITY                                              ║",
-          "║    whoami                — credentials & bio           ║",
-          "║    neofetch              — system info panel           ║",
+          "║    whoami                - credentials & bio           ║",
+          "║    neofetch              - system info panel           ║",
           "╠═════════════════════════════════════════════════════════╣",
           "║  FILESYSTEM                                            ║",
-          "║    ls                    — list current directory      ║",
-          "║    ls projects/          — list all 20 projects        ║",
-          "║    ls -la                — detailed listing            ║",
-          "║    cd projects           — change into projects/       ║",
-          "║    cd ..                 — go up one level             ║",
-          "║    pwd                   — print working directory     ║",
-          "║    cat README.md         — read about section          ║",
-          "║    cat contact.md        — read contact info           ║",
-          "║    echo <text>           — print text                  ║",
-          "║    history               — show command history        ║",
-          "║    uname -a              — system information          ║",
+          "║    ls                    - list current directory      ║",
+          "║    ls projects/          - list all 20 projects        ║",
+          "║    ls -la                - detailed listing            ║",
+          "║    cd projects           - change into projects/       ║",
+          "║    cd ..                 - go up one level             ║",
+          "║    pwd                   - print working directory     ║",
+          "║    cat README.md         - read about section          ║",
+          "║    cat contact.md        - read contact info           ║",
+          "║    echo <text>           - print text                  ║",
+          "║    history               - show command history        ║",
+          "║    uname -a              - system information          ║",
           "╠═════════════════════════════════════════════════════════╣",
           "║  PROJECTS                                              ║",
-          "║    nano <project-name>   — open project in editor      ║",
-          "║    nano triponbuddy      — (example)    ESC to close   ║",
-          "║    nano mediassist       — (example)    ESC to close   ║",
+          "║    nano <project-name>   - open project in editor      ║",
+          "║    nano triponbuddy      - (example)    ESC to close   ║",
+          "║    nano mediassist       - (example)    ESC to close   ║",
           "╠═════════════════════════════════════════════════════════╣",
           "║  GIT & NETWORK                                         ║",
-          "║    git log               — view commit history         ║",
-          "║    git status            — view working tree status    ║",
-          "║    curl nilesh.dev/skills — fetch skills JSON          ║",
-          "║    ssh nilesh@portfolio.dev — remote access            ║",
-          "║    ping google.com       — network latency test        ║",
+          "║    git log               - view commit history         ║",
+          "║    git status            - view working tree status    ║",
+          "║    curl nilesh.dev/skills - fetch skills JSON          ║",
+          "║    ssh nilesh@portfolio.dev - remote access            ║",
+          "║    ping google.com       - network latency test        ║",
           "╠═════════════════════════════════════════════════════════╣",
           "║  EASTER EGGS                                           ║",
-          "║    ./portfolio.sh        — run the portfolio script    ║",
-          "║    bash portfolio.sh     — same as above               ║",
-          "║    sudo rm -rf boring-portfolio/   — try it            ║",
+          "║    ./portfolio.sh        - run the portfolio script    ║",
+          "║    bash portfolio.sh     - same as above               ║",
+          "║    sudo rm -rf boring-portfolio/   - try it            ║",
           "╚═════════════════════════════════════════════════════════╝",
         ],
         type: "info",
@@ -635,7 +635,7 @@ export default function DevMode() {
           input: trimmed,
           output: isLa
             ? [`total ${projects.length}`, ...projects.map(p => `-rw-r--r--  1 nilesh portfolio  4096 May 02 2026 ${p.id}.md`)]
-            : projects.map(p => `${p.id}.md    — ${p.tagline}`),
+            : projects.map(p => `${p.id}.md    - ${p.tagline}`),
           prompt: snap,
         });
         return;
@@ -652,9 +652,9 @@ export default function DevMode() {
         add({ input: trimmed, output: [EDUCATION_LIST.join("  ")], prompt: snap });
         return;
       }
-      // Skills subdirs — just say no entries (we don't drill into them)
+      // Skills subdirs - just say no entries (we don't drill into them)
       if (target.startsWith("~/skills/")) {
-        add({ input: trimmed, output: ["(no further entries — run 'cd ..' to go back)"], prompt: snap });
+        add({ input: trimmed, output: ["(no further entries - run 'cd ..' to go back)"], prompt: snap });
         return;
       }
       add({ input: trimmed, output: [`ls: cannot access '${target}': No such file or directory`], type: "error", prompt: snap });
@@ -853,15 +853,15 @@ export default function DevMode() {
         runAsync("Reading repository history", 420, [
           "a1b2c3d (HEAD -> main) feat: add agentic commerce protocol",
           "b2c3d4e feat: ship mediassist ai v2.0 with rag pipeline",
-          "c3d4e5f feat: yukti-ai — 1000+ science q&a components",
+          "c3d4e5f feat: yukti-ai - 1000+ science q&a components",
           "d4e5f6a feat: triponbuddy v3 with gemini live integration",
-          "e5f6a7b feat: college erp — full rbac multi-tenant system",
-          "f6a7b8c feat: nasa spaceapps — 1st place local round",
+          "e5f6a7b feat: college erp - full rbac multi-tenant system",
+          "f6a7b8c feat: nasa spaceapps - 1st place local round",
           "a7b8c9d feat: ai social media automation pipeline",
-          "b8c9d0e feat: roofvision ai — satellite roof detection",
+          "b8c9d0e feat: roofvision ai - satellite roof detection",
           "c9d0e1f feat: detox ai android launcher",
-          "d0e1f2a feat: 8th hackathon win — codebharat rs.50k",
-          "e1f2a3b feat: nain 2.0 grant approved — rs.2l funded",
+          "d0e1f2a feat: 8th hackathon win - codebharat rs.50k",
+          "e1f2a3b feat: nain 2.0 grant approved - rs.2l funded",
           "f2a3b4c init: repository initialized",
         ]);
         return;
@@ -965,7 +965,7 @@ export default function DevMode() {
           "Connection established.",
           "Authenticated as: nilesh (uid=1000)",
           "",
-          "Welcome to portfolio.dev — type 'help' to get started.",
+          "Welcome to portfolio.dev - type 'help' to get started.",
         ], "success");
         return;
       }
@@ -979,7 +979,7 @@ export default function DevMode() {
     ) {
       runAsync("Loading Nilesh Patil OS", 1400, [
         "#!/bin/bash",
-        "# portfolio.sh — Nilesh Patil v3.0.0",
+        "# portfolio.sh - Nilesh Patil v3.0.0",
         "",
         "Initializing...",
         "",
@@ -992,7 +992,7 @@ export default function DevMode() {
         "  connecting to portfolio   ... done",
         "",
         "┌────────────────────────────────────────────────────┐",
-        "│  NILESH PATIL — Full Stack & GenAI Engineer        │",
+        "│  NILESH PATIL - Full Stack & GenAI Engineer        │",
         "│  Status: Available for work                        │",
         "│  Location: Belgaum, Karnataka, India               │",
         "└────────────────────────────────────────────────────┘",
@@ -1123,7 +1123,7 @@ export default function DevMode() {
         </div>
         <span className="text-[#00ff88]/50 text-xs font-mono tracking-widest"
               style={{ textShadow: "0 0 8px rgba(0,255,136,0.4)" }}>
-          NILESH.SH — TERMINAL
+          NILESH.SH - TERMINAL
         </span>
         <button
           data-testid="button-back-mode"
@@ -1142,7 +1142,7 @@ export default function DevMode() {
         className="relative z-10 flex-1 overflow-y-auto p-4 space-y-0.5"
         onClick={() => inputRef.current?.focus()}
       >
-        {/* Glitchy ASCII logo — always at top */}
+        {/* Glitchy ASCII logo - always at top */}
         <GlitchAscii />
 
         {/* History entries */}
@@ -1174,7 +1174,7 @@ export default function DevMode() {
         {/* Loading indicator */}
         {loadingCmd && <LoadingDots message={loadingCmd.message} />}
 
-        {/* Input prompt — sits directly below the last output, like a real terminal */}
+        {/* Input prompt - sits directly below the last output, like a real terminal */}
         {!loadingCmd && (
           <div
             ref={inputBarRef}
@@ -1205,7 +1205,7 @@ export default function DevMode() {
           </div>
         )}
 
-        {/* Bottom spacer — gives headroom so the latest entry can scroll up into view */}
+        {/* Bottom spacer - gives headroom so the latest entry can scroll up into view */}
         <div aria-hidden style={{ minHeight: "60vh" }} />
       </div>
     </div>

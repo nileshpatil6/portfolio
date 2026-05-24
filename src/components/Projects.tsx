@@ -93,7 +93,7 @@ function PreviewPanel({ active }: { active: Project }) {
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
     >
-      {/* ── Illustration — fixed 220px ── */}
+      {/* ── Illustration - fixed 220px ── */}
       <div
         className="relative overflow-hidden flex-shrink-0"
         style={{ height: 220, borderRadius: 14, background: "#0a0a0a" }}
@@ -132,7 +132,7 @@ function PreviewPanel({ active }: { active: Project }) {
         )}
       </div>
 
-      {/* ── Info — scrollable remainder ── */}
+      {/* ── Info - scrollable remainder ── */}
       <div className="flex-1 overflow-y-auto pt-4 space-y-2.5" style={{ scrollbarWidth: "none" }}>
 
         {/* Name */}
@@ -404,7 +404,7 @@ export default function Projects() {
     <section id="projects" ref={sectionRef} style={{ background: "var(--bg)" }}>
 
       {/* ── Header ── */}
-      <div className="pt-24 pb-12 px-6 md:px-16 max-w-7xl mx-auto">
+      <div className="pt-16 md:pt-20 pb-10 px-6 md:px-16 max-w-7xl mx-auto">
         <div className="divider mb-20" />
 
         <div className="flex items-end justify-between gap-8 flex-wrap mb-2">
@@ -445,14 +445,14 @@ export default function Projects() {
 
       {/* ── Split / List ── */}
       <div
-        className="px-6 md:px-16 pb-8 max-w-7xl mx-auto"
+        className="px-6 md:px-16 pb-16 md:pb-20 max-w-7xl mx-auto"
         style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : "5fr 4fr",
           gap: "clamp(24px, 4vw, 56px)",
         }}
       >
-        {/* LEFT — project list */}
+        {/* LEFT - project list */}
         <div ref={listRef}>
           {ROWS.map((row, i) => {
             if (row.type === "bucket") {
@@ -493,7 +493,7 @@ export default function Projects() {
           })}
         </div>
 
-        {/* RIGHT — sticky preview (desktop only) */}
+        {/* RIGHT - sticky preview (desktop only) */}
         {!isMobile && (
           <div style={{ position: "relative", height: leftH ? leftH + "px" : "auto" }}>
             <div

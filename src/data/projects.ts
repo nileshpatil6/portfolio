@@ -32,7 +32,7 @@ export const projects: Project[] = [
     description: "Co-founded dual-app healthcare system (patient + doctor) with AI voice assistant using Whisper, GPT-4o, and TTS. Prescription scanning via OCR, medication reminders, Emergency SOS, multilingual support.",
     tech: ["Flutter", "Dart", "Supabase", "OpenAI GPT-4o", "Whisper", "Google Maps", "Firebase"],
     category: "AI/Mobile",
-    highlight: "Rs.2L Funded — Govt. of Karnataka NAIN 2.0",
+    highlight: "Rs.2L Funded - Govt. of Karnataka NAIN 2.0",
     color: "#00ff88",
   },
   {
@@ -60,7 +60,7 @@ export const projects: Project[] = [
     id: "detox-ai",
     name: "Detox AI",
     tagline: "Android Digital Wellness Launcher",
-    description: "Full Android home screen replacement enforcing screen time limits with monochrome UI. Agentic AI task-verification loop using Gemini 2.5 Flash — users earn phone time by completing real tasks.",
+    description: "Full Android home screen replacement enforcing screen time limits with monochrome UI. Agentic AI task-verification loop using Gemini 2.5 Flash - users earn phone time by completing real tasks.",
     tech: ["Flutter", "Dart", "Kotlin", "Gemini 2.5 Flash", "AccessibilityService", "UsageStatsAPI", "Hive"],
     category: "AI/Mobile",
     githubUrl: "https://github.com/nileshpatil6",
@@ -107,7 +107,7 @@ export const projects: Project[] = [
   {
     id: "promptinject",
     name: "PromptInject Environment",
-    tagline: "AI Security Research — Prompt Injection",
+    tagline: "AI Security Research - Prompt Injection",
     description: "Research environment for studying prompt injection attacks on AI agents. Deployed on HuggingFace Spaces for the security research community.",
     tech: ["Python", "Agentic AI", "Security Research", "HuggingFace Spaces"],
     category: "AI/ML",
@@ -169,7 +169,7 @@ export const projects: Project[] = [
   {
     id: "prasanhom",
     name: "Prasan Hom",
-    tagline: "Interior Design Firm — Freelance",
+    tagline: "Interior Design Firm - Freelance",
     description: "Premium interior design firm website built for a client. Elegant Next.js + Tailwind implementation with sophisticated animations and a luxury aesthetic.",
     tech: ["Next.js", "TypeScript", "Tailwind CSS"],
     category: "Freelance",
@@ -180,7 +180,7 @@ export const projects: Project[] = [
   {
     id: "unyfiny",
     name: "Unyfiny",
-    tagline: "Live Production Platform — Freelance",
+    tagline: "Live Production Platform - Freelance",
     description: "Live production web platform built for an international client. Full-stack solution with real users currently active on the platform.",
     tech: ["React", "Next.js", "TypeScript"],
     category: "Freelance",
@@ -190,7 +190,7 @@ export const projects: Project[] = [
   {
     id: "akcarrentals",
     name: "AK Car Rentals",
-    tagline: "Car Rental Platform — Freelance",
+    tagline: "Car Rental Platform - Freelance",
     description: "Full-featured car rental booking platform with vehicle management, booking system, and admin dashboard. Currently live with real customers.",
     tech: ["React", "TypeScript", "Node.js"],
     category: "Freelance",
@@ -200,7 +200,7 @@ export const projects: Project[] = [
   {
     id: "cmn",
     name: "CMN Services India",
-    tagline: "Enterprise Services Platform — Freelance",
+    tagline: "Enterprise Services Platform - Freelance",
     description: "Corporate services platform for CMN Services India. Professional web presence with service catalog, lead generation, and client portal.",
     tech: ["React", "TypeScript", "Next.js"],
     category: "Freelance",

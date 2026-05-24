@@ -84,7 +84,7 @@ export default function Contact() {
   }, []);
 
   return (
-    <section id="contact" ref={sectionRef} className="relative pt-24 pb-10 md:pt-32 md:pb-12 px-6 md:px-16 overflow-hidden">
+    <section id="contact" ref={sectionRef} className="relative pt-20 pb-10 md:pt-24 md:pb-12 px-6 md:px-16 overflow-hidden">
 
       {/* Blob left */}
       <div className="cb1 absolute pointer-events-none" style={{
@@ -150,7 +150,7 @@ export default function Contact() {
               }}
             >
               <div className="flex items-start sm:items-center justify-between gap-2">
-                {/* Label + value — stacked on mobile, row on sm+ */}
+                {/* Label + value - stacked on mobile, row on sm+ */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-8 min-w-0 flex-1">
                   <span
                     className="section-label flex-shrink-0 sm:w-28 mb-0.5 sm:mb-0"

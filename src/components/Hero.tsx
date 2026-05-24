@@ -113,7 +113,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative min-h-[115vh] flex flex-col justify-end pb-28 pt-32 px-6 md:px-16 overflow-hidden">
+    <section ref={sectionRef} className="relative min-h-[100vh] flex flex-col justify-end pb-16 pt-24 md:pb-20 md:pt-28 px-6 md:px-16 overflow-hidden">
 
       {/* Giant blob 1 */}
       <div className="hb1 absolute pointer-events-none" style={{
@@ -166,10 +166,10 @@ export default function Hero() {
 
       <div className="hero-inner max-w-7xl w-full relative z-10">
 
-        {/* ── NAME — dramatic stacked display ── */}
+        {/* ── NAME - dramatic stacked display ── */}
         <div className="mb-8 select-none" style={{ overflow: "hidden" }}>
           <div style={{ lineHeight: 0.86, letterSpacing: "-0.045em" }}>
-            {/* NILESH — ultra-light italic, outlined */}
+            {/* NILESH - ultra-light italic, outlined */}
             <div
               className="hero-name-first font-serif block"
               style={{
@@ -183,7 +183,7 @@ export default function Hero() {
             >
               Nilesh
             </div>
-            {/* PATIL — ultra-bold filled */}
+            {/* PATIL - ultra-bold filled */}
             <div
               className="hero-name-last font-serif block"
               style={{
@@ -201,7 +201,7 @@ export default function Hero() {
         <div className="flex items-center gap-2 mb-8 anim-fade-in" style={{ animationDelay: "2.2s" }}>
           <div className="status-dot" />
           <span className="section-label" style={{ color: "var(--fg-muted)" }}>
-            Available for work — Belgaum, Karnataka
+            Available for work - Belgaum, Karnataka
           </span>
         </div>
 

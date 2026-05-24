@@ -61,7 +61,7 @@ export default function ModeSelect() {
         }`}
       >
         {/* Label */}
-        <p className="section-label mb-8 tracking-[0.22em]">nilesh s. patil — portfolio</p>
+        <p className="section-label mb-8 tracking-[0.22em]">nilesh s. patil - portfolio</p>
 
         {/* Big headline */}
         <div className="text-center mb-16 max-w-4xl">
@@ -117,7 +117,7 @@ export default function ModeSelect() {
               <em>Portfolio</em>
             </h2>
             <p className="text-sm leading-relaxed opacity-70">
-              Editorial portfolio. Projects, skills, story — all in one scroll.
+              Editorial portfolio. Projects, skills, story - all in one scroll.
             </p>
             <div className="mt-6 flex items-center gap-2 text-sm font-medium">
               <span>Enter</span>

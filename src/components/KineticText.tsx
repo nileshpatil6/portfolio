@@ -63,7 +63,7 @@ export default function KineticText() {
      * IMPORTANT: do NOT set overflow: hidden on this section.
      * overflow: hidden makes the section a scroll container which
      * breaks position: sticky on child rows (sticky needs to track
-     * the nearest scrollable ancestor — the page, not this section).
+     * the nearest scrollable ancestor - the page, not this section).
      */
     <section
       ref={sectionRef}
@@ -101,7 +101,7 @@ export default function KineticText() {
               zIndex:       li + 1,
             }}
           >
-            {/* Sticky panel — visible for the full ROW_VH scroll range */}
+            {/* Sticky panel - visible for the full ROW_VH scroll range */}
             <div style={{
               position:       "sticky",
               top:            0,
@@ -128,7 +128,7 @@ export default function KineticText() {
                 {chars.map((char, ci) => (
                   <div key={ci} style={{ position: "relative", display: "inline-block" }}>
 
-                    {/* ── Main char — squishes from its top edge downward ── */}
+                    {/* ── Main char - squishes from its top edge downward ── */}
                     <span
                       className="kt-main"
                       style={{
@@ -147,7 +147,7 @@ export default function KineticText() {
                       {char}
                     </span>
 
-                    {/* ── Drip — grows downward below the collapsing char ── */}
+                    {/* ── Drip - grows downward below the collapsing char ── */}
                     {/*
                      * No React-controlled transform here.
                      * GSAP fully owns scaleY + opacity via gsap.set() + tl.to()
@@ -168,7 +168,7 @@ export default function KineticText() {
                         fontWeight:      isFill ? 900 : 100,
                         fontStyle:       isFill ? "normal" : "italic",
                         lineHeight:      0.88,
-                        /* drip colour — strong enough to read on light bg */
+                        /* drip colour - strong enough to read on light bg */
                         color: isFill
                           ? "color-mix(in srgb, var(--fg) 65%, transparent)"
                           : "transparent",
@@ -178,7 +178,7 @@ export default function KineticText() {
                         /* fade out toward the bottom so it reads as a drip */
                         maskImage:       "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 75%)",
                         WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 75%)",
-                        /* GSAP sets scaleY / opacity — no transform here */
+                        /* GSAP sets scaleY / opacity - no transform here */
                       }}
                     >
                       {char}

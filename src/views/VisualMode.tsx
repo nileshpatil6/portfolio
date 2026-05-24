@@ -329,7 +329,7 @@ function Nav() {
               </button>
             </div>
 
-            {/* Hamburger — mobile only */}
+            {/* Hamburger - mobile only */}
             <button
               className="md:hidden flex flex-col justify-center gap-1.5 w-8 h-8 p-1"
               onClick={() => setMobileOpen(o => !o)}
