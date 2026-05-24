@@ -87,11 +87,12 @@ function PreviewPanel({ active }: { active: Project }) {
   return (
     <motion.div
       key={active.id}
-      className="flex flex-col h-full"
+      className="flex flex-col"
       initial={{ opacity: 0, y: 22 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      style={{ maxHeight: "100%" }}
     >
       {/* ── Illustration — fixed 220px ── */}
       <div
@@ -132,8 +133,8 @@ function PreviewPanel({ active }: { active: Project }) {
         )}
       </div>
 
-      {/* ── Info — scrollable remainder ── */}
-      <div className="flex-1 overflow-y-auto pt-4 space-y-2.5" style={{ scrollbarWidth: "none" }}>
+      {/* ── Info ── */}
+      <div className="overflow-y-auto pt-4 space-y-2.5" style={{ scrollbarWidth: "none", minHeight: 0 }}>
 
         {/* Name */}
         <div className="flex items-start gap-2.5">
@@ -359,7 +360,7 @@ export default function Projects() {
     const els = listRef.current.querySelectorAll<HTMLElement>("[data-pid]");
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => { if (e.isIntersecting) setActiveId((e.target as HTMLElement).dataset.pid!); });
-    }, { root: null, rootMargin: "-10% 0px -85% 0px", threshold: 0 });
+    }, { root: null, rootMargin: "-20% 0px -85% 0px", threshold: 0 });
     els.forEach(el => io.observe(el));
     return () => io.disconnect();
   }, []);
@@ -474,12 +475,18 @@ export default function Projects() {
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              paddingTop: 76,
-              paddingBottom: 32,
+              alignItems: "stretch",
               boxSizing: "border-box",
             }}
           >
-            <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                width: "100%",
+                maxHeight: "calc(100vh - 120px)",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
               <AnimatePresence mode="wait">
                 <PreviewPanel key={activeId} active={active} />
               </AnimatePresence>
