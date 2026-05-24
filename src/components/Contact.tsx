@@ -111,7 +111,7 @@ export default function Contact() {
   }, []);
 
   return (
-    <section id="contact" ref={sectionRef} className="relative pt-32 pb-12 md:pt-40 md:pb-16 px-6 md:px-16 overflow-hidden">
+    <section id="contact" ref={sectionRef} className="relative pt-24 pb-10 md:pt-32 md:pb-12 px-6 md:px-16 overflow-hidden">
 
       {/* Blob left */}
       <div className="cb1 absolute pointer-events-none" style={{
@@ -131,10 +131,10 @@ export default function Contact() {
         willChange: "transform, border-radius, opacity",
       }} />
 
-      <div className="divider mb-20" />
+      <div className="divider mb-12" />
       <div className="max-w-7xl mx-auto relative z-10">
 
-        <div className="mb-24">
+        <div className="mb-14">
           <p className="section-label mb-6">07 / 07 · Let's talk</p>
           <h2 className="contact-headline font-serif" style={{
             fontSize: "clamp(2.4rem, 9vw, 8rem)",
@@ -201,7 +201,7 @@ export default function Contact() {
           ))}
         </div>
 
-        <div className="mt-16 pt-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3" style={{ borderTop: "1px solid var(--border-color)" }}>
+        <div className="mt-10 pt-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-3" style={{ borderTop: "1px solid var(--border-color)" }}>
           <p className="section-label">© {new Date().getFullYear()} Nilesh S. Patil · Belgaum, India</p>
           <div className="flex flex-wrap items-center gap-3 md:gap-5">
             <a href="https://github.com/nileshpatil6" target="_blank" rel="noopener noreferrer" className="section-label hover:text-[var(--fg)] transition-colors" data-cursor-text="GitHub ↗">GitHub</a>

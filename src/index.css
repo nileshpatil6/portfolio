@@ -429,25 +429,28 @@
 }
 .btn-outline:hover { border-color: var(--fg); transform: translateY(-1px); }
 
-/* ─── THEME TOGGLE ───────────────────────────────────── */
-.theme-toggle {
-  width: 36px; height: 20px;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-elevated);
-  position: relative;
-  cursor: none;
-  transition: background 0.2s, border-color 0.2s;
-}
-.theme-toggle-thumb {
-  position: absolute;
-  top: 2px; left: 2px;
-  width: 14px; height: 14px;
+/* ─── THEME TOGGLE (sun/moon) ────────────────────────── */
+.theme-icon-toggle {
+  width: 32px; height: 32px;
   border-radius: 50%;
-  background: var(--fg);
-  transition: transform 0.2s cubic-bezier(0.16,1,0.3,1);
+  border: 1px solid var(--border-color);
+  background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  transition: border-color 0.2s, background 0.2s;
+  color: var(--fg);
 }
-.dark .theme-toggle-thumb { transform: translateX(16px); }
+.theme-icon-toggle:hover { background: var(--bg-elevated); }
+.theme-icon-sun,
+.theme-icon-moon {
+  position: absolute;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s;
+}
+.theme-icon-sun  { transform: translateY(0) rotate(0deg);      opacity: 1; }
+.theme-icon-moon { transform: translateY(24px) rotate(-30deg); opacity: 0; }
+.dark .theme-icon-sun  { transform: translateY(-24px) rotate(30deg); opacity: 0; }
+.dark .theme-icon-moon { transform: translateY(0)  rotate(0deg);     opacity: 1; }
 
 /* ─── HORIZONTAL SCROLL ──────────────────────────────── */
 .h-scroll-track {

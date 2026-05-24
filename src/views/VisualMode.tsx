@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/lib/theme";
+import { Sun, Moon, TerminalSquare } from "lucide-react";
 import FlowBackground from "@/components/FlowBackground";
 import Hero from "@/components/Hero";
 import LandsatName from "@/components/LandsatName";
@@ -82,16 +83,23 @@ function Nav() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button onClick={toggle} className="theme-toggle" aria-label="Toggle theme">
-              <div className="theme-toggle-thumb" />
+            <button
+              onClick={toggle}
+              aria-label="Toggle theme"
+              className="theme-icon-toggle"
+              style={{ cursor: "inherit" }}
+            >
+              <span className="theme-icon-sun"><Sun size={16} strokeWidth={2} /></span>
+              <span className="theme-icon-moon"><Moon size={16} strokeWidth={2} /></span>
             </button>
             <div className="hidden md:block">
               <button
                 data-testid="button-nav-terminal"
                 onClick={() => router.push("/dev")}
-                className="btn-outline"
+                className="btn-outline flex items-center gap-1.5"
                 style={{ fontSize: "0.68rem", padding: "0.4rem 1rem" }}
               >
+                <TerminalSquare size={13} strokeWidth={2} />
                 Terminal
               </button>
             </div>
