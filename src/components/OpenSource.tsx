@@ -133,7 +133,7 @@ const merges: Merge[] = [
     title: "Allow wildcard-only args like Read(*) and Skill(*) in claude-code-settings",
     url: "https://github.com/SchemaStore/schemastore/pull/5707",
     impact: "Extended the Claude Code settings JSON schema consumed by VS Code, JetBrains, Sublime, and every editor that imports SchemaStore. Wildcard tool args no longer trigger false validation errors.",
-    weight: "major",
+    weight: "flagship",
     stack: ["JSON Schema", "DX"],
     accent: "#7c3aed",
   },
