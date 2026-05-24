@@ -25,13 +25,15 @@ const OrgLogo = ({ org, size = 20 }: { org: string; size?: number }) => {
       <path d="M12.025 1.13c-5.77 0-10.449 4.647-10.449 10.378 0 1.112.178 2.181.503 3.185.064-.222.203-.444.416-.577a.96.96 0 0 1 .524-.15c.293 0 .584.124.84.284.278.173.48.408.71.694.226.282.458.611.684.951v-.014c.017-.324.106-.622.264-.874s.403-.487.762-.543c.3-.047.596.06.787.203s.31.313.4.467c.15.257.212.468.233.542.01.026.653 1.552 1.657 2.54.616.605 1.01 1.223 1.082 1.912.055.537-.096 1.059-.38 1.572.637.121 1.294.187 1.967.187.657 0 1.298-.063 1.921-.178-.287-.517-.44-1.041-.384-1.581.07-.69.465-1.307 1.081-1.913 1.004-.987 1.647-2.513 1.657-2.539.021-.074.083-.285.233-.542.09-.154.208-.323.4-.467a1.08 1.08 0 0 1 .787-.203c.359.056.604.29.762.543s.247.55.265.874v.015c.225-.34.457-.67.683-.952.23-.286.432-.52.71-.694.257-.16.547-.284.84-.285a.97.97 0 0 1 .524.151c.228.143.373.388.43.625l.006.04a10.3 10.3 0 0 0 .534-3.273c0-5.731-4.678-10.378-10.449-10.378M8.327 6.583a1.5 1.5 0 0 1 .713.174 1.487 1.487 0 0 1 .617 2.013c-.183.343-.762-.214-1.102-.094-.38.134-.532.914-.917.71a1.487 1.487 0 0 1 .69-2.803m7.486 0a1.487 1.487 0 0 1 .689 2.803c-.385.204-.536-.576-.916-.71-.34-.12-.92.437-1.103.094a1.487 1.487 0 0 1 .617-2.013 1.5 1.5 0 0 1 .713-.174m-10.68 1.55a.96.96 0 1 1 0 1.921.96.96 0 0 1 0-1.92m13.838 0a.96.96 0 1 1 0 1.92.96.96 0 0 1 0-1.92M8.489 11.458c.588.01 1.965 1.157 3.572 1.164 1.607-.007 2.984-1.155 3.572-1.164.196-.003.305.12.305.454 0 .886-.424 2.328-1.563 3.202-.22-.756-1.396-1.366-1.63-1.32q-.011.001-.02.006l-.044.026-.01.008-.03.024q-.018.017-.035.036l-.032.04a1 1 0 0 0-.058.09l-.014.025q-.049.088-.11.19a1 1 0 0 1-.083.116 1.2 1.2 0 0 1-.173.18q-.035.029-.075.058a1.3 1.3 0 0 1-.251-.243 1 1 0 0 1-.076-.107c-.124-.193-.177-.363-.337-.444-.034-.016-.104-.008-.2.022q-.094.03-.216.087-.06.028-.125.063l-.13.074q-.067.04-.136.086a3 3 0 0 0-.135.096 3 3 0 0 0-.26.219 2 2 0 0 0-.12.121 2 2 0 0 0-.106.128l-.002.002a2 2 0 0 0-.09.132l-.001.001a1.2 1.2 0 0 0-.105.212q-.013.036-.024.073c-1.139-.875-1.563-2.317-1.563-3.203 0-.334.109-.457.305-.454m.836 10.354c.824-1.19.766-2.082-.365-3.194-1.13-1.112-1.789-2.738-1.789-2.738s-.246-.945-.806-.858-.97 1.499.202 2.362c1.173.864-.233 1.45-.685.64-.45-.812-1.683-2.896-2.322-3.295s-1.089-.175-.938.647 2.822 2.813 2.562 3.244-1.176-.506-1.176-.506-2.866-2.567-3.49-1.898.473 1.23 2.037 2.16c1.564.932 1.686 1.178 1.464 1.53s-3.675-2.511-4-1.297c-.323 1.214 3.524 1.567 3.287 2.405-.238.839-2.71-1.587-3.216-.642-.506.946 3.49 2.056 3.522 2.064 1.29.33 4.568 1.028 5.713-.624m5.349 0c-.824-1.19-.766-2.082.365-3.194 1.13-1.112 1.789-2.738 1.789-2.738s.246-.945.806-.858.97 1.499-.202 2.362c-1.173.864.233 1.45.685.64.451-.812 1.683-2.896 2.322-3.295s1.089-.175.938.647-2.822 2.813-2.562 3.244 1.176-.506 1.176-.506 2.866-2.567 3.49-1.898-.473 1.23-2.037 2.16c-1.564.932-1.686 1.178-1.464 1.53s3.675-2.511 4-1.297c.323 1.214-3.524 1.567-3.287 2.405.238.839 2.71-1.587 3.216-.642.506.946-3.49 2.056-3.522 2.064-1.29.33-4.568 1.028-5.713-.624" />
     </svg>
   );
-  // SchemaStore
+  // SchemaStore — official JSON logo
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
-      <rect x="2" y="3" width="20" height="18" rx="3" stroke="#7c3aed" strokeWidth="1.8" />
-      <path d="M8 9l-3 3 3 3M16 9l3 3-3 3" stroke="#7c3aed" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M13 8l-2 8" stroke="#a78bfa" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
+    <img
+      src="/logos/schemastore.png"
+      alt="SchemaStore"
+      width={size}
+      height={size}
+      style={{ flexShrink: 0, display: "block", objectFit: "contain" }}
+    />
   );
 };
 
@@ -110,30 +112,139 @@ export default function OpenSource() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Headline: dramatic scale + slide
       gsap.from(".os-headline", {
-        y: 60, opacity: 0, duration: 1.1, ease: "expo.out",
+        scale: 0.6, y: 100, opacity: 0, duration: 1.4, ease: "expo.out",
         scrollTrigger: { trigger: ".os-headline", start: "top 85%", once: true },
       });
 
-      gsap.from(".os-stat", {
-        y: 30, opacity: 0, duration: 0.8, stagger: 0.1, ease: "expo.out",
-        scrollTrigger: { trigger: ".os-stats", start: "top 88%", once: true },
+      // Subhead fade
+      gsap.from(".os-subhead", {
+        y: 30, opacity: 0, duration: 1, delay: 0.2, ease: "expo.out",
+        scrollTrigger: { trigger: ".os-headline", start: "top 85%", once: true },
       });
 
-      gsap.from(".os-logo-chip", {
-        y: 40, opacity: 0, scale: 0.85, duration: 0.7, stagger: 0.08, ease: "back.out(1.6)",
-        scrollTrigger: { trigger: ".os-logos", start: "top 88%", once: true },
+      // Stats: each pops in from a different direction with rotation
+      gsap.utils.toArray<HTMLElement>(".os-stat").forEach((stat, i) => {
+        gsap.from(stat, {
+          y: i % 2 === 0 ? -120 : 120,
+          x: i === 0 ? -80 : i === 3 ? 80 : 0,
+          opacity: 0,
+          scale: 0.5,
+          rotation: (i - 1.5) * 8,
+          duration: 1.1,
+          delay: i * 0.08,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".os-stats", start: "top 90%", once: true },
+        });
       });
 
-      gsap.fromTo(".os-card",
-        { y: 60, opacity: 0 },
-        {
-          y: 0, opacity: 1, duration: 0.9, stagger: 0.1, ease: "expo.out",
-          scrollTrigger: { trigger: ".os-cards", start: "top 95%", once: true },
-          immediateRender: false,
-          clearProps: "transform,opacity",
+      // Stat numbers count up
+      gsap.utils.toArray<HTMLElement>(".os-stat-num").forEach((el) => {
+        const target = el.getAttribute("data-target");
+        if (!target) return;
+        const num = parseInt(target, 10);
+        if (isNaN(num)) return;
+        const suffix = el.getAttribute("data-suffix") ?? "";
+        const obj = { v: 0 };
+        gsap.to(obj, {
+          v: num,
+          duration: 1.6,
+          delay: 0.3,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".os-stats", start: "top 90%", once: true },
+          onUpdate: () => { el.textContent = Math.round(obj.v) + suffix; },
+        });
+      });
+
+      // Logo chips: fly in from radial positions with rotation
+      gsap.utils.toArray<HTMLElement>(".os-logo-chip").forEach((chip, i) => {
+        const angle = (i / 4) * Math.PI * 2;
+        gsap.from(chip, {
+          x: Math.cos(angle) * 300,
+          y: Math.sin(angle) * 200,
+          rotation: (Math.random() - 0.5) * 90,
+          opacity: 0,
+          scale: 0.3,
+          duration: 1.2,
+          delay: i * 0.1,
+          ease: "expo.out",
+          scrollTrigger: { trigger: ".os-logos", start: "top 88%", once: true },
+        });
+      });
+
+      // Cards: alternate sides with rotation + scale, dramatic stagger
+      gsap.utils.toArray<HTMLElement>(".os-card").forEach((card, i) => {
+        const fromLeft = i % 2 === 0;
+        gsap.fromTo(card,
+          {
+            x: fromLeft ? -250 : 250,
+            opacity: 0,
+            rotation: fromLeft ? -6 : 6,
+            scale: 0.85,
+          },
+          {
+            x: 0, opacity: 1, rotation: 0, scale: 1,
+            duration: 1.2,
+            delay: i * 0.12,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".os-cards", start: "top 92%", once: true },
+            immediateRender: false,
+            clearProps: "transform",
+          }
+        );
+
+        // Org logo inside card pops with bounce
+        const logo = card.querySelector(".os-card-orglogo");
+        if (logo) {
+          gsap.from(logo, {
+            scale: 0,
+            rotation: -180,
+            duration: 0.9,
+            delay: i * 0.12 + 0.4,
+            ease: "back.out(2)",
+            scrollTrigger: { trigger: ".os-cards", start: "top 92%", once: true },
+          });
         }
-      );
+
+        // Accent line draws in
+        const accent = card.querySelector(".os-card-accent");
+        if (accent) {
+          gsap.from(accent, {
+            scaleY: 0,
+            transformOrigin: "top center",
+            duration: 0.8,
+            delay: i * 0.12 + 0.3,
+            ease: "expo.out",
+            scrollTrigger: { trigger: ".os-cards", start: "top 92%", once: true },
+          });
+        }
+      });
+
+      // Background grid parallax + opacity pulse
+      gsap.to(".os-bg-grid", {
+        y: -150,
+        opacity: 0.045,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1.5,
+        }
+      });
+
+      // Background morph blob
+      gsap.to(".os-bg-blob", {
+        y: -200,
+        rotation: 60,
+        borderRadius: "40% 60% 30% 70% / 60% 30% 70% 40%",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 2,
+        }
+      });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -146,11 +257,23 @@ export default function OpenSource() {
     >
       {/* Subtle code-pattern background */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.025]"
+        className="os-bg-grid absolute inset-0 pointer-events-none opacity-[0.025]"
         style={{
           backgroundImage:
             "linear-gradient(var(--fg) 1px, transparent 1px), linear-gradient(90deg, var(--fg) 1px, transparent 1px)",
           backgroundSize: "48px 48px",
+        }}
+      />
+
+      {/* Morphing blob */}
+      <div
+        className="os-bg-blob absolute pointer-events-none"
+        style={{
+          width: "min(70vw, 600px)", height: "min(70vw, 600px)",
+          top: "20%", right: "-25%",
+          background: "var(--fg)", opacity: 0.035,
+          borderRadius: "60% 40% 55% 45% / 45% 55% 40% 60%",
+          willChange: "transform, border-radius",
         }}
       />
 
@@ -179,7 +302,7 @@ export default function OpenSource() {
             developers actually use.
           </strong>
         </h2>
-        <p className="max-w-2xl mb-12 md:mb-16 leading-relaxed"
+        <p className="os-subhead max-w-2xl mb-12 md:mb-16 leading-relaxed"
            style={{ fontSize: "clamp(0.95rem, 1.3vw, 1.05rem)", color: "var(--fg-muted)" }}>
           Not just opened. <span style={{ color: "var(--fg)", fontWeight: 600 }}>Merged.</span>{" "}
           Code I&apos;ve written that now ships inside the toolchains of OpenAI, Google,
@@ -190,18 +313,21 @@ export default function OpenSource() {
         <div className="os-stats grid grid-cols-2 md:grid-cols-4 gap-px mb-12 md:mb-14"
              style={{ background: "var(--border-color)", border: "1px solid var(--border-color)" }}>
           {[
-            { n: "5+",  label: "PRs merged",     sub: "in 2026 alone" },
-            { n: "4",   label: "Major orgs",     sub: "OpenAI · Google · HF · SchemaStore" },
-            { n: "3",   label: "Languages",      sub: "Python · Go · TypeScript" },
-            { n: "100%", label: "Merge rate",    sub: "on production codebases" },
+            { target: 5,   suffix: "+", label: "PRs merged",  sub: "in 2026 alone" },
+            { target: 4,   suffix: "",  label: "Major orgs",  sub: "OpenAI · Google · HF · SchemaStore" },
+            { target: 3,   suffix: "",  label: "Languages",   sub: "Python · Go · TypeScript" },
+            { target: 100, suffix: "%", label: "Merge rate",  sub: "on production codebases" },
           ].map(s => (
             <div key={s.label}
                  className="os-stat p-5 md:p-6"
                  style={{ background: "var(--bg)" }}>
-              <p className="font-serif" style={{
-                fontSize: "clamp(1.8rem, 3.4vw, 2.6rem)",
-                fontWeight: 700, color: "var(--fg)", lineHeight: 1,
-              }}>{s.n}</p>
+              <p className="os-stat-num font-serif"
+                 data-target={s.target}
+                 data-suffix={s.suffix}
+                 style={{
+                   fontSize: "clamp(1.8rem, 3.4vw, 2.6rem)",
+                   fontWeight: 700, color: "var(--fg)", lineHeight: 1,
+                 }}>0{s.suffix}</p>
               <p className="mt-2 text-sm font-medium" style={{ color: "var(--fg)" }}>{s.label}</p>
               <p className="mt-1 section-label" style={{ fontSize: "0.6rem" }}>{s.sub}</p>
             </div>
@@ -251,7 +377,7 @@ export default function OpenSource() {
               {/* Flagship accent line */}
               {m.weight === "flagship" && (
                 <span
-                  className="absolute left-0 top-5 md:top-7 bottom-5 md:bottom-7 w-[3px] rounded-full"
+                  className="os-card-accent absolute left-0 top-5 md:top-7 bottom-5 md:bottom-7 w-[3px] rounded-full"
                   style={{ background: m.accent }}
                 />
               )}
@@ -260,7 +386,7 @@ export default function OpenSource() {
                 {/* Left: org logo + name + repo */}
                 <div className="md:w-52 flex-shrink-0 mb-4 md:mb-0">
                   <div
-                    className="inline-flex items-center gap-2.5 px-3 py-2 rounded-xl mb-2.5"
+                    className="os-card-orglogo inline-flex items-center gap-2.5 px-3 py-2 rounded-xl mb-2.5"
                     style={{ background: `${m.accent}12`, border: `1px solid ${m.accent}30` }}
                   >
                     <OrgLogo org={m.org} size={22} />
