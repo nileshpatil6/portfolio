@@ -87,12 +87,11 @@ function PreviewPanel({ active }: { active: Project }) {
   return (
     <motion.div
       key={active.id}
-      className="flex flex-col"
+      className="flex flex-col h-full"
       initial={{ opacity: 0, y: 22 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-      style={{ maxHeight: "100%" }}
     >
       {/* ── Illustration — fixed 220px ── */}
       <div
@@ -133,8 +132,8 @@ function PreviewPanel({ active }: { active: Project }) {
         )}
       </div>
 
-      {/* ── Info ── */}
-      <div className="overflow-y-auto pt-4 space-y-2.5" style={{ scrollbarWidth: "none", minHeight: 0 }}>
+      {/* ── Info — scrollable remainder ── */}
+      <div className="flex-1 overflow-y-auto pt-4 space-y-2.5" style={{ scrollbarWidth: "none" }}>
 
         {/* Name */}
         <div className="flex items-start gap-2.5">
@@ -470,27 +469,16 @@ export default function Projects() {
           <div
             style={{
               position: "sticky",
-              top: 0,
-              height: "100vh",
+              top: "10vh",
+              height: "80vh",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "stretch",
               boxSizing: "border-box",
             }}
           >
-            <div
-              style={{
-                width: "100%",
-                maxHeight: "calc(100vh - 120px)",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <AnimatePresence mode="wait">
-                <PreviewPanel key={activeId} active={active} />
-              </AnimatePresence>
-            </div>
+            <AnimatePresence mode="wait">
+              <PreviewPanel key={activeId} active={active} />
+            </AnimatePresence>
           </div>
         )}
       </div>
