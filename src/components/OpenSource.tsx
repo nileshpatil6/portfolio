@@ -6,6 +6,41 @@ import { ArrowUpRight, GitMerge } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const getOrgChipStyle = (org: string, accent: string): React.CSSProperties => {
+  if (org === "OpenAI") {
+    return {
+      background: "linear-gradient(135deg, rgba(120,120,120,0.18) 0%, rgba(0,0,0,0.04) 100%)",
+      border: "1px solid rgba(0,0,0,0.18)",
+    };
+  }
+  if (org === "Google") {
+    return {
+      background:
+        "linear-gradient(135deg, rgba(66,133,244,0.14) 0%, rgba(52,168,83,0.12) 35%, rgba(251,188,5,0.14) 65%, rgba(234,67,53,0.14) 100%)",
+      borderWidth: "1px",
+      borderStyle: "solid",
+      borderImage:
+        "linear-gradient(135deg, #4285F4 0%, #34A853 33%, #FBBC05 66%, #EA4335 100%) 1",
+    };
+  }
+  if (org === "SchemaStore") {
+    return {
+      background:
+        "linear-gradient(135deg, rgba(0,0,0,0.22) 0%, rgba(120,120,120,0.10) 50%, rgba(0,0,0,0.04) 100%)",
+      border: "1px solid rgba(0,0,0,0.25)",
+    };
+  }
+  return {
+    background: `${accent}14`,
+    border: `1px solid ${accent}55`,
+  };
+};
+
+const getOrgTextColor = (org: string, accent: string): string => {
+  if (org === "OpenAI" || org === "SchemaStore" || org === "Google") return "var(--fg)";
+  return accent;
+};
+
 const OrgLogo = ({ org, size = 20 }: { org: string; size?: number }) => {
   if (org === "OpenAI") return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" style={{ color: "var(--fg)", flexShrink: 0 }}>
@@ -354,12 +389,9 @@ export default function OpenSource() {
             ].map(org => (
               <div key={org.name}
                    className="os-logo-chip flex items-center gap-2.5 px-4 py-2.5 rounded-full"
-                   style={{
-                     border: `1px solid ${org.accent}40`,
-                     background: `${org.accent}0d`,
-                   }}>
+                   style={getOrgChipStyle(org.name, org.accent)}>
                 <OrgLogo org={org.name} size={18} />
-                <span className="text-sm font-semibold" style={{ color: "var(--fg)" }}>
+                <span className="text-sm font-semibold" style={{ color: getOrgTextColor(org.name, org.accent) }}>
                   {org.name}
                 </span>
               </div>
@@ -392,6 +424,8 @@ export default function OpenSource() {
                         ? "var(--fg)"
                         : m.org === "Google"
                         ? "linear-gradient(180deg, #4285F4 0%, #34A853 33%, #FBBC05 66%, #EA4335 100%)"
+                        : m.org === "SchemaStore"
+                        ? "linear-gradient(180deg, #000 0%, #888 50%, #000 100%)"
                         : m.accent,
                   }}
                 />
@@ -402,10 +436,10 @@ export default function OpenSource() {
                 <div className="md:w-52 flex-shrink-0 mb-4 md:mb-0">
                   <div
                     className="os-card-orglogo inline-flex items-center gap-2.5 px-3 py-2 rounded-xl mb-2.5"
-                    style={{ background: `${m.accent}12`, border: `1px solid ${m.accent}30` }}
+                    style={getOrgChipStyle(m.org, m.accent)}
                   >
                     <OrgLogo org={m.org} size={22} />
-                    <span className="font-semibold text-sm" style={{ color: m.accent }}>
+                    <span className="font-semibold text-sm" style={{ color: getOrgTextColor(m.org, m.accent) }}>
                       {m.org}
                     </span>
                   </div>
