@@ -27,12 +27,95 @@ const navItems = [
   { label: "Contact",  id: "contact" },
 ];
 
+const THEME_TOKENS = [
+  { name: "--bg",            light: "#f8f8f5", dark: "#0f0f0e" },
+  { name: "--fg",            light: "#0f0f0e", dark: "#f8f8f5" },
+  { name: "--bg-elevated",   light: "#ffffff", dark: "#161614" },
+  { name: "--fg-muted",      light: "#6b6b66", dark: "#888880" },
+  { name: "--border-color",  light: "#e2e2dc", dark: "#2a2a26" },
+  { name: "--accent",        light: "#0f0f0e", dark: "#f8f8f5" },
+];
+
+function ThemeRevampPanel({ to, onApply, onDone }: {
+  to: "light" | "dark";
+  onApply: () => void;
+  onDone: () => void;
+}) {
+  const [morphed, setMorphed] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const fromKey = to === "dark" ? "light" : "dark";
+
+  useEffect(() => {
+    const tMorph = setTimeout(() => setMorphed(true), 380);
+    const tApply = setTimeout(() => onApply(),       760);
+    const tOut   = setTimeout(() => setClosing(true), 1320);
+    const tDone  = setTimeout(() => onDone(),         1700);
+    return () => { clearTimeout(tMorph); clearTimeout(tApply); clearTimeout(tOut); clearTimeout(tDone); };
+  }, [onApply, onDone]);
+
+  return (
+    <div className={`theme-revamp-overlay ${closing ? "is-closing" : ""}`}>
+      <div className="theme-revamp-panel">
+        <div className="theme-revamp-titlebar">
+          <div className="theme-revamp-dots">
+            <span style={{ background: "#ff5f57" }} />
+            <span style={{ background: "#febc2e" }} />
+            <span style={{ background: "#28c840" }} />
+          </div>
+          <span className="theme-revamp-path">~/src/app/globals.css</span>
+          <span className="theme-revamp-badge">M</span>
+        </div>
+
+        <div className="theme-revamp-code">
+          <div className="theme-revamp-line">
+            <span className="theme-revamp-num">1</span>
+            <span><span className="trv-keyword">:root</span><span className="trv-mute">.</span><span className="trv-keyword">{fromKey === "dark" ? "dark" : "light"}</span> <span className="trv-mute">{"{"}</span></span>
+          </div>
+          {THEME_TOKENS.map((tok, i) => {
+            const fromVal = tok[fromKey as "light" | "dark"];
+            const toVal   = tok[to as "light" | "dark"];
+            const stagger = 60 + i * 55;
+            return (
+              <div key={tok.name} className="theme-revamp-line theme-revamp-line-stagger" style={{ animationDelay: `${stagger}ms` }}>
+                <span className="theme-revamp-num">{i + 2}</span>
+                <span className="trv-prop">{tok.name}</span>
+                <span className="trv-mute">: </span>
+                <span className="trv-hex-stack">
+                  <span className={`trv-hex trv-hex-from ${morphed ? "is-gone" : ""}`}>{fromVal}</span>
+                  <span className={`trv-hex trv-hex-to ${morphed ? "is-here" : ""}`}>{toVal}</span>
+                </span>
+                <span
+                  className="trv-swatch"
+                  style={{ background: morphed ? toVal : fromVal, transitionDelay: `${i * 40}ms` }}
+                />
+                <span className="trv-mute">;</span>
+              </div>
+            );
+          })}
+          <div className="theme-revamp-line">
+            <span className="theme-revamp-num">{THEME_TOKENS.length + 2}</span>
+            <span className="trv-mute">{"}"}</span>
+          </div>
+        </div>
+
+        <div className="theme-revamp-statusbar">
+          <span className={`trv-status-dot ${morphed ? "is-done" : ""}`} />
+          <span className="trv-status-text">
+            {morphed ? `applied · theme=${to}` : `compiling · theme=${to}`}
+          </span>
+          <span className="trv-status-right">CSS · UTF-8 · LF</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Nav() {
   const router = useRouter();
   const { theme, toggle } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [toast, setToast] = useState<{ id: number; next: string } | null>(null);
+  const [revamp, setRevamp] = useState<{ id: number; to: "light" | "dark" } | null>(null);
 
   useEffect(() => {
     const onScroll = () => {
@@ -48,39 +131,20 @@ function Nav() {
     setMobileOpen(false);
   };
 
-  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height / 2;
-    document.documentElement.style.setProperty("--theme-x", `${x}px`);
-    document.documentElement.style.setProperty("--theme-y", `${y}px`);
-
-    const next = theme === "dark" ? "light" : "dark";
-    const id = Date.now();
-    setToast({ id, next });
-    setTimeout(() => setToast(t => (t?.id === id ? null : t)), 1500);
-
-    const doc = document as Document & { startViewTransition?: (cb: () => void) => unknown };
-    if (typeof doc.startViewTransition === "function") {
-      doc.startViewTransition(() => toggle());
-    } else {
-      toggle();
-    }
+  const handleToggle = () => {
+    if (revamp) return; // ignore clicks while transition active
+    const next: "light" | "dark" = theme === "dark" ? "light" : "dark";
+    setRevamp({ id: Date.now(), to: next });
   };
 
   return (
     <>
-      {toast && (
-        <div key={toast.id} className="theme-toast" role="status" aria-live="polite">
-          <span className="theme-toast-prompt">$</span>
-          <span className="theme-toast-fn">theme</span>
-          <span className="theme-toast-dot">.</span>
-          <span className="theme-toast-fn">set</span>
-          <span className="theme-toast-paren">(</span>
-          <span className="theme-toast-str">&quot;{toast.next}&quot;</span>
-          <span className="theme-toast-paren">)</span>
-          <span className="theme-toast-cursor" />
-        </div>
+      {revamp && (
+        <ThemeRevampPanel
+          to={revamp.to}
+          onApply={toggle}
+          onDone={() => setRevamp(null)}
+        />
       )}
       <nav
         className="site-nav px-6 md:px-16"
