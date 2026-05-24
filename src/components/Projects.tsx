@@ -335,10 +335,22 @@ function MobileExpandedPanel({ project }: { project: Project }) {
 export default function Projects() {
   const [activeId, setActiveId] = useState(PROJ_ROWS[0].project.id);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [leftH, setLeftH] = useState(0);
   const active = projects.find(p => p.id === activeId)!;
   const sectionRef = useRef<HTMLElement>(null);
   const listRef    = useRef<HTMLDivElement>(null);
   const isMobile   = useMobile();
+
+  // Measure left column height so the right column wrapper can match it
+  useEffect(() => {
+    if (!listRef.current || isMobile) return;
+    const measure = () => setLeftH(listRef.current?.offsetHeight ?? 0);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(listRef.current);
+    window.addEventListener("resize", measure);
+    return () => { ro.disconnect(); window.removeEventListener("resize", measure); };
+  }, [isMobile]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -483,7 +495,7 @@ export default function Projects() {
 
         {/* RIGHT — sticky preview (desktop only) */}
         {!isMobile && (
-          <div style={{ alignSelf: "stretch", position: "relative" }}>
+          <div style={{ position: "relative", height: leftH ? leftH + "px" : "auto" }}>
             <div
               style={{
                 position: "sticky",
