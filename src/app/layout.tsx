@@ -93,13 +93,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  icons: {
-    icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-    ],
-    shortcut: "/favicon.svg",
-    apple: "/favicon.svg",
-  },
   verification: {
     // Add the Google Search Console verification token here when you receive it.
     // Get it at: https://search.google.com/search-console (HTML tag method).
