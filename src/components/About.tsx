@@ -115,7 +115,7 @@ export default function About() {
 
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex items-center gap-4 mb-16">
-          <span className="section-label">02 / 07</span>
+          <span className="section-label">02 / 08</span>
           <div className="flex-1 h-px" style={{ background: "var(--border-color)" }} />
           <span className="section-label">About</span>
         </div>

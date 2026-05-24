@@ -142,7 +142,7 @@ export default function Journey() {
       <div className="max-w-7xl mx-auto">
 
         <div className="flex items-center gap-4 mb-4">
-          <span className="section-label">03 / 07</span>
+          <span className="section-label">03 / 08</span>
           <div className="w-8 h-px" style={{ background: "var(--border-color)" }} />
           <span className="section-label">Journey</span>
         </div>

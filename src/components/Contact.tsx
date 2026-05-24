@@ -108,7 +108,7 @@ export default function Contact() {
       <div className="max-w-7xl mx-auto relative z-10">
 
         <div className="mb-14">
-          <p className="section-label mb-6">07 / 07 · Let's talk</p>
+          <p className="section-label mb-6">08 / 08 · Let&apos;s talk</p>
           <h2 className="contact-headline font-serif" style={{
             fontSize: "clamp(2.4rem, 9vw, 8rem)",
             fontWeight: 300, fontStyle: "italic",

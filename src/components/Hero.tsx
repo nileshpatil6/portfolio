@@ -160,7 +160,7 @@ export default function Hero() {
 
       {/* Section index */}
       <div className="absolute top-28 right-6 md:right-16 flex flex-col items-end gap-1 anim-fade-in" style={{ animationDelay: "2.2s" }}>
-        <span className="section-label">01 / 07</span>
+        <span className="section-label">01 / 08</span>
         <span className="section-label" style={{ color: "var(--fg-subtle)" }}>Introduction</span>
       </div>
 

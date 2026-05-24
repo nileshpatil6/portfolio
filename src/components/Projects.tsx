@@ -381,7 +381,7 @@ export default function Projects() {
           {/* Headline */}
           <div>
             <div className="flex items-center gap-3 mb-5">
-              <span className="section-label">04 / 07</span>
+              <span className="section-label">04 / 08</span>
               <div className="w-8 h-px" style={{ background: "var(--border-color)" }} />
               <span className="section-label">Work</span>
             </div>

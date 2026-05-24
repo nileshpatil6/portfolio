@@ -114,7 +114,7 @@ export default function Achievements() {
       <div className="max-w-7xl mx-auto relative z-10">
 
         <div className="flex items-center gap-4 mb-4">
-          <span className="section-label">06 / 07</span>
+          <span className="section-label">07 / 08</span>
           <div className="w-8 h-px" style={{ background: "var(--border-color)" }} />
           <span className="section-label">Recognition</span>
         </div>

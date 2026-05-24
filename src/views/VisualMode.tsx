@@ -10,6 +10,7 @@ import About from "@/components/About";
 import Journey from "@/components/Journey";
 import KineticText from "@/components/KineticText";
 import Projects from "@/components/Projects";
+import OpenSource from "@/components/OpenSource";
 import Skills from "@/components/Skills";
 import Achievements from "@/components/Achievements";
 import Contact from "@/components/Contact";
@@ -19,12 +20,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const navItems = [
-  { label: "About",    id: "about" },
-  { label: "Journey",  id: "journey" },
-  { label: "Work",     id: "projects" },
-  { label: "Skills",   id: "skills" },
-  { label: "Awards",   id: "achievements" },
-  { label: "Contact",  id: "contact" },
+  { label: "About",       id: "about" },
+  { label: "Journey",     id: "journey" },
+  { label: "Work",        id: "projects" },
+  { label: "Open Source", id: "opensource" },
+  { label: "Skills",      id: "skills" },
+  { label: "Awards",      id: "achievements" },
+  { label: "Contact",     id: "contact" },
 ];
 
 const THEME_TOKENS = [
@@ -424,6 +426,7 @@ export default function VisualMode() {
           <About />
           <Journey />
           <Projects />
+          <OpenSource />
           <Skills />
           <Achievements />
           <KineticText />
