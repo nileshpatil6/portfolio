@@ -178,7 +178,7 @@ export default function About() {
               { n: "19+", label: "Projects",       sub: "Most live in production" },
               { n: "7",   label: "In production",  sub: "Real users, real impact" },
               { n: "3",   label: "Countries",      sub: "India · USA · Japan" },
-              { n: "2+",  label: "Years building", sub: "Fullstack & AI/ML" },
+              { n: "3+",  label: "Years building", sub: "Fullstack & AI/ML" },
             ].map(({ n, label, sub }) => (
               <div
                 key={label}

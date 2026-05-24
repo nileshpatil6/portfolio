@@ -224,7 +224,7 @@ export default function Hero() {
             { n: "19+", label: "Projects shipped",   cursor: "Built & shipped" },
             { n: "7",   label: "Live in production", cursor: "Real users" },
             { n: "3",   label: "Countries served",   cursor: "India · USA · Japan" },
-            { n: "2+",  label: "Years building",     cursor: "And counting" },
+            { n: "3+",  label: "Years building",     cursor: "And counting" },
           ].map(({ n, label, cursor }) => (
             <div key={label} data-cursor-text={cursor}>
               <p className="font-serif" style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700, color: "var(--fg)", lineHeight: 1 }}>{n}</p>
