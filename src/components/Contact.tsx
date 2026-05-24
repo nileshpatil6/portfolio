@@ -87,8 +87,9 @@ export default function Contact() {
         ease: "expo.out",
         scrollTrigger: {
           trigger: ".contact-links",
-          start: "top 88%",
-          toggleActions: "play none none reverse",
+          start: "top 92%",
+          toggleActions: "play none none none",
+          once: true,
         }
       });
 
@@ -101,8 +102,9 @@ export default function Contact() {
         ease: "back.out(1.7)",
         scrollTrigger: {
           trigger: ".contact-cta",
-          start: "top 90%",
-          toggleActions: "play none none reverse",
+          start: "top 95%",
+          toggleActions: "play none none none",
+          once: true,
         }
       });
 

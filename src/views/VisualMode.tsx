@@ -27,11 +27,35 @@ const navItems = [
   { label: "Contact",  id: "contact" },
 ];
 
+function ThemeSwitchOverlay({ active }: { active: boolean }) {
+  if (!active) return null;
+  const isDark = document.documentElement.classList.contains("dark");
+  const lines = [
+    `> THEME.DELTA   = ${isDark ? "light" : "dark"}`,
+    `> PALETTE.APPLY = true`,
+    `> RENDER.FLUSH  = 1`,
+  ];
+  return (
+    <div className="fixed inset-0 z-[9998] pointer-events-none flex items-center justify-center theme-switch-overlay">
+      <div className="font-mono text-xs space-y-1 theme-switch-text">
+        {lines.map((l, i) => (
+          <div key={i} style={{ animationDelay: `${i * 55}ms` }} className="theme-switch-line">
+            <span style={{ color: "#00ff88" }}>{l.split("=")[0]}=</span>
+            <span style={{ color: "#00d4ff" }}>{l.split("=")[1]}</span>
+          </div>
+        ))}
+        <div className="theme-switch-bar" />
+      </div>
+    </div>
+  );
+}
+
 function Nav() {
   const router = useRouter();
   const { theme, toggle } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [switching, setSwitching] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -47,8 +71,15 @@ function Nav() {
     setMobileOpen(false);
   };
 
+  const handleToggle = () => {
+    setSwitching(true);
+    setTimeout(() => toggle(), 160);
+    setTimeout(() => setSwitching(false), 620);
+  };
+
   return (
     <>
+      <ThemeSwitchOverlay active={switching} />
       <nav
         className="site-nav px-6 md:px-16"
         style={{ borderBottomColor: scrolled ? "var(--border-subtle)" : "transparent" }}
@@ -84,7 +115,7 @@ function Nav() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={toggle}
+              onClick={handleToggle}
               aria-label="Toggle theme"
               className="theme-icon-toggle"
               style={{ cursor: "inherit" }}
