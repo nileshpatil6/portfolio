@@ -817,6 +817,9 @@ export default function DevMode() {
 
         {/* Loading indicator */}
         {loadingCmd && <LoadingDots message={loadingCmd.message} />}
+
+        {/* Bottom spacer — ensures latest entry can always scroll to the top */}
+        <div aria-hidden style={{ minHeight: "85vh" }} />
       </div>
 
       {/* Input bar */}
