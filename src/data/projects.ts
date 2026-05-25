@@ -207,8 +207,6 @@ export const projects: Project[] = [
     liveUrl: "https://cmnservicesindia.com",
     color: "#00ff88",
   },
-];
-
   {
     id: "local-gpt-rag",
     name: "LocalGPT RAG",
