@@ -175,7 +175,7 @@ export default function About() {
           {/* Right - stat cards */}
           <div className="grid grid-cols-2 gap-4">
             {[
-              { n: "19+", label: "Projects",       sub: "Most live in production" },
+              { n: "25+", label: "Projects",       sub: "Most live in production" },
               { n: "7",   label: "In production",  sub: "Real users, real impact" },
               { n: "3",   label: "Countries",      sub: "India · USA · Japan" },
               { n: "3+",  label: "Years building", sub: "Fullstack & AI/ML" },
