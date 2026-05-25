@@ -58,8 +58,9 @@ function TypeWriter({
 }
 
 const BUCKETS = [
-  { label: "AI & Web",     ids: ["triponbuddy","yukti-ai","roofvision","ai-social","dataverseai","text2db","finadvise"] },
-  { label: "Mobile & ML", ids: ["mediassist","detox-ai","mindread","promptinject","multiagent-rag","rag-pinecone"] },
+  { label: "AI & Web",     ids: ["triponbuddy","yukti-ai","roofvision","ai-social","dataverseai","text2db","finadvise","ai-ppt-generator","yt-script-genai","realestate-diagnostic","isro-drone"] },
+  { label: "Mobile & ML", ids: ["mediassist","detox-ai","mindread","promptinject","multiagent-rag","rag-pinecone","offline-ocr-translation","jet-engine-ai","stock-prediction","messaging-app-flutter"] },
+  { label: "RAG & AI Infra", ids: ["local-gpt-rag"] },
   { label: "Blockchain",  ids: ["agentic-commerce","college-erp"] },
   { label: "Freelance",   ids: ["prasanhom","unyfiny","akcarrentals","cmn"] },
 ];
