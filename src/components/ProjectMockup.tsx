@@ -585,6 +585,330 @@ const CMNServices = () => (
   </svg>
 );
 
+const LocalGPTRAG = () => (
+  <svg viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="260" fill="#0e0818" />
+    {/* Server box */}
+    <rect x="30" y="70" width="100" height="130" rx="8" fill="#1a0f2e" stroke="#7c3aed" strokeOpacity="0.5" strokeWidth="1.5" />
+    <rect x="40" y="85" width="80" height="12" rx="3" fill="#7c3aed" fillOpacity="0.3" />
+    <rect x="40" y="103" width="80" height="12" rx="3" fill="#7c3aed" fillOpacity="0.2" />
+    <rect x="40" y="121" width="80" height="12" rx="3" fill="#7c3aed" fillOpacity="0.15" />
+    <circle cx="50" cy="160" r="5" fill="#00ff88" fillOpacity="0.8" />
+    <text x="60" y="164" fontSize="8" fill="#00ff88" fontFamily="monospace">LOCAL</text>
+    <circle cx="50" cy="178" r="5" fill="#00ff88" fillOpacity="0.5" />
+    <text x="60" y="182" fontSize="8" fill="#7c3aed" fontFamily="monospace" opacity="0.7">OFFLINE</text>
+    {/* Documents */}
+    {[0,1,2].map(i => (
+      <g key={i}>
+        <rect x={165+i*5} y={55+i*5} width="60" height="80" rx="4" fill="#1a0f2e" stroke="#7c3aed" strokeOpacity="0.35" strokeWidth="1" />
+        <rect x={173+i*5} y={68+i*5} width="44" height="4" rx="2" fill="#7c3aed" fillOpacity="0.4" />
+        <rect x={173+i*5} y={78+i*5} width="36" height="4" rx="2" fill="#7c3aed" fillOpacity="0.25" />
+        <rect x={173+i*5} y={88+i*5} width="40" height="4" rx="2" fill="#7c3aed" fillOpacity="0.2" />
+      </g>
+    ))}
+    {/* Arrow */}
+    <path d="M 145 130 L 165 130" stroke="#7c3aed" strokeWidth="2" strokeOpacity="0.7" />
+    <polygon points="165,125 178,130 165,135" fill="#7c3aed" fillOpacity="0.8" />
+    {/* Vector embeddings */}
+    <rect x="250" y="70" width="130" height="130" rx="8" fill="#1a0f2e" stroke="#7c3aed" strokeOpacity="0.4" strokeWidth="1" />
+    {Array.from({length:16}, (_,i) => {
+      const x = 262 + (i%4)*28, y = 82 + Math.floor(i/4)*28;
+      return <circle key={i} cx={x} cy={y} r={3+i%3} fill="#7c3aed" fillOpacity={0.2+i%4*0.12} />;
+    })}
+    <line x1="276" y1="82" x2="304" y2="110" stroke="#a855f7" strokeWidth="0.8" strokeOpacity="0.3" />
+    <line x1="304" y1="82" x2="332" y2="110" stroke="#a855f7" strokeWidth="0.8" strokeOpacity="0.3" />
+    <line x1="276" y1="110" x2="304" y2="138" stroke="#a855f7" strokeWidth="0.8" strokeOpacity="0.3" />
+    <text x="265" y="185" fontSize="7" fill="#7c3aed" fontFamily="monospace" opacity="0.6">ChromaDB vectors</text>
+    <text x="20" y="24" fontSize="14" fontWeight="bold" fill="#a855f7" fontFamily="monospace">LocalGPT RAG</text>
+    <text x="20" y="42" fontSize="9" fill="#6d28d9" fontFamily="monospace">100% Offline · No Cloud · Local LLMs</text>
+  </svg>
+);
+
+const AIPPTGenerator = () => (
+  <svg viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="260" fill="#100a00" />
+    {/* Slide preview */}
+    <rect x="180" y="45" width="200" height="130" rx="6" fill="#1e1000" stroke="#f59e0b" strokeOpacity="0.5" strokeWidth="1.5" />
+    <rect x="180" y="45" width="200" height="30" rx="6" fill="#f59e0b" fillOpacity="0.12" />
+    <rect x="190" y="53" width="90" height="8" rx="4" fill="#f59e0b" fillOpacity="0.6" />
+    <rect x="190" y="85" width="180" height="5" rx="2" fill="#f59e0b" fillOpacity="0.3" />
+    <rect x="190" y="96" width="160" height="5" rx="2" fill="#f59e0b" fillOpacity="0.2" />
+    <rect x="190" y="107" width="170" height="5" rx="2" fill="#f59e0b" fillOpacity="0.2" />
+    {/* Chart inside slide */}
+    {[40,65,50,80,55].map((h,i) => (
+      <rect key={i} x={230+i*28} y={170-h} width="20" height={h} rx="2" fill="#f59e0b" fillOpacity={0.25+i*0.07} />
+    ))}
+    {/* Prompt input */}
+    <rect x="20" y="55" width="145" height="50" rx="8" fill="#1e1000" stroke="#f59e0b" strokeOpacity="0.35" strokeWidth="1" />
+    <text x="32" y="75" fontSize="8" fill="#f59e0b" fontFamily="monospace" opacity="0.7">{">"} "Create a pitch deck</text>
+    <text x="32" y="88" fontSize="8" fill="#f59e0b" fontFamily="monospace" opacity="0.7">for an AI startup"</text>
+    {/* Arrow */}
+    <path d="M 168 80 L 178 80" stroke="#f59e0b" strokeWidth="2" strokeOpacity="0.7" />
+    <polygon points="178,75 191,80 178,85" fill="#f59e0b" fillOpacity="0.8" />
+    <text x="156" y="73" fontSize="7" fill="#f59e0b" fontFamily="monospace" opacity="0.5">AI</text>
+    {/* Slide thumbnails */}
+    {[0,1,2,3].map(i => (
+      <rect key={i} x={20+i*35} y={165} width="28" height="18" rx="3" fill={i===0?"#f59e0b":"#1e1000"} fillOpacity={i===0?0.4:0.3} stroke="#f59e0b" strokeOpacity="0.25" strokeWidth="0.8" />
+    ))}
+    <text x="162" y="178" fontSize="8" fill="#f59e0b" fontFamily="monospace" opacity="0.5">+8 more</text>
+    {/* Export buttons */}
+    <rect x="20" y="200" width="60" height="22" rx="5" fill="#f59e0b" fillOpacity="0.25" stroke="#f59e0b" strokeOpacity="0.4" strokeWidth="1" />
+    <text x="50" y="215" textAnchor="middle" fontSize="7" fill="#f59e0b" fontFamily="monospace">PPTX</text>
+    <rect x="88" y="200" width="60" height="22" rx="5" fill="#f59e0b" fillOpacity="0.15" stroke="#f59e0b" strokeOpacity="0.3" strokeWidth="1" />
+    <text x="118" y="215" textAnchor="middle" fontSize="7" fill="#f59e0b" fontFamily="monospace">PDF</text>
+    <text x="20" y="24" fontSize="14" fontWeight="bold" fill="#f59e0b" fontFamily="monospace">AI Presentation Gen</text>
+    <text x="20" y="42" fontSize="9" fill="#92400e" fontFamily="monospace">Prompt-to-Slides · Gemini AI</text>
+  </svg>
+);
+
+const OfflineOCR = () => (
+  <svg viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="260" fill="#060c14" />
+    {/* Document with handwriting */}
+    <rect x="20" y="50" width="120" height="160" rx="6" fill="#0a1828" stroke="#00d4ff" strokeOpacity="0.4" strokeWidth="1.5" />
+    {[0,1,2,3,4,5,6].map(i => (
+      <line key={i} x1="32" y1={72+i*18} x2="128" y2={72+i*18} stroke="#00d4ff" strokeWidth="0.4" strokeOpacity="0.15" />
+    ))}
+    <path d="M 35 76 Q 55 72 75 78 Q 95 84 115 74" stroke="#00d4ff" strokeWidth="1.5" fill="none" strokeOpacity="0.5" />
+    <path d="M 35 94 Q 60 88 85 96 Q 100 100 120 92" stroke="#00d4ff" strokeWidth="1.5" fill="none" strokeOpacity="0.4" />
+    <path d="M 35 112 Q 70 106 95 116 Q 105 120 125 110" stroke="#00d4ff" strokeWidth="1.5" fill="none" strokeOpacity="0.35" />
+    {/* Scan lines */}
+    <rect x="20" y="100" width="120" height="2" fill="#00d4ff" fillOpacity="0.4" />
+    <rect x="20" y="99" width="120" height="20" fill="#00d4ff" fillOpacity="0.04" />
+    {/* OCR output */}
+    <rect x="165" y="50" width="120" height="90" rx="6" fill="#0a1828" stroke="#00d4ff" strokeOpacity="0.35" strokeWidth="1" />
+    <text x="175" y="68" fontSize="8" fill="#00d4ff" fontFamily="monospace" opacity="0.5">EXTRACTED TEXT</text>
+    <rect x="175" y="75" width="100" height="5" rx="2" fill="#00d4ff" fillOpacity="0.45" />
+    <rect x="175" y="85" width="90" height="5" rx="2" fill="#00d4ff" fillOpacity="0.35" />
+    <rect x="175" y="95" width="100" height="5" rx="2" fill="#00d4ff" fillOpacity="0.3" />
+    <rect x="175" y="105" width="70" height="5" rx="2" fill="#00d4ff" fillOpacity="0.25" />
+    {/* Translation arrow */}
+    <path d="M 285" />
+    <path d="M 220 145 L 220 165" stroke="#00d4ff" strokeWidth="2" strokeOpacity="0.6" />
+    <polygon points="215,165 220,178 225,165" fill="#00d4ff" fillOpacity="0.7" />
+    <text x="228" y="162" fontSize="7" fill="#00d4ff" fontFamily="monospace" opacity="0.5">TRANSLATE</text>
+    {/* Translation output */}
+    <rect x="165" y="182" width="120" height="60" rx="6" fill="#0a1828" stroke="#00ff88" strokeOpacity="0.35" strokeWidth="1" />
+    <rect x="175" y="193" width="100" height="5" rx="2" fill="#00ff88" fillOpacity="0.4" />
+    <rect x="175" y="203" width="85" height="5" rx="2" fill="#00ff88" fillOpacity="0.3" />
+    <rect x="175" y="213" width="95" height="5" rx="2" fill="#00ff88" fillOpacity="0.25" />
+    <text x="175" y="234" fontSize="7" fill="#00ff88" fontFamily="monospace" opacity="0.6">EN → HI · Offline</text>
+    {/* Offline badge */}
+    <rect x="305" y="55" width="75" height="24" rx="6" fill="#00ff88" fillOpacity="0.1" stroke="#00ff88" strokeOpacity="0.4" strokeWidth="1" />
+    <text x="342" y="71" textAnchor="middle" fontSize="8" fill="#00ff88" fontFamily="monospace">NO CLOUD</text>
+    <text x="20" y="24" fontSize="14" fontWeight="bold" fill="#00d4ff" fontFamily="monospace">Offline OCR</text>
+    <text x="20" y="42" fontSize="9" fill="#0077aa" fontFamily="monospace">Text Extraction · Multilingual</text>
+  </svg>
+);
+
+const JetEngineAI = () => (
+  <svg viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="260" fill="#080f08" />
+    {/* Turbine fan blades */}
+    {Array.from({length:8}, (_,i) => {
+      const angle = i * 45 * Math.PI/180;
+      const x1 = 200 + 20*Math.cos(angle), y1 = 120 + 20*Math.sin(angle);
+      const x2 = 200 + 60*Math.cos(angle), y2 = 120 + 60*Math.sin(angle);
+      return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#00ff88" strokeWidth="3" strokeOpacity="0.5" strokeLinecap="round" />;
+    })}
+    <circle cx="200" cy="120" r="20" fill="#00ff88" fillOpacity="0.1" stroke="#00ff88" strokeWidth="2" strokeOpacity="0.7" />
+    <circle cx="200" cy="120" r="60" fill="none" stroke="#00ff88" strokeWidth="1" strokeOpacity="0.2" />
+    <circle cx="200" cy="120" r="70" fill="none" stroke="#00ff88" strokeWidth="0.5" strokeOpacity="0.15" />
+    {/* Anomaly spike */}
+    <polyline points="20,190 60,185 100,188 130,195 160,170 175,145 180,110 185,135 190,188 210,188 360,188"
+      stroke="#00ff88" strokeWidth="1.5" fill="none" strokeOpacity="0.6" />
+    <circle cx="180" cy="110" r="6" fill="#ef4444" fillOpacity="0.9" />
+    <line x1="180" y1="110" x2="220" y2="80" stroke="#ef4444" strokeWidth="1" strokeOpacity="0.7" strokeDasharray="3 2" />
+    <rect x="218" y="65" width="100" height="30" rx="4" fill="#1a0000" stroke="#ef4444" strokeOpacity="0.5" strokeWidth="1" />
+    <text x="228" y="78" fontSize="7" fill="#ef4444" fontFamily="monospace">ANOMALY DETECTED</text>
+    <text x="228" y="90" fontSize="7" fill="#ef4444" fontFamily="monospace">RUL: 42 cycles</text>
+    {/* NASA badge */}
+    <rect x="20" y="50" width="120" height="50" rx="6" fill="#0d1f0d" stroke="#00ff88" strokeOpacity="0.35" strokeWidth="1" />
+    <text x="80" y="70" textAnchor="middle" fontSize="9" fill="#00ff88" fontFamily="monospace" fontWeight="bold">NASA SpaceApps</text>
+    <text x="80" y="85" textAnchor="middle" fontSize="20" fill="#f59e0b" fontFamily="monospace">🏆</text>
+    <text x="80" y="85" textAnchor="middle" fontSize="8" fill="#f59e0b" fontFamily="monospace" opacity="0">1st Place</text>
+    <text x="20" y="24" fontSize="14" fontWeight="bold" fill="#00ff88" fontFamily="monospace">Jet Engine AI</text>
+    <text x="20" y="42" fontSize="9" fill="#00aa55" fontFamily="monospace">NASA SpaceApps 1st · LSTM Anomaly</text>
+  </svg>
+);
+
+const RealEstateDiag = () => (
+  <svg viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="260" fill="#0e0818" />
+    {/* House outline */}
+    <polygon points="200,50 310,120 310,210 90,210 90,120" fill="#1a0f2e" stroke="#7c3aed" strokeOpacity="0.5" strokeWidth="1.5" />
+    <polygon points="200,50 310,120 90,120" fill="#130a22" stroke="#7c3aed" strokeOpacity="0.4" strokeWidth="1" />
+    {/* Windows */}
+    <rect x="115" y="135" width="45" height="40" rx="3" fill="#7c3aed" fillOpacity="0.2" stroke="#7c3aed" strokeOpacity="0.35" strokeWidth="1" />
+    <rect x="240" y="135" width="45" height="40" rx="3" fill="#7c3aed" fillOpacity="0.2" stroke="#7c3aed" strokeOpacity="0.35" strokeWidth="1" />
+    <line x1="137" y1="135" x2="137" y2="175" stroke="#7c3aed" strokeOpacity="0.2" strokeWidth="1" />
+    <line x1="115" y1="155" x2="160" y2="155" stroke="#7c3aed" strokeOpacity="0.2" strokeWidth="1" />
+    <line x1="262" y1="135" x2="262" y2="175" stroke="#7c3aed" strokeOpacity="0.2" strokeWidth="1" />
+    <line x1="240" y1="155" x2="285" y2="155" stroke="#7c3aed" strokeOpacity="0.2" strokeWidth="1" />
+    {/* Door */}
+    <rect x="178" y="168" width="44" height="42" rx="3" fill="#7c3aed" fillOpacity="0.15" stroke="#7c3aed" strokeOpacity="0.3" strokeWidth="1" />
+    {/* AI scan overlay */}
+    <rect x="90" y="120" width="220" height="90" fill="none" stroke="#a855f7" strokeOpacity="0.3" strokeWidth="1" strokeDasharray="5 3" />
+    {/* Analysis chips */}
+    <rect x="20" y="50" width="60" height="22" rx="5" fill="#00ff88" fillOpacity="0.1" stroke="#00ff88" strokeOpacity="0.4" strokeWidth="1" />
+    <text x="50" y="65" textAnchor="middle" fontSize="7" fill="#00ff88" fontFamily="monospace">Score: 87</text>
+    <rect x="20" y="78" width="60" height="22" rx="5" fill="#f59e0b" fillOpacity="0.1" stroke="#f59e0b" strokeOpacity="0.35" strokeWidth="1" />
+    <text x="50" y="93" textAnchor="middle" fontSize="7" fill="#f59e0b" fontFamily="monospace">₹48L est.</text>
+    <rect x="20" y="106" width="60" height="22" rx="5" fill="#00d4ff" fillOpacity="0.1" stroke="#00d4ff" strokeOpacity="0.35" strokeWidth="1" />
+    <text x="50" y="121" textAnchor="middle" fontSize="7" fill="#00d4ff" fontFamily="monospace">3BHK</text>
+    <text x="20" y="24" fontSize="14" fontWeight="bold" fill="#a855f7" fontFamily="monospace">Real Estate AI</text>
+    <text x="20" y="42" fontSize="9" fill="#6d28d9" fontFamily="monospace">Property Diagnostic · Gemini Vision</text>
+  </svg>
+);
+
+const YTScriptGenAI = () => (
+  <svg viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="260" fill="#100a00" />
+    {/* YouTube-style player */}
+    <rect x="20" y="45" width="175" height="100" rx="6" fill="#1e1000" stroke="#f59e0b" strokeOpacity="0.4" strokeWidth="1.5" />
+    <rect x="20" y="45" width="175" height="100" rx="6" fill="#ff0000" fillOpacity="0.04" />
+    {/* Play button */}
+    <polygon points="90,90 115,80 115,100" fill="#ff0000" fillOpacity="0.8" />
+    <polygon points="90,90 115,80 115,100" fill="#f59e0b" fillOpacity="0.3" />
+    {/* Progress bar */}
+    <rect x="30" y="132" width="155" height="4" rx="2" fill="#333" />
+    <rect x="30" y="132" width="80" height="4" rx="2" fill="#f59e0b" fillOpacity="0.8" />
+    <circle cx="110" cy="134" r="5" fill="#f59e0b" />
+    {/* Title bar */}
+    <rect x="20" y="155" width="175" height="18" rx="3" fill="#1e1000" />
+    <rect x="28" y="161" width="120" height="5" rx="2" fill="#f59e0b" fillOpacity="0.4" />
+    {/* Script panel */}
+    <rect x="210" y="45" width="170" height="185" rx="6" fill="#1e1000" stroke="#f59e0b" strokeOpacity="0.35" strokeWidth="1" />
+    <text x="220" y="63" fontSize="8" fill="#f59e0b" fontFamily="monospace" opacity="0.6">GENERATED SCRIPT</text>
+    <rect x="220" y="70" width="150" height="4" rx="2" fill="#f59e0b" fillOpacity="0.5" />
+    {[0,1,2,3,4,5,6,7,8,9].map(i => (
+      <rect key={i} x={220} y={80+i*12} width={130+Math.sin(i)*20} height="4" rx="2" fill="#f59e0b" fillOpacity={0.2+i%2*0.05} />
+    ))}
+    <rect x="220" y="210" width="70" height="14" rx="7" fill="#f59e0b" fillOpacity="0.7" />
+    <text x="255" y="221" textAnchor="middle" fontSize="7" fill="#100a00" fontFamily="monospace">EXPORT</text>
+    {/* Keyword tags */}
+    {["Hook","CTA","SEO"].map((tag,i) => (
+      <rect key={i} x={20+i*62} y={185} width="55" height="18" rx="9" fill="#f59e0b" fillOpacity="0.12" stroke="#f59e0b" strokeOpacity="0.3" strokeWidth="0.8">
+        <text x={47+i*62} y={197} textAnchor="middle" fontSize="7" fill="#f59e0b" fontFamily="monospace">{tag}</text>
+      </rect>
+    ))}
+    {["Hook","CTA","SEO"].map((tag,i) => (
+      <text key={i} x={47+i*62} y={197} textAnchor="middle" fontSize="7" fill="#f59e0b" fontFamily="monospace">{tag}</text>
+    ))}
+    <text x="20" y="24" fontSize="14" fontWeight="bold" fill="#f59e0b" fontFamily="monospace">YT Script GenAI</text>
+    <text x="20" y="42" fontSize="9" fill="#92400e" fontFamily="monospace">YouTube Scripts · SEO-Optimized AI</text>
+  </svg>
+);
+
+const ISRODrone = () => (
+  <svg viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="260" fill="#060c14" />
+    {/* Map background grid */}
+    {[0,1,2,3,4].map(i => <line key={`h${i}`} x1="0" y1={40+i*45} x2="400" y2={40+i*45} stroke="#00d4ff" strokeWidth="0.3" strokeOpacity="0.1" />)}
+    {[0,1,2,3,4,5].map(i => <line key={`v${i}`} x1={i*80} y1="30" x2={i*80} y2="230" stroke="#00d4ff" strokeWidth="0.3" strokeOpacity="0.1" />)}
+    {/* Drone body */}
+    <rect x="178" y="108" width="44" height="24" rx="4" fill="#0a1828" stroke="#00d4ff" strokeWidth="1.5" strokeOpacity="0.8" />
+    {/* Rotor arms */}
+    <line x1="178" y1="120" x2="148" y2="100" stroke="#00d4ff" strokeWidth="1.5" strokeOpacity="0.6" />
+    <line x1="222" y1="120" x2="252" y2="100" stroke="#00d4ff" strokeWidth="1.5" strokeOpacity="0.6" />
+    <line x1="178" y1="132" x2="148" y2="152" stroke="#00d4ff" strokeWidth="1.5" strokeOpacity="0.6" />
+    <line x1="222" y1="132" x2="252" y2="152" stroke="#00d4ff" strokeWidth="1.5" strokeOpacity="0.6" />
+    {/* Rotor circles */}
+    {[[148,100],[252,100],[148,152],[252,152]].map(([cx,cy],i) => (
+      <circle key={i} cx={cx} cy={cy} r="14" fill="none" stroke="#00d4ff" strokeWidth="1" strokeOpacity="0.5" strokeDasharray="3 2" />
+    ))}
+    {/* Flight path */}
+    <path d="M 50 200 Q 100 160 150 140 Q 180 128 200 120 Q 250 105 310 80 Q 340 68 370 60"
+      stroke="#00d4ff" strokeWidth="1.5" strokeDasharray="6 3" fill="none" strokeOpacity="0.5" />
+    {/* Telemetry panel */}
+    <rect x="20" y="170" width="130" height="75" rx="6" fill="#0a1828" stroke="#00d4ff" strokeOpacity="0.3" strokeWidth="1" />
+    <text x="30" y="186" fontSize="7" fill="#00d4ff" fontFamily="monospace" opacity="0.5">TELEMETRY</text>
+    <text x="30" y="200" fontSize="8" fill="#00d4ff" fontFamily="monospace">ALT: 120m</text>
+    <text x="30" y="213" fontSize="8" fill="#00d4ff" fontFamily="monospace">SPD: 18m/s</text>
+    <text x="30" y="226" fontSize="8" fill="#00ff88" fontFamily="monospace">STATUS: OK</text>
+    <rect x="30" y="233" width="60" height="5" rx="2" fill="#00d4ff" fillOpacity="0.15" />
+    <rect x="30" y="233" width="45" height="5" rx="2" fill="#00ff88" fillOpacity="0.5" />
+    {/* ISRO badge */}
+    <rect x="300" y="170" width="80" height="40" rx="6" fill="#0a1828" stroke="#00d4ff" strokeOpacity="0.3" strokeWidth="1" />
+    <text x="340" y="188" textAnchor="middle" fontSize="9" fill="#00d4ff" fontFamily="monospace" fontWeight="bold">ISRO</text>
+    <text x="340" y="203" textAnchor="middle" fontSize="7" fill="#00d4ff" fontFamily="monospace" opacity="0.6">Hackathon</text>
+    <text x="20" y="24" fontSize="14" fontWeight="bold" fill="#00d4ff" fontFamily="monospace">ISRO Drone</text>
+    <text x="20" y="42" fontSize="9" fill="#0077aa" fontFamily="monospace">Mission Control · Real-Time Telemetry</text>
+  </svg>
+);
+
+const StockPrediction = () => (
+  <svg viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="260" fill="#080f08" />
+    {/* Candlestick chart */}
+    {[
+      {x:40, o:170, c:145, h:140, l:180, up:true},
+      {x:70, o:145, c:155, h:140, l:160, up:false},
+      {x:100,o:155, c:135, h:130, l:162, up:true},
+      {x:130,o:135, c:150, h:128, l:155, up:false},
+      {x:160,o:150, c:128, h:122, l:155, up:true},
+      {x:190,o:128, c:138, h:120, l:142, up:false},
+      {x:220,o:138, c:115, h:110, l:142, up:true},
+    ].map(({x,o,c,h,l,up},i) => (
+      <g key={i}>
+        <line x1={x} y1={h} x2={x} y2={l} stroke={up?"#00ff88":"#ef4444"} strokeWidth="1.5" strokeOpacity="0.7" />
+        <rect x={x-8} y={Math.min(o,c)} width="16" height={Math.abs(o-c)||2} rx="1" fill={up?"#00ff88":"#ef4444"} fillOpacity="0.7" />
+      </g>
+    ))}
+    {/* LSTM prediction line */}
+    <path d="M 220 115 Q 250 108 270 100 Q 300 88 340 80 Q 360 76 380 72"
+      stroke="#00ff88" strokeWidth="2" fill="none" strokeDasharray="7 3" strokeOpacity="0.8" />
+    {/* Confidence band */}
+    <path d="M 220 115 Q 250 100 270 90 Q 300 75 340 65 Q 360 60 380 55 L 380 90 Q 360 95 340 98 Q 300 105 270 115 Q 250 122 220 125 Z"
+      fill="#00ff88" fillOpacity="0.06" />
+    {/* Axes */}
+    <line x1="22" y1="50" x2="22" y2="215" stroke="#00ff88" strokeWidth="0.8" strokeOpacity="0.2" />
+    <line x1="22" y1="215" x2="385" y2="215" stroke="#00ff88" strokeWidth="0.8" strokeOpacity="0.2" />
+    {/* Model info */}
+    <rect x="240" y="175" width="140" height="50" rx="6" fill="#0d1f0d" stroke="#00ff88" strokeOpacity="0.3" strokeWidth="1" />
+    <text x="310" y="192" textAnchor="middle" fontSize="8" fill="#00ff88" fontFamily="monospace" opacity="0.6">LSTM Model</text>
+    <text x="310" y="206" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#00ff88" fontFamily="monospace">93.4%</text>
+    <text x="310" y="218" textAnchor="middle" fontSize="7" fill="#00ff88" fontFamily="monospace" opacity="0.5">backtested acc.</text>
+    {/* Prediction label */}
+    <text x="355" y="68" fontSize="7" fill="#00ff88" fontFamily="monospace" opacity="0.7">+12.4%</text>
+    <text x="20" y="24" fontSize="14" fontWeight="bold" fill="#00ff88" fontFamily="monospace">Stock Prediction</text>
+    <text x="20" y="42" fontSize="9" fill="#00aa55" fontFamily="monospace">LSTM · TensorFlow · Market Forecast</text>
+  </svg>
+);
+
+const FlutterMessaging = () => (
+  <svg viewBox="0 0 400 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="260" fill="#0e0818" />
+    {/* Phone frame */}
+    <rect x="120" y="20" width="160" height="220" rx="18" fill="#1a0f2e" stroke="#7c3aed" strokeOpacity="0.5" strokeWidth="1.5" />
+    <rect x="132" y="35" width="136" height="190" rx="10" fill="#0e0818" />
+    {/* Chat header */}
+    <rect x="132" y="35" width="136" height="36" rx="10" fill="#1a0f2e" />
+    <circle cx="155" cy="53" r="12" fill="#7c3aed" fillOpacity="0.4" />
+    <rect x="172" y="47" width="60" height="5" rx="2" fill="#7c3aed" fillOpacity="0.6" />
+    <circle cx="154" cy="53" r="4" fill="#00ff88" />
+    {/* Messages */}
+    <rect x="142" y="80" width="85" height="24" rx="10" fill="#7c3aed" fillOpacity="0.5" />
+    <rect x="149" y="88" width="70" height="5" rx="2" fill="white" fillOpacity="0.4" />
+    <rect x="172" y="112" width="85" height="24" rx="10" fill="#2a1f3e" stroke="#7c3aed" strokeOpacity="0.3" strokeWidth="0.8" />
+    <rect x="179" y="120" width="70" height="5" rx="2" fill="#7c3aed" fillOpacity="0.35" />
+    <rect x="142" y="144" width="70" height="24" rx="10" fill="#7c3aed" fillOpacity="0.5" />
+    <rect x="149" y="152" width="56" height="5" rx="2" fill="white" fillOpacity="0.4" />
+    <rect x="187" y="176" width="75" height="24" rx="10" fill="#2a1f3e" stroke="#7c3aed" strokeOpacity="0.3" strokeWidth="0.8" />
+    <rect x="194" y="184" width="62" height="5" rx="2" fill="#7c3aed" fillOpacity="0.35" />
+    {/* Input bar */}
+    <rect x="132" y="208" width="136" height="17" rx="8" fill="#1a0f2e" />
+    <rect x="140" y="213" width="90" height="7" rx="3" fill="#7c3aed" fillOpacity="0.15" />
+    <circle cx="255" cy="216" r="8" fill="#7c3aed" fillOpacity="0.5" />
+    {/* E2E badge */}
+    <rect x="20" y="100" width="90" height="35" rx="6" fill="#1a0f2e" stroke="#00ff88" strokeOpacity="0.3" strokeWidth="1" />
+    <text x="65" y="116" textAnchor="middle" fontSize="8" fill="#00ff88" fontFamily="monospace">E2E Encrypted</text>
+    <text x="65" y="128" textAnchor="middle" fontSize="7" fill="#00ff88" fontFamily="monospace" opacity="0.6">Flutter + Firebase</text>
+    <text x="20" y="24" fontSize="14" fontWeight="bold" fill="#a855f7" fontFamily="monospace">Flutter Chat</text>
+    <text x="20" y="42" fontSize="9" fill="#6d28d9" fontFamily="monospace">Real-Time Messaging · E2E Encrypted</text>
+  </svg>
+);
+
 /* ─── Project ID → SVG map ───────────────────────────── */
 const projectSVGs: Record<string, React.FC> = {
   "triponbuddy":      TripOnBuddy,
@@ -606,6 +930,15 @@ const projectSVGs: Record<string, React.FC> = {
   "unyfiny":          Unyfiny,
   "akcarrentals":     AKCarRentals,
   "cmn":              CMNServices,
+  "local-gpt-rag":         LocalGPTRAG,
+  "ai-ppt-generator":      AIPPTGenerator,
+  "offline-ocr-translation": OfflineOCR,
+  "jet-engine-ai":         JetEngineAI,
+  "realestate-diagnostic": RealEstateDiag,
+  "yt-script-genai":       YTScriptGenAI,
+  "isro-drone":            ISRODrone,
+  "stock-prediction":      StockPrediction,
+  "messaging-app-flutter": FlutterMessaging,
 };
 
 interface ProjectMockupProps {
