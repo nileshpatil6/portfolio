@@ -5,10 +5,52 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+function useMobileTilt(targetRef: React.RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    if (!isTouch || !targetRef.current) return;
+
+    let rafId = 0;
+    let gx = 0, gy = 0;
+
+    const onOrientation = (e: DeviceOrientationEvent) => {
+      const beta  = Math.max(-30, Math.min(30, e.beta  ?? 0));
+      const gamma = Math.max(-30, Math.min(30, e.gamma ?? 0));
+      gx = gamma / 30;
+      gy = beta  / 30;
+    };
+
+    const onTouch = (e: TouchEvent) => {
+      const t = e.touches[0];
+      gx = (t.clientX / window.innerWidth  - 0.5) * 2;
+      gy = (t.clientY / window.innerHeight - 0.5) * 2;
+    };
+
+    const tick = () => {
+      if (targetRef.current) {
+        targetRef.current.style.transform = `translate(${gx * 14}px, ${gy * 10}px)`;
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener("deviceorientation", onOrientation, { passive: true });
+    window.addEventListener("touchmove", onTouch, { passive: true });
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      window.removeEventListener("deviceorientation", onOrientation);
+      window.removeEventListener("touchmove", onTouch);
+      cancelAnimationFrame(rafId);
+    };
+  }, [targetRef]);
+}
+
 const roles = ["Full Stack Developer", "GenAI Engineer", "Agentic AI Builder", "Hackathon Champion", "Founder & Builder"];
 
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
+  const tiltRef = useRef<HTMLDivElement>(null);
+  useMobileTilt(tiltRef);
   const [roleIdx, setRoleIdx] = useState(0);
   const [displayed, setDisplayed] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -115,6 +157,8 @@ export default function Hero() {
   return (
     <section ref={sectionRef} className="relative min-h-[100vh] flex flex-col justify-end pb-16 pt-24 md:pb-20 md:pt-28 px-6 md:px-16 overflow-hidden">
 
+      {/* Blob group - tilt on mobile via deviceorientation/touch */}
+      <div ref={tiltRef} className="absolute inset-0 pointer-events-none" style={{ willChange: "transform" }}>
       {/* Giant blob 1 */}
       <div className="hb1 absolute pointer-events-none" style={{
         width: "min(110vw, 1000px)", height: "min(110vw, 1000px)",
@@ -150,6 +194,7 @@ export default function Hero() {
         borderRadius: "50%",
         willChange: "transform, opacity",
       }} />
+      </div>{/* end tilt group */}
 
       {/* Dot grid decorative */}
       <div className="absolute top-28 left-6 md:left-16 grid gap-2 opacity-25 anim-fade-in" style={{ gridTemplateColumns: "repeat(4, 4px)", animationDelay: "2.5s" }}>
@@ -234,9 +279,9 @@ export default function Hero() {
         </div>
 
         <div className="mt-12 flex flex-wrap gap-3 anim-fade-up" style={{ animationDelay: "2.3s" }}>
-          <a href="#projects" className="btn-primary" data-cursor-text="Explore →">View work</a>
-          <a href="#contact" className="btn-outline" data-cursor-text="Say hi ✦">Get in touch</a>
-          <a href="https://github.com/nileshpatil6" target="_blank" rel="noopener noreferrer" className="btn-outline" data-cursor-text="Open source">GitHub ↗</a>
+          <a href="#projects" className="btn-primary mob-tap-target" data-cursor-text="Explore →">View work</a>
+          <a href="#contact" className="btn-outline mob-tap-target" data-cursor-text="Say hi ✦">Get in touch</a>
+          <a href="https://github.com/nileshpatil6" target="_blank" rel="noopener noreferrer" className="btn-outline mob-tap-target" data-cursor-text="Open source">GitHub ↗</a>
         </div>
       </div>
 

@@ -414,8 +414,44 @@ export default function DevMode() {
     if (!el || !container) return;
     container.scrollTop = el.offsetTop - container.clientHeight * 0.2;
   }, [history]);
-  /* Focus input on mount */
-  useEffect(() => { inputRef.current?.focus(); }, []);
+  /* Focus input on mount - skip on touch devices so keyboard doesn't pop on load */
+  useEffect(() => {
+    const isTouch = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    if (!isTouch) inputRef.current?.focus();
+  }, []);
+
+  /* Detect touch device for mobile-specific UI */
+  const [isTouch, setIsTouch] = useState(false);
+  useEffect(() => {
+    setIsTouch(window.matchMedia("(hover: none) and (pointer: coarse)").matches);
+  }, []);
+
+  /* Insert text into input at cursor position (for mobile quick-commands) */
+  const insertCommand = (cmd: string) => {
+    setInput(cmd);
+    inputRef.current?.focus();
+  };
+
+  /* Trigger Tab autocomplete from mobile button */
+  const triggerTab = () => {
+    const evt = { key: "Tab", preventDefault: () => {}, ctrlKey: false } as unknown as React.KeyboardEvent<HTMLInputElement>;
+    handleKeyDown(evt);
+    inputRef.current?.focus();
+  };
+
+  /* Trigger history nav from mobile buttons */
+  const triggerHistory = (dir: "up" | "down") => {
+    const evt = { key: dir === "up" ? "ArrowUp" : "ArrowDown", preventDefault: () => {}, ctrlKey: false } as unknown as React.KeyboardEvent<HTMLInputElement>;
+    handleKeyDown(evt);
+    inputRef.current?.focus();
+  };
+
+  /* Submit current input from mobile (when no virtual Enter on numeric kbd) */
+  const triggerEnter = () => {
+    const evt = { key: "Enter", preventDefault: () => {}, ctrlKey: false } as unknown as React.KeyboardEvent<HTMLInputElement>;
+    handleKeyDown(evt);
+    inputRef.current?.focus();
+  };
   /* Boot flicker: remove class after animation */
   useEffect(() => { const t = setTimeout(() => setBooting(false), 750); return () => clearTimeout(t); }, []);
 
@@ -1110,7 +1146,7 @@ export default function DevMode() {
 
   /* ── Render ───────────────────────────────────────────── */
   return (
-    <div className={`relative h-screen w-full terminal-body flex flex-col overflow-hidden ${booting ? "terminal-boot" : ""}`}>
+    <div className={`relative h-screen w-full terminal-body flex flex-col overflow-hidden ${booting ? "terminal-boot" : ""} ${isTouch ? "mobile-terminal" : ""}`}>
       <div className="terminal-vignette" />
 
       {/* Title bar */}
@@ -1192,21 +1228,70 @@ export default function DevMode() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="flex-1 bg-transparent text-white font-mono text-sm outline-none cursor-none caret-transparent"
+              className={`flex-1 bg-transparent text-white font-mono outline-none ${isTouch ? "text-base" : "text-sm cursor-none caret-transparent"}`}
+              style={isTouch ? { caretColor: "#00ff88" } : undefined}
               autoComplete="off"
               spellCheck={false}
-              autoFocus
+              autoCapitalize="none"
+              autoCorrect="off"
             />
-            <span
-              className="term-cursor"
-              style={{ boxShadow: "0 0 7px rgba(0,255,136,0.7)" }}
-            />
+            {!isTouch && (
+              <span
+                className="term-cursor"
+                style={{ boxShadow: "0 0 7px rgba(0,255,136,0.7)" }}
+              />
+            )}
           </div>
         )}
 
         {/* Bottom spacer - gives headroom so the latest entry can scroll up into view */}
-        <div aria-hidden style={{ minHeight: "60vh" }} />
+        <div aria-hidden style={{ minHeight: isTouch ? "40vh" : "60vh" }} />
       </div>
+
+      {/* Mobile command bar - quick tap commands + virtual keys */}
+      {isTouch && (
+        <div className="relative z-20 border-t border-[#00ff88]/15 bg-[#0a0a0f]/95 backdrop-blur-sm">
+          {/* Quick command chips */}
+          <div className="flex gap-2 px-3 py-2 overflow-x-auto scrollbar-none">
+            {["help", "ls", "whoami", "cat README.md", "cd projects", "neofetch", "git log", "history", "clear"].map(cmd => (
+              <button
+                key={cmd}
+                onPointerDown={e => { e.preventDefault(); insertCommand(cmd); }}
+                className="shrink-0 px-3 py-1 rounded border border-[#00ff88]/30 text-[#00ff88] font-mono text-xs bg-[#00ff88]/5 active:bg-[#00ff88]/20 transition-colors"
+              >
+                {cmd}
+              </button>
+            ))}
+          </div>
+          {/* Virtual key row: Tab / Up / Down / Enter */}
+          <div className="flex gap-2 px-3 pb-3">
+            <button
+              onPointerDown={e => { e.preventDefault(); triggerTab(); }}
+              className="flex-1 py-2 rounded border border-[#00d4ff]/30 text-[#00d4ff] font-mono text-xs bg-[#00d4ff]/5 active:bg-[#00d4ff]/20 transition-colors"
+            >
+              TAB
+            </button>
+            <button
+              onPointerDown={e => { e.preventDefault(); triggerHistory("up"); }}
+              className="flex-1 py-2 rounded border border-[#a0aec0]/30 text-[#a0aec0] font-mono text-xs bg-[#a0aec0]/5 active:bg-[#a0aec0]/20 transition-colors"
+            >
+              ↑
+            </button>
+            <button
+              onPointerDown={e => { e.preventDefault(); triggerHistory("down"); }}
+              className="flex-1 py-2 rounded border border-[#a0aec0]/30 text-[#a0aec0] font-mono text-xs bg-[#a0aec0]/5 active:bg-[#a0aec0]/20 transition-colors"
+            >
+              ↓
+            </button>
+            <button
+              onPointerDown={e => { e.preventDefault(); triggerEnter(); }}
+              className="flex-[2] py-2 rounded border border-[#00ff88]/40 text-[#00ff88] font-mono text-xs bg-[#00ff88]/10 active:bg-[#00ff88]/30 transition-colors font-bold"
+            >
+              ENTER
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

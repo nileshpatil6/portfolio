@@ -305,6 +305,12 @@
 .nano-header { background: #e8e8e2; color: #0a0a09; font-weight: 600; }
 .nano-footer { background: #1a1a18; color: #888880; }
 
+/* ── Mobile terminal ─────────────────────────────────── */
+.mobile-terminal .font-mono { font-size: 0.82rem; }
+.mobile-terminal .text-sm   { font-size: 0.82rem; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* ─── TYPOGRAPHY ─────────────────────────────────────── */
 .font-serif { font-family: var(--app-font-serif); }
 .font-mono  { font-family: var(--app-font-mono); }
@@ -363,6 +369,89 @@
 .spin-slow        { animation: spin-slow 20s linear infinite; }
 .marquee-track    { animation: marquee 30s linear infinite; }
 .marquee-track:hover { animation-play-state: paused; }
+
+/* ─── MOBILE-ONLY ANIMATIONS ────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  /* scroll-reveal: add .mob-reveal to any element, JS adds .mob-visible when in view */
+  .mob-reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.16,1,0.3,1);
+  }
+  .mob-reveal.mob-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .mob-reveal-left {
+    opacity: 0;
+    transform: translateX(-24px);
+    transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.16,1,0.3,1);
+  }
+  .mob-reveal-left.mob-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* touch tap ripple */
+  .mob-tap-target { position: relative; overflow: hidden; }
+  .mob-tap-target::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0;
+    border-radius: inherit;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+  .mob-tap-target:active::after { opacity: 0.08; }
+
+  /* btn active feedback */
+  .btn-primary:active  { transform: scale(0.97); opacity: 0.85; }
+  .btn-outline:active  { transform: scale(0.97); opacity: 0.85; }
+  .project-card:active { transform: scale(0.99); }
+
+  /* hero name pulsing glow on mobile */
+  @keyframes mob-name-glow {
+    0%, 100% { text-shadow: none; }
+    50%       { text-shadow: 0 0 60px rgba(var(--fg-raw, 0,0,0), 0.15); }
+  }
+  .hero-name-last { animation: mob-name-glow 4s ease-in-out infinite; }
+
+  /* floating dot pulse in hero background */
+  @keyframes mob-dot-pulse {
+    0%, 100% { transform: scale(1);   opacity: 0.18; }
+    50%       { transform: scale(1.6); opacity: 0.08; }
+  }
+  .mob-hero-dot { animation: mob-dot-pulse 3s ease-in-out infinite; }
+
+  /* skill tag entrance stagger */
+  .mob-stagger > * {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .mob-stagger.mob-visible > * { opacity: 1; transform: translateY(0); }
+  .mob-stagger.mob-visible > *:nth-child(1)  { transition-delay: 0.05s; }
+  .mob-stagger.mob-visible > *:nth-child(2)  { transition-delay: 0.10s; }
+  .mob-stagger.mob-visible > *:nth-child(3)  { transition-delay: 0.15s; }
+  .mob-stagger.mob-visible > *:nth-child(4)  { transition-delay: 0.20s; }
+  .mob-stagger.mob-visible > *:nth-child(5)  { transition-delay: 0.25s; }
+  .mob-stagger.mob-visible > *:nth-child(6)  { transition-delay: 0.30s; }
+  .mob-stagger.mob-visible > *:nth-child(7)  { transition-delay: 0.35s; }
+  .mob-stagger.mob-visible > *:nth-child(8)  { transition-delay: 0.40s; }
+  .mob-stagger.mob-visible > *:nth-child(n+9){ transition-delay: 0.45s; }
+
+  /* cursor: none override - show real cursor on touch */
+  .btn-primary, .btn-outline, button, a { cursor: auto; }
+
+  /* section number counter animation */
+  @keyframes mob-counter {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .mob-counter-in { animation: mob-counter 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
+}
 
 /* ─── SVG FLOW BACKGROUND ───────────────────────────── */
 .flow-svg {

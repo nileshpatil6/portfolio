@@ -16,6 +16,7 @@ import Achievements from "@/components/Achievements";
 import Contact from "@/components/Contact";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useMobileReveal } from "@/hooks/useMobileReveal";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -407,6 +408,8 @@ function Nav() {
 }
 
 export default function VisualMode() {
+  useMobileReveal();
+
   useEffect(() => {
     ScrollTrigger.refresh();
     return () => {
@@ -421,16 +424,16 @@ export default function VisualMode() {
 
       <div style={{ paddingTop: 60 }}>
         <main>
-          <Hero />
+          <div className="mob-reveal"><Hero /></div>
           <LandsatName />
-          <About />
-          <Journey />
-          <Projects />
-          <OpenSource />
-          <Skills />
-          <Achievements />
+          <div className="mob-reveal"><About /></div>
+          <div className="mob-reveal"><Journey /></div>
+          <div className="mob-reveal"><Projects /></div>
+          <div className="mob-reveal"><OpenSource /></div>
+          <div className="mob-reveal"><Skills /></div>
+          <div className="mob-reveal"><Achievements /></div>
           <KineticText />
-          <Contact />
+          <div className="mob-reveal"><Contact /></div>
         </main>
       </div>
     </div>
