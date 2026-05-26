@@ -101,7 +101,7 @@ function Tile({
       transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1], delay: index * 0.05 }}
       style={{
         position:    "relative",
-        width:       "clamp(40px, 8.5vw, 118px)",
+        width:       "clamp(48px, 13vw, 118px)",
         aspectRatio: "1 / 1",
         overflow:    "hidden",
         borderRadius: 6,
@@ -257,7 +257,7 @@ export default function LandsatName() {
   }, []);
 
   const renderRow = (row: string, baseOffset: number) => (
-    <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "clamp(5px, 0.8vw, 11px)" }}>
+    <div style={{ display: "flex", justifyContent: "center", flexWrap: "nowrap", gap: "clamp(4px, 0.8vw, 11px)" }}>
       {row.split("").map((letter, j) => {
         const idx = baseOffset + j;
         return <Tile key={idx} letter={letter} state={states[idx]} reveal={reveal} index={idx} />;
@@ -353,8 +353,8 @@ export default function LandsatName() {
         </motion.div>
 
         {/* ── Tiles ── */}
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(1.5rem, 5vw, 4rem)" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "clamp(8px, 1.4vw, 16px)" }}>
+        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 clamp(0.75rem, 3vw, 4rem)" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "clamp(6px, 1.4vw, 16px)" }}>
             {renderRow(ROWS[0], 0)}
             {renderRow(ROWS[1], ROWS[0].length)}
           </div>
