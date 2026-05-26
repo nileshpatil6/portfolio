@@ -101,7 +101,7 @@ function Tile({
       transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1], delay: index * 0.05 }}
       style={{
         position:    "relative",
-        width:       "clamp(48px, 13vw, 118px)",
+        width:       "clamp(0px, calc((100vw - 24px) / 6 - 4px), 118px)",
         aspectRatio: "1 / 1",
         overflow:    "hidden",
         borderRadius: 6,
@@ -257,7 +257,7 @@ export default function LandsatName() {
   }, []);
 
   const renderRow = (row: string, baseOffset: number) => (
-    <div style={{ display: "flex", justifyContent: "center", flexWrap: "nowrap", gap: "clamp(4px, 0.8vw, 11px)" }}>
+    <div style={{ display: "flex", justifyContent: "center", flexWrap: "nowrap", gap: "clamp(3px, 0.8vw, 11px)" }}>
       {row.split("").map((letter, j) => {
         const idx = baseOffset + j;
         return <Tile key={idx} letter={letter} state={states[idx]} reveal={reveal} index={idx} />;
@@ -344,7 +344,6 @@ export default function LandsatName() {
                     textTransform: "uppercase",
                   }}
                 >
-                  ◈ REACQUIRING
                 </motion.span>
               )}
             </AnimatePresence>
