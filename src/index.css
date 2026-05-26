@@ -305,6 +305,9 @@
 .nano-header { background: #e8e8e2; color: #0a0a09; font-weight: 600; }
 .nano-footer { background: #1a1a18; color: #888880; }
 
+/* ── Mobile terminal input placeholder ───────────────── */
+[data-testid="input-terminal"]::placeholder { color: rgba(255,255,255,0.18); }
+
 /* ── Mobile terminal ─────────────────────────────────── */
 .mobile-terminal .font-mono { font-size: 0.82rem; }
 .mobile-terminal .text-sm   { font-size: 0.82rem; }

@@ -1146,39 +1146,55 @@ export default function DevMode() {
 
   /* ── Render ───────────────────────────────────────────── */
   return (
-    <div className={`relative h-screen w-full terminal-body flex flex-col overflow-hidden ${booting ? "terminal-boot" : ""} ${isTouch ? "mobile-terminal" : ""}`}>
+    <div className={`relative w-full terminal-body flex flex-col overflow-hidden ${booting ? "terminal-boot" : ""}`}
+      style={{ height: "100dvh" }}
+    >
       <div className="terminal-vignette" />
 
       {/* Title bar */}
-      <div className="relative z-10 flex items-center justify-between px-4 py-2 bg-[#111]/90 border-b border-[#00ff88]/12 backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-          <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
-          <div className="w-3 h-3 rounded-full bg-[#28c840]" />
-        </div>
-        <span className="text-[#00ff88]/50 text-xs font-mono tracking-widest"
-              style={{ textShadow: "0 0 8px rgba(0,255,136,0.4)" }}>
-          NILESH.SH - TERMINAL
-        </span>
+      <div className="relative z-10 flex items-center justify-between px-4 bg-[#111]/90 border-b border-[#00ff88]/12 backdrop-blur-sm flex-shrink-0"
+        style={{ height: 44 }}
+      >
+        {/* Back button - more tappable on mobile */}
         <button
           data-testid="button-back-mode"
           onClick={() => router.push("/")}
-          className="text-[#a0aec0] hover:text-[#00d4ff] text-xs font-mono transition-colors cursor-none"
+          className="text-[#a0aec0] text-xs font-mono transition-colors"
+          style={{ padding: "8px 0", minWidth: 44 }}
         >
-          [X] EXIT
+          ← back
         </button>
+        <span className="text-[#00ff88]/50 text-xs font-mono tracking-widest"
+              style={{ textShadow: "0 0 8px rgba(0,255,136,0.4)" }}>
+          NILESH.SH
+        </span>
+        <div className="flex items-center gap-1.5" style={{ minWidth: 44, justifyContent: "flex-end" }}>
+          <div className="w-2 h-2 rounded-full bg-[#28c840]" />
+          <span className="text-[#00ff88]/40 text-xs font-mono">live</span>
+        </div>
       </div>
 
       {nano.open && <NanoViewer state={nano} onClose={() => setNano({ open: false })} />}
 
-      {/* Output area */}
+      {/* Output area - scrollable */}
       <div
         ref={scrollContainerRef}
-        className="relative z-10 flex-1 overflow-y-auto p-4 space-y-0.5"
-        onClick={() => inputRef.current?.focus()}
+        className="relative z-10 flex-1 overflow-y-auto space-y-0.5"
+        style={{ padding: isTouch ? "12px 14px" : "16px" }}
+        onClick={() => !isTouch && inputRef.current?.focus()}
       >
-        {/* Glitchy ASCII logo - always at top */}
-        <GlitchAscii />
+        {/* ASCII logo - hidden on mobile to save space */}
+        {!isTouch && <GlitchAscii />}
+
+        {/* Mobile compact header */}
+        {isTouch && (
+          <div className="mb-3 pb-2 border-b border-[#00ff88]/10">
+            <div className="font-mono text-[#00ff88]/70 text-xs" style={{ textShadow: "0 0 8px rgba(0,255,136,0.4)" }}>
+              NILESH.SH v1.0 · type a command or tap below
+            </div>
+            <div className="font-mono text-[#a0aec0]/40 text-xs mt-0.5">try: help · ls · whoami · neofetch</div>
+          </div>
+        )}
 
         {/* History entries */}
         {history.map((entry, i) => {
@@ -1186,7 +1202,7 @@ export default function DevMode() {
           return (
             <div key={i} ref={isLast && entry.input !== undefined ? latestEntryRef : null}>
               {entry.input !== undefined && (
-                <div className="font-mono text-sm flex gap-1 mt-1">
+                <div className="font-mono flex gap-1 mt-1" style={{ fontSize: isTouch ? "0.8rem" : "0.875rem" }}>
                   <span
                     className="text-[#00d4ff] whitespace-nowrap select-none"
                     style={{ textShadow: "0 0 8px rgba(0,212,255,0.45)" }}
@@ -1194,7 +1210,7 @@ export default function DevMode() {
                     {entry.prompt ?? getPrompt()}
                   </span>
                   {" "}
-                  <span className="text-white">{entry.input}</span>
+                  <span className="text-white break-all">{entry.input}</span>
                 </div>
               )}
               <AnimatedOutput
@@ -1209,8 +1225,8 @@ export default function DevMode() {
         {/* Loading indicator */}
         {loadingCmd && <LoadingDots message={loadingCmd.message} />}
 
-        {/* Input prompt - sits directly below the last output, like a real terminal */}
-        {!loadingCmd && (
+        {/* Desktop: inline input prompt at bottom of scroll area */}
+        {!isTouch && !loadingCmd && (
           <div
             ref={inputBarRef}
             className="flex items-center gap-1 mt-1"
@@ -1228,66 +1244,107 @@ export default function DevMode() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              className={`flex-1 bg-transparent text-white font-mono outline-none ${isTouch ? "text-base" : "text-sm cursor-none caret-transparent"}`}
-              style={isTouch ? { caretColor: "#00ff88" } : undefined}
+              className="flex-1 bg-transparent text-white font-mono text-sm outline-none cursor-none caret-transparent"
               autoComplete="off"
               spellCheck={false}
-              autoCapitalize="none"
-              autoCorrect="off"
+              autoFocus
             />
-            {!isTouch && (
-              <span
-                className="term-cursor"
-                style={{ boxShadow: "0 0 7px rgba(0,255,136,0.7)" }}
-              />
-            )}
+            <span
+              className="term-cursor"
+              style={{ boxShadow: "0 0 7px rgba(0,255,136,0.7)" }}
+            />
           </div>
         )}
 
-        {/* Bottom spacer - gives headroom so the latest entry can scroll up into view */}
-        <div aria-hidden style={{ minHeight: isTouch ? "40vh" : "60vh" }} />
+        {/* Bottom spacer - desktop only */}
+        {!isTouch && <div aria-hidden style={{ minHeight: "60vh" }} />}
+        {/* Mobile: small spacer so last line isn't right at bottom bar edge */}
+        {isTouch && <div aria-hidden style={{ height: 8 }} />}
       </div>
 
-      {/* Mobile command bar - quick tap commands + virtual keys */}
+      {/* ── MOBILE BOTTOM BAR ─────────────────────────────── */}
       {isTouch && (
-        <div className="relative z-20 border-t border-[#00ff88]/15 bg-[#0a0a0f]/95 backdrop-blur-sm">
+        <div className="relative z-20 flex-shrink-0 bg-[#0d0d12] border-t border-[#00ff88]/12">
+
           {/* Quick command chips */}
-          <div className="flex gap-2 px-3 py-2 overflow-x-auto scrollbar-none">
-            {["help", "ls", "whoami", "cat README.md", "cd projects", "neofetch", "git log", "history", "clear"].map(cmd => (
+          <div className="flex gap-1.5 px-3 pt-2 pb-1.5 overflow-x-auto scrollbar-none">
+            {["help", "ls", "whoami", "neofetch", "cat README.md", "cd projects", "git log", "history", "clear"].map(cmd => (
               <button
                 key={cmd}
-                onPointerDown={e => { e.preventDefault(); insertCommand(cmd); }}
-                className="shrink-0 px-3 py-1 rounded border border-[#00ff88]/30 text-[#00ff88] font-mono text-xs bg-[#00ff88]/5 active:bg-[#00ff88]/20 transition-colors"
+                onPointerDown={e => { e.preventDefault(); insertCommand(cmd); inputRef.current?.focus(); }}
+                className="shrink-0 font-mono bg-[#1a1a22] border border-[#00ff88]/20 text-[#00ff88]/80 rounded-md active:bg-[#00ff88]/15 active:border-[#00ff88]/50 transition-colors"
+                style={{ fontSize: "0.7rem", padding: "5px 10px", letterSpacing: "0.03em" }}
               >
                 {cmd}
               </button>
             ))}
           </div>
-          {/* Virtual key row: Tab / Up / Down / Enter */}
-          <div className="flex gap-2 px-3 pb-3">
-            <button
-              onPointerDown={e => { e.preventDefault(); triggerTab(); }}
-              className="flex-1 py-2 rounded border border-[#00d4ff]/30 text-[#00d4ff] font-mono text-xs bg-[#00d4ff]/5 active:bg-[#00d4ff]/20 transition-colors"
+
+          {/* Input row */}
+          <div className="flex items-center gap-2 px-3 pb-3 pt-1">
+            {/* Prompt + input */}
+            <div
+              className="flex-1 flex items-center gap-2 rounded-lg border border-[#00ff88]/20 bg-[#131318] px-3"
+              style={{ height: 44 }}
+              onClick={() => inputRef.current?.focus()}
             >
-              TAB
+              <span
+                className="text-[#00d4ff] font-mono whitespace-nowrap select-none flex-shrink-0"
+                style={{ fontSize: "0.72rem", textShadow: "0 0 8px rgba(0,212,255,0.4)" }}
+              >
+                $
+              </span>
+              <input
+                ref={inputRef}
+                data-testid="input-terminal"
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="flex-1 bg-transparent text-white font-mono outline-none min-w-0"
+                style={{ fontSize: "0.85rem", caretColor: "#00ff88" }}
+                autoComplete="off"
+                spellCheck={false}
+                autoCapitalize="none"
+                autoCorrect="off"
+                placeholder="type a command..."
+              />
+              {loadingCmd && (
+                <div className="w-3 h-3 rounded-full border border-[#00ff88]/50 border-t-[#00ff88] animate-spin flex-shrink-0" />
+              )}
+            </div>
+
+            {/* Send button */}
+            <button
+              onPointerDown={e => { e.preventDefault(); triggerEnter(); }}
+              className="flex-shrink-0 rounded-lg bg-[#00ff88]/10 border border-[#00ff88]/30 text-[#00ff88] font-mono font-bold active:bg-[#00ff88]/25 transition-colors flex items-center justify-center"
+              style={{ width: 44, height: 44, fontSize: "1.1rem" }}
+            >
+              ↵
             </button>
+          </div>
+
+          {/* Aux key row: history nav + tab */}
+          <div className="flex gap-2 px-3 pb-2">
             <button
               onPointerDown={e => { e.preventDefault(); triggerHistory("up"); }}
-              className="flex-1 py-2 rounded border border-[#a0aec0]/30 text-[#a0aec0] font-mono text-xs bg-[#a0aec0]/5 active:bg-[#a0aec0]/20 transition-colors"
+              className="flex-1 font-mono rounded border border-[#ffffff]/10 text-[#a0aec0]/70 bg-[#1a1a22] active:bg-[#2a2a32] transition-colors"
+              style={{ fontSize: "0.7rem", padding: "5px 0" }}
             >
-              ↑
+              ↑ prev
             </button>
             <button
               onPointerDown={e => { e.preventDefault(); triggerHistory("down"); }}
-              className="flex-1 py-2 rounded border border-[#a0aec0]/30 text-[#a0aec0] font-mono text-xs bg-[#a0aec0]/5 active:bg-[#a0aec0]/20 transition-colors"
+              className="flex-1 font-mono rounded border border-[#ffffff]/10 text-[#a0aec0]/70 bg-[#1a1a22] active:bg-[#2a2a32] transition-colors"
+              style={{ fontSize: "0.7rem", padding: "5px 0" }}
             >
-              ↓
+              ↓ next
             </button>
             <button
-              onPointerDown={e => { e.preventDefault(); triggerEnter(); }}
-              className="flex-[2] py-2 rounded border border-[#00ff88]/40 text-[#00ff88] font-mono text-xs bg-[#00ff88]/10 active:bg-[#00ff88]/30 transition-colors font-bold"
+              onPointerDown={e => { e.preventDefault(); triggerTab(); }}
+              className="flex-1 font-mono rounded border border-[#00d4ff]/20 text-[#00d4ff]/70 bg-[#1a1a22] active:bg-[#00d4ff]/10 transition-colors"
+              style={{ fontSize: "0.7rem", padding: "5px 0" }}
             >
-              ENTER
+              TAB
             </button>
           </div>
         </div>
