@@ -11,8 +11,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    const saved = localStorage.getItem("theme") as Theme;
-    if (saved) setTheme(saved);
+    const saved = localStorage.getItem("theme") as Theme | null;
+    // Only restore dark if user explicitly chose it previously
+    if (saved === "dark") setTheme("dark");
+    // Light is already the default - never pick up system prefers-color-scheme
   }, []);
 
   useEffect(() => {

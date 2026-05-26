@@ -1,159 +1,154 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import FlowBackground from "@/components/FlowBackground";
 import { useTheme } from "@/lib/theme";
+import { Sun, Moon } from "lucide-react";
 
 export default function ModeSelect() {
   const router = useRouter();
   const { theme, toggle } = useTheme();
   const [loaded, setLoaded] = useState(false);
-  const [count, setCount] = useState(0);
 
   useEffect(() => {
-    // Count up from 0 to 100 then reveal
-    let n = 0;
-    const t = setInterval(() => {
-      n += Math.floor(Math.random() * 4) + 1;
-      if (n >= 100) { n = 100; clearInterval(t); setTimeout(() => setLoaded(true), 300); }
-      setCount(n);
-    }, 22);
-    return () => clearInterval(t);
+    const t = setTimeout(() => setLoaded(true), 120);
+    return () => clearTimeout(t);
   }, []);
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden" style={{ background: "var(--bg)" }}>
-      <FlowBackground />
-      <div className="noise" />
-
-      {/* Loading counter (375.studio style) */}
-      {!loaded && (
-        <div className="fixed inset-0 z-50 flex items-end justify-end p-10" style={{ background: "var(--bg)" }}>
-          <FlowBackground />
-          <span
-            className="font-serif select-none"
-            style={{
-              fontSize: "clamp(5rem, 18vw, 14rem)",
-              lineHeight: 1,
-              color: "var(--fg)",
-              fontVariantNumeric: "tabular-nums",
-              fontStyle: "italic",
-              fontWeight: 300,
-            }}
-          >
-            {count}%
-          </span>
-        </div>
-      )}
-
+    <div
+      className="relative min-h-screen flex flex-col"
+      style={{ background: "var(--bg)", color: "var(--fg)" }}
+    >
       {/* Theme toggle */}
-      <div className={`fixed top-6 right-6 z-40 flex items-center gap-2 transition-all duration-700 ${loaded ? "opacity-100" : "opacity-0"}`}>
-        <span className="section-label">{theme === "light" ? "light" : "dark"}</span>
-        <button onClick={toggle} className="theme-toggle" aria-label="Toggle theme">
-          <div className="theme-toggle-thumb" />
+      <div className="absolute top-5 right-5 z-20">
+        <button
+          onClick={toggle}
+          aria-label="Toggle theme"
+          className="theme-icon-toggle"
+          style={{ cursor: "auto" }}
+        >
+          <span className="theme-icon-sun"><Sun size={15} strokeWidth={2} /></span>
+          <span className="theme-icon-moon"><Moon size={15} strokeWidth={2} /></span>
         </button>
       </div>
 
-      {/* Main content */}
+      {/* Content */}
       <div
-        className={`relative z-10 flex flex-col items-center justify-center min-h-screen px-6 transition-all duration-1000 ${
-          loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+        className={`flex flex-col flex-1 px-6 md:px-16 transition-all duration-500 ${
+          loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         }`}
+        style={{ paddingTop: "clamp(64px, 14vh, 120px)", paddingBottom: 40 }}
       >
-        {/* Label */}
-        <p className="section-label mb-8 tracking-[0.22em]">nilesh s. patil - portfolio</p>
+        {/* Name */}
+        <p
+          className="font-mono mb-2"
+          style={{ fontSize: "0.65rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--fg-muted)" }}
+        >
+          Nilesh S. Patil
+        </p>
 
-        {/* Big headline */}
-        <div className="text-center mb-16 max-w-4xl">
-          <h1
-            className="hero-headline"
-            style={{ fontSize: "clamp(3.5rem, 10vw, 8rem)" }}
-          >
-            Full Stack<br />
-            <strong>Engineer</strong>{" "}
-            <em>&</em>
-            <br />GenAI Builder
-          </h1>
-        </div>
+        {/* Question */}
+        <h1
+          className="font-serif"
+          style={{
+            fontSize: "clamp(2rem, 7vw, 4.5rem)",
+            fontWeight: 300,
+            lineHeight: 1.12,
+            color: "var(--fg)",
+            marginBottom: "clamp(40px, 7vh, 72px)",
+          }}
+        >
+          How do you want<br />
+          to explore?
+        </h1>
 
-        {/* Mode cards */}
-        <div className="grid md:grid-cols-2 gap-4 w-full max-w-2xl">
+        {/* Cards - vertical stack, visual on top */}
+        <div className="flex flex-col gap-4 w-full" style={{ maxWidth: 540 }}>
+
+          {/* Visual / Portfolio - primary */}
           <button
-            onClick={() => router.push("/dev")}
-            className="group text-left p-8 border transition-all duration-300 cursor-none rounded-lg"
+            onClick={() => router.push("/visual")}
+            className="group text-left rounded-2xl transition-all duration-200 active:scale-[0.98]"
             style={{
-              borderColor: "var(--border-color)",
-              background: "var(--bg-elevated)",
+              padding: "clamp(24px, 4vw, 36px)",
+              background: "var(--fg)",
+              color: "var(--bg)",
+              cursor: "auto",
+              border: "none",
             }}
           >
-            <div className="mb-4 font-mono text-xs" style={{ color: "var(--fg-subtle)" }}>
-              <span style={{ color: "var(--fg-muted)" }}>$</span> ./portfolio --mode dev
-            </div>
-            <h2 className="font-serif text-2xl mb-2" style={{ color: "var(--fg)" }}>
-              <em>Terminal</em>
-            </h2>
-            <p className="text-sm leading-relaxed" style={{ color: "var(--fg-muted)" }}>
-              Linux shell interface. Browse with ls, read with nano, explore.
-            </p>
-            <div className="mt-6 flex items-center gap-2 text-sm font-medium" style={{ color: "var(--fg)" }}>
-              <span>Enter</span>
-              <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p
+                  className="font-mono mb-2"
+                  style={{ fontSize: "0.6rem", letterSpacing: "0.14em", textTransform: "uppercase", opacity: 0.5 }}
+                >
+                  Recommended
+                </p>
+                <h2
+                  className="font-serif"
+                  style={{ fontSize: "clamp(1.5rem, 4vw, 2.2rem)", fontWeight: 600, marginBottom: 8 }}
+                >
+                  Browse the Portfolio
+                </h2>
+                <p style={{ fontSize: "clamp(0.82rem, 2.2vw, 0.95rem)", lineHeight: 1.55, opacity: 0.65, maxWidth: 360 }}>
+                  See my work, skills, and story in a clean visual layout. Best place to start.
+                </p>
+              </div>
+              <span
+                className="flex-shrink-0 group-hover:translate-x-1 transition-transform duration-200 mt-1"
+                style={{ fontSize: "1.4rem", opacity: 0.7 }}
+              >
+                →
+              </span>
             </div>
           </button>
 
+          {/* Terminal - secondary */}
           <button
-            onClick={() => router.push("/visual")}
-            className="group text-left p-8 border transition-all duration-300 cursor-none rounded-lg"
+            onClick={() => router.push("/dev")}
+            className="group text-left rounded-2xl transition-all duration-200 active:scale-[0.98]"
             style={{
-              borderColor: "var(--fg)",
-              background: "var(--fg)",
-              color: "var(--bg)",
+              padding: "clamp(24px, 4vw, 36px)",
+              border: "1.5px solid var(--border-color)",
+              background: "var(--bg-elevated)",
+              color: "var(--fg)",
+              cursor: "auto",
             }}
           >
-            <div className="mb-4 font-mono text-xs opacity-50">
-              → visual_mode.tsx
-            </div>
-            <h2 className="font-serif text-2xl mb-2">
-              <em>Portfolio</em>
-            </h2>
-            <p className="text-sm leading-relaxed opacity-70">
-              Editorial portfolio. Projects, skills, story - all in one scroll.
-            </p>
-            <div className="mt-6 flex items-center gap-2 text-sm font-medium">
-              <span>Enter</span>
-              <span className="group-hover:translate-x-1 transition-transform duration-200">→</span>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p
+                  className="font-mono mb-2"
+                  style={{ fontSize: "0.6rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--fg-subtle)" }}
+                >
+                  For the curious
+                </p>
+                <h2
+                  className="font-serif"
+                  style={{ fontSize: "clamp(1.5rem, 4vw, 2.2rem)", fontWeight: 600, marginBottom: 8 }}
+                >
+                  Open the Terminal
+                </h2>
+                <p style={{ fontSize: "clamp(0.82rem, 2.2vw, 0.95rem)", lineHeight: 1.55, color: "var(--fg-muted)", maxWidth: 360 }}>
+                  A real Linux-style terminal. Type commands, explore, see what happens.
+                </p>
+              </div>
+              <span
+                className="flex-shrink-0 font-mono group-hover:translate-x-1 transition-transform duration-200 mt-1"
+                style={{ fontSize: "1rem", color: "var(--fg-subtle)" }}
+              >
+                →
+              </span>
             </div>
           </button>
         </div>
 
         {/* Footer */}
-        <div className="mt-16 flex items-center gap-6">
+        <div className="mt-auto pt-12 flex flex-wrap items-center gap-x-5 gap-y-1">
           <span className="section-label">Belgaum, Karnataka</span>
-          <span className="section-label opacity-40">·</span>
+          <span className="section-label opacity-30">·</span>
           <span className="section-label">technil6436@gmail.com</span>
-        </div>
-      </div>
-
-      {/* Circular rotating text (wisprflow style) */}
-      <div
-        className={`fixed bottom-8 left-8 z-10 transition-all duration-1000 ${loaded ? "opacity-100" : "opacity-0"}`}
-        style={{ width: 120, height: 120 }}
-      >
-        <svg viewBox="0 0 120 120" className="spin-slow w-full h-full">
-          <defs>
-            <path id="circle-path" d="M 60,60 m -45,0 a 45,45 0 1,1 90,0 a 45,45 0 1,1 -90,0" />
-          </defs>
-          <text fontSize="10" fontFamily="var(--app-font-mono)" fill="var(--fg-subtle)" letterSpacing="3">
-            <textPath href="#circle-path">
-              FULL STACK · GENAI · BUILDER · 
-            </textPath>
-          </text>
-        </svg>
-        <div
-          className="absolute inset-0 m-auto flex items-center justify-center"
-          style={{ width: 32, height: 32, top: "50%", left: "50%", transform: "translate(-50%,-50%)" }}
-        >
-          <div className="status-dot" />
         </div>
       </div>
     </div>
