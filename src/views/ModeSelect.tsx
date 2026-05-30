@@ -1,11 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useTheme } from "@/lib/theme";
 import { Sun, Moon } from "lucide-react";
 
 export default function ModeSelect() {
-  const router = useRouter();
   const { theme, toggle } = useTheme();
   const [loaded, setLoaded] = useState(false);
 
@@ -62,8 +61,8 @@ export default function ModeSelect() {
 
           {/* Right: cards split */}
           <div className="flex flex-col">
-            <button
-              onClick={() => router.push("/visual")}
+            <Link
+              href="/visual"
               className="group flex-1 text-left flex flex-col justify-between p-16 transition-colors duration-200"
               style={{ background: "var(--fg)", color: "var(--bg)", cursor: "auto", borderBottom: "1px solid rgba(255,255,255,0.08)" }}
             >
@@ -81,10 +80,10 @@ export default function ModeSelect() {
                   Projects, skills, and story in one clean scroll.
                 </p>
               </div>
-            </button>
+            </Link>
 
-            <button
-              onClick={() => router.push("/dev")}
+            <Link
+              href="/dev"
               className="group flex-1 text-left flex flex-col justify-between p-16 transition-colors duration-200 hover:bg-[var(--bg-elevated)]"
               style={{ background: "var(--bg-elevated)", color: "var(--fg)", cursor: "auto" }}
             >
@@ -102,7 +101,7 @@ export default function ModeSelect() {
                   A real Linux-style shell. Type commands, explore.
                 </p>
               </div>
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -116,8 +115,8 @@ export default function ModeSelect() {
           </h1>
 
           <div className="flex flex-col gap-3">
-            <button
-              onClick={() => router.push("/visual")}
+            <Link
+              href="/visual"
               className="group text-left rounded-2xl active:scale-[0.98] transition-transform"
               style={{ padding: 24, background: "var(--fg)", color: "var(--bg)", cursor: "auto" }}
             >
@@ -129,10 +128,10 @@ export default function ModeSelect() {
                 </div>
                 <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform mt-1" style={{ fontSize: "1.2rem", opacity: 0.6 }}>→</span>
               </div>
-            </button>
+            </Link>
 
-            <button
-              onClick={() => router.push("/dev")}
+            <Link
+              href="/dev"
               className="group text-left rounded-2xl active:scale-[0.98] transition-transform"
               style={{ padding: 24, background: "var(--bg-elevated)", color: "var(--fg)", border: "1.5px solid var(--border-color)", cursor: "auto" }}
             >
@@ -144,7 +143,7 @@ export default function ModeSelect() {
                 </div>
                 <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform mt-1" style={{ fontSize: "1.2rem", color: "var(--fg-subtle)" }}>→</span>
               </div>
-            </button>
+            </Link>
           </div>
 
           <div className="mt-auto pt-10 flex flex-wrap gap-x-4 gap-y-1">
